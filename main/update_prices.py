@@ -1,0 +1,572 @@
+from datetime import date
+from django.db.models import Sum, F, ExpressionWrapper, fields
+from django.db.models.functions import Abs
+import sys
+import os
+import freecurrencyapi
+
+# Live prices update
+import requests
+from bs4 import BeautifulSoup
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from datetime import datetime
+import re
+import random
+import time
+import pandas as pd
+import os
+# from commodities_data import commodities_data
+
+# Set the Django settings module environment variable
+# Add the Django project root directory to the Python path
+project_root = r'C:\\Users\\sawin\\Documents\\Commodity Project\\django_project\\comchecker'
+sys.path.append(project_root)
+
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "comchecker.settings")
+
+# Initialize Django
+import django
+django.setup()
+
+
+from main.models import (
+    Product, 
+    MaterialProportion, 
+    Commodity, 
+    CommodityProduction, 
+    Currency, 
+    CommodityPrice
+)
+
+
+today = date(2024, 7, 1)
+last_year = date(2023, 7, 1)
+
+def get_price(date, commodity_id):
+    # Calculate the absolute difference between the entry date and the provided date
+        closest_price_entry = (
+            CommodityPrice.objects
+            .filter(commodity=commodity_id)
+            .annotate(date_diff=ExpressionWrapper(Abs(F('date') - date), output_field=fields.DurationField()))
+            .order_by('date_diff')  # Order by the smallest date difference
+            .values('price')
+            .first()
+        )        
+        return closest_price_entry['price'] if closest_price_entry else 0
+
+def update_total_production(commodities):
+    for commodity in commodities:
+        commodity.update_production_total()
+    print('total production updated for all commodities')
+
+
+
+def add_1y_increase_to_products(products):    
+    for product in products:
+        materials_proportions = MaterialProportion.objects.filter(product=product.id)
+        total_proportion = materials_proportions.aggregate(total_proportion=Sum('proportion'))['total_proportion'] or 0
+
+        weighted_price_lastyear = 0
+        weighted_price_today = 0
+
+        # Fetch all commodities that are in the materials_proportions list
+        commodities = Commodity.objects.filter(id__in=[m.commodity_id for m in materials_proportions])
+
+        # Build a lookup dictionary for commodities
+        commodity_lookup = {commodity.id: commodity for commodity in commodities}
+
+        # Loop through materials and process the required data
+        for material in materials_proportions[:10]:
+            commodity = commodity_lookup.get(material.commodity_id)
+            
+            # Retrieve prices for last year and today
+            last_year_price_raw = get_price(last_year, material.commodity_id)
+            today_price_raw = get_price(today, material.commodity_id)
+            
+            # Accessing rate_for_price_kg and currency rate
+            rate_for_price_kg = commodity.rate_for_price_kg
+            currency_rate = commodity.currency.rate
+
+            # Retrieve prices for last year and today
+            last_year_price_raw = get_price(last_year, material.commodity_id)
+            today_price_raw = get_price(today, material.commodity_id)
+
+            if total_proportion > 0:
+                print(f'Last year price: {last_year_price_raw}')
+                print(f'Material proportion: {material.proportion}')
+                print(f'Rate price per kg: {rate_for_price_kg}')
+                print(f'Currency rate: {currency_rate}')
+
+                weighted_price_lastyear += last_year_price_raw * material.proportion * rate_for_price_kg / currency_rate
+                weighted_price_today += today_price_raw * material.proportion * rate_for_price_kg / currency_rate
+        
+        if weighted_price_lastyear != 0 and last_year_price_raw != 0 and today_price_raw != 0:
+            product.increasefromlastyear = (weighted_price_today - weighted_price_lastyear) / weighted_price_lastyear * 100
+        else:
+            product.increasefromlastyear = None  # Or any default value
+        product.save()
+
+def add_1y_increase_to_commodities(commodities):
+    for commodity in commodities:
+        last_year_price = get_price(last_year, commodity.id)
+        today_price = get_price(today, commodity.id)
+        if last_year_price and today_price:
+            commodity.increasefromlastyear = (today_price - last_year_price) / last_year_price * 100
+        else:
+            commodity.increasefromlastyear = None  # Or any default value
+        commodity.save()
+        print(f'{commodity.name} - 1 year increase saved: {commodity.increasefromlastyear}')
+
+
+def add_price_now(commodities):
+    for commodity in commodities:
+        today_price = get_price(today, commodity.id)
+        commodity.price_now = today_price
+        commodity.save()
+        print(f'{commodity.name} - Price now saved: {commodity.price_now}')
+
+
+def add_top_value_commodities(products):
+    for product in products:
+        materials_proportions = MaterialProportion.objects.filter(product=product.id)
+        total_proportion = materials_proportions.aggregate(total_proportion=Sum('proportion'))['total_proportion'] or 0
+
+        # Fetch all commodities that are in the materials_proportions list
+        commodities = Commodity.objects.filter(id__in=[m.commodity_id for m in materials_proportions])
+
+        # Build a lookup dictionary for commodities
+        commodity_lookup = {commodity.id: commodity for commodity in commodities}
+
+        commodity_contributions = {}
+        # Loop through materials and process the required data
+        for material in materials_proportions[:10]:
+            commodity = commodity_lookup.get(material.commodity_id)
+            
+            # Retrieve prices for last year and today
+            today_price_raw = get_price(today, material.commodity_id)
+            
+            # Accessing rate_for_price_kg and currency rate
+            rate_for_price_kg = commodity.rate_for_price_kg
+            currency_rate = commodity.currency.rate
+
+            # Retrieve prices for last year and today
+            today_price_raw = get_price(today, material.commodity_id)
+
+            if total_proportion > 0:
+                print(f'Material proportion: {material.proportion}')
+                print(f'Rate price per kg: {rate_for_price_kg}')
+                print(f'Currency rate: {currency_rate}')
+
+                weighted_today_value = today_price_raw * material.proportion * rate_for_price_kg / currency_rate
+                if commodity.id not in commodity_contributions:
+                    commodity_contributions[commodity.id] = {'commodity': commodity, 'contribution': 0}
+                commodity_contributions[commodity.id]['contribution'] += weighted_today_value
+        
+        # Determine the top-value commodity by the highest cumulative contribution
+        top_value_commodity = max(commodity_contributions.values(), key=lambda x: x['contribution'])['commodity'] if commodity_contributions else None
+        
+        product.top_value_commodity = top_value_commodity if top_value_commodity else None
+        product.save()
+
+
+def update_currencies(API_KEY):
+    client = freecurrencyapi.Client(API_KEY)
+
+    latest_result = client.latest()
+    print(f'Latest results: {latest_result}')
+
+    # Assuming the API response has 'USD' as the base currency
+    rates = latest_result.get('data', {})
+
+    # Update each currency entry in the database
+    for currency in Currency.objects.all():
+        if currency.code == 'USD':
+            continue  # Skip updating USD itself, it should remain 1
+
+        rate_to_usd = rates.get(currency.code)
+        if rate_to_usd is not None:
+            Currency.objects.update_or_create(
+                code=currency.code,
+                defaults={
+                    'rate': rate_to_usd,
+                    'date': date.today(),  # Update with today's date
+                }
+            )
+
+
+
+# products = Product.objects.all()
+# commodities = Commodity.objects.all()
+
+# add_1y_increase_to_products(products)
+# add_1y_increase_to_commodities(commodities)
+# add_price_now(commodities)
+# add_top_value_commodities(products)
+# update_total_production(commodities)
+
+# API_KEY = 'fca_live_HKyQMt07Aa18hKfhzE2hj3YJFrmHpXhsGel3UKUb'
+# update_currencies(API_KEY)
+
+
+######################
+# Live prices update #
+######################
+
+def get_fred_price(url, commodities_data, com):
+    # Send a request to the website
+    response = requests.get(url)
+    
+    # Parse the HTML content using BeautifulSoup
+    soup = BeautifulSoup(response.text, 'html.parser')
+
+    # Extract the relevant data from the page
+    try:
+        commodities_data[com]['observation_date'] = soup.find('span', class_='series-meta-value').text.strip()
+        commodities_data[com]['price'] = float(soup.find('span', class_='series-meta-observation-value').text.strip())
+        commodities_data[com]['updated_date'] = soup.find('span', class_='series-meta-updated-date').text.strip()
+        commodities_data[com]['updated_time'] = soup.find('span', class_='series-meta-updated-time').text.strip()
+        commodities_data[com]['date'] = datetime.now().strftime('%Y-%m-%d')
+        print(f'{com}: {commodities_data[com]}')
+    except AttributeError:
+        print("Could not find one or more elements on the page.")
+
+
+def get_investing_com_price(url, commodities_data, com):
+    # Send a request to the website
+    response = requests.get(url)
+    # Parse the HTML content using BeautifulSoup
+    soup = BeautifulSoup(response.text, 'html.parser')
+    
+
+    # Extract the date from the <time> tag
+    try:
+        time_element = soup.find('time', {'data-test': 'trading-time-label'})
+        if time_element and time_element.has_attr('datetime'):
+            commodities_data[com]['observation_date'] = time_element['datetime']  # Get the datetime attribute
+    except AttributeError:
+        print("Could not find the time element.")
+
+    # Extract the value from the <div> tag
+    try:
+        value_element = soup.find('div', {'data-test': 'instrument-price-last'})
+        if value_element:
+            price_unformatted = value_element.text.strip()
+            commodities_data[com]['price'] = float(price_unformatted.replace(',',''))
+            commodities_data[com]['date'] = datetime.now().strftime('%Y-%m-%d')
+            print(f'{com}: {commodities_data[com]}')
+    except AttributeError:
+        print("Could not find the value element.")
+
+def get_trading_economics(url, element_id, commodities_data, com):
+    # Initialize WebDriver (assuming you're using Chrome, you can adjust if using a different browser)
+    driver = webdriver.Chrome()
+
+    # Open the specified URL
+    driver.get(url)
+
+    try:
+        # Wait for the price element to be present and visible on the page
+        wait = WebDriverWait(driver, 10)  # Wait up to 10 seconds
+        price_element = wait.until(EC.visibility_of_element_located((By.ID, element_id)))
+        
+        if price_element:
+            commodities_data[com]['price'] = float(price_element.text.strip())
+            commodities_data[com]['date'] = datetime.now().strftime('%Y-%m-%d')
+            print(f'{com}: {commodities_data[com]}')
+    except Exception as e:
+        print(f"Could not find the price element: {e}")
+
+    # Close the WebDriver
+    time.sleep(random.randrange(1,5,1))
+    driver.quit()
+
+
+
+def get_investing_com_v2_price(url, commodities_data, com):
+    # Send a request to the website
+    response = requests.get(url)
+    
+    # Parse the HTML content using BeautifulSoup
+    soup = BeautifulSoup(response.text, 'html.parser')
+    
+    # Find all <span> elements and locate the one starting with "Actual"
+    try:
+        spans = soup.find_all('span')
+        for span in spans:
+            text = span.get_text(strip=True)
+            if text.startswith("Actual"):
+                # Extract the value after "Actual"
+                match = re.search(r'Actual\s*(\S+)', text)
+                if match:
+                    commodities_data[com]['price'] = float(match.group(1).strip())  # Get the value and strip any extra whitespace
+                    commodities_data[com]['date'] = datetime.now().strftime('%Y-%m-%d')
+                    print(f'{com}: {commodities_data[com]}')
+                break  # Exit loop once the target span is found
+    except Exception as e:
+        print(f"Could not find the value element: {e}")
+    
+
+def get_live_prices_commodities(commodities_data):
+    commodities_to_exclude = [
+    "Aluminium",
+    "Cobalt",
+    "Copper",
+    "Cotton",
+    "Crude Oil",
+    "Gold",
+    "Hot-Rolled Steel",
+    "Iron Ore",
+    "Lead",
+    "Lumber",
+    "Natural Gas",
+    "Nickel",
+    "Palladium",
+    "Silver",
+    "Tin",
+    "Zinc"
+    ]
+    for com in commodities_data:
+        print(com)
+        if com not in commodities_to_exclude:        
+            if commodities_data[com]['source'] == 'FRED':
+                get_fred_price(commodities_data[com]['url'], commodities_data, com)
+            elif commodities_data[com]['source'] == 'Investing.com':
+                get_investing_com_price(commodities_data[com]['url'], commodities_data, com)
+            elif commodities_data[com]['source'] == 'Trading Economics':
+                pass
+                get_trading_economics(commodities_data[com]['url'],
+                                            commodities_data[com]['element_id'], commodities_data, com)
+            elif commodities_data[com]['source'] == 'Investing.com v2':
+                get_investing_com_v2_price(commodities_data[com]['url'], commodities_data, com)
+            elif commodities_data[com]['source'] == 'ONS':
+                print('Needs manual update 15/20th each month!')
+        print(f'Commodity {com} excluded, price update from futures cash')
+    print('Values updated')
+    return commodities_data
+
+def save_to_excel(new_dict, directory_to_save):
+    try:
+        # Create a DataFrame from the dictionary
+        if not os.path.exists(directory_to_save):
+            os.makedirs(directory_to_save)
+        df = pd.DataFrame([new_dict])  # Ensure new_dict is treated as a single row
+        
+        # Define the file path
+        file_path = os.path.join(directory_to_save, 'commodities_data.xlsx')
+        
+        if os.path.exists(file_path):
+            # Load the existing Excel file
+            with pd.ExcelFile(file_path) as xls:
+                existing_df = pd.read_excel(xls, sheet_name='Sheet1')
+            
+            # Append the new data to the existing DataFrame
+            updated_df = pd.concat([existing_df, df], ignore_index=True)
+        else:
+            # If the file does not exist, use the new DataFrame as is
+            updated_df = df
+        
+        # Save the updated DataFrame to the Excel file
+        updated_df.to_excel(file_path, sheet_name='Sheet1', index=False)
+        print('saved to excel!')
+    except:
+        print('error occured not saved to excel')
+
+
+def update_live_commodity_prices(commodity_data):
+    for com, data in commodity_data.items():
+        # Extract relevant data
+        price = data.get('price')
+        date = data.get('date')
+        currency_code = data.get('currency')
+        if price and date and currency_code and com:
+            commodity = Commodity.objects.get(name=com)
+            currency = Currency.objects.get(code=currency_code)
+
+            # Update or create the CommodityPrice record
+            obj, created = CommodityPrice.objects.update_or_create(
+                commodity=commodity,
+                currency=currency,
+                date=date,
+                defaults={'price': price}
+            )
+            
+            # Optionally, print to verify
+            if created:
+                print(f"Created new CommodityPrice record: {obj}")
+            else:
+                print(f"Updated CommodityPrice record: {obj}")
+
+####
+####
+####
+
+
+
+
+# new_dict = get_live_prices_commodities(commodities_data)
+# directory_to_save = r'C:\Users\sawin\Documents\Commodity Project\django_project\comchecker\main'
+# save_to_excel(new_dict, directory_to_save)
+# update_live_commodity_prices(new_dict)
+
+
+
+#########################
+# Futures prices update #
+#########################
+
+
+futures_commodities_data_input  = {
+    "Aluminium": {"url_code": "Q8Y00", "currency": "USD"},
+    "Coal": {"url_code": "LQY00", "currency": "USD"},
+    "Cobalt": {"url_code": "U8Y00", "currency": "USD"},
+    "Copper": {"url_code": "O9Y00", "currency": "USD"},
+    "Cotton": {"url_code": "CTY00", "currency": "USD"},
+    "Crude Oil": {"url_code": "CLY00", "currency": "USD"},
+    "Gold": {"url_code": "GCY00", "currency": "USD"},
+    "Iron Ore": {"url_code": "TRY00", "currency": "USD"},
+    "Kraft Pulp": {"url_code": "VLY00", "currency": "CNY"},
+    "Lead": {"url_code": "R0Y00", "currency": "USD"},
+    "Lumber": {"url_code": "LBY00", "currency": "USD"},
+    "Natural Gas": {"url_code": "NGY00", "currency": "USD"},
+    "Nickel": {"url_code": "Q0Y00", "currency": "USD"},
+    "Palladium": {"url_code": "PAY00", "currency": "USD"},
+    "Silver": {"url_code": "SIU00", "currency": "USD"},
+    "Steel": {"url_code": "V7Y00", "currency": "USD"},
+    "Steel Scrap": {"url_code": "C-F24", "currency": "USD"},
+    "Tin": {"url_code": "S4Y00", "currency": "USD"},
+    "Zinc": {"url_code": "O0Y00", "currency": "USD"},
+    "EU Carbon Permits": {"url_code": "CKH23", "currency": "EUR"},
+    "Rubber": {"url_code": "W2Y00", "currency": "USD"}
+}
+
+def parse_contract_date(contract_name):
+    # Extract the date part from the contract name, e.g., "Oct '24" from "VLV24 (Oct '24)"
+    try:
+        date_str = contract_name.split('(')[-1].strip(') ')
+        if date_str == 'Cash':
+            return datetime.today().strftime("%Y-%m-%d")
+        # Convert "Oct '24" to "2024-10-01"
+        date_obj = datetime.strptime(date_str, "%b '%y")
+        return date_obj.strftime("%Y-%m-%d")
+    except ValueError:
+        return "Invalid Date"
+
+
+def get_futures_prices(url_code):
+    url = f'https://www.barchart.com/futures/quotes/{url_code}/futures-prices'
+
+    # Initialize WebDriver (assuming you're using Chrome)
+    driver = webdriver.Chrome()
+
+    try:
+        # Open the specified URL
+        driver.get(url)
+
+        # Wait for the bc-data-grid element to load
+        wait = WebDriverWait(driver, 20)
+        bc_data_grid = wait.until(
+            EC.presence_of_element_located((By.CSS_SELECTOR, "bc-data-grid"))
+        )
+
+        time.sleep(5)
+
+        # Execute the JavaScript to scroll down to get all rows visible
+        driver.execute_script("scroll(0, 2000);")
+
+        time.sleep(5)
+
+        # Use JavaScript to access nested shadow DOM elements in one step
+        rows_script = """
+        return Array.from(document.querySelector('bc-data-grid').shadowRoot
+            .querySelector('div._grid').querySelectorAll('set-class.row'))
+            .map(row => Array.from(row.children).map(cell => {
+                const tb = cell.querySelector('text-binding');
+                return tb && tb.shadowRoot ? tb.shadowRoot.innerHTML : '';
+            }));
+        """
+
+        # Execute the JavaScript to get all the data from the shadow DOM
+        rows = driver.execute_script(rows_script)
+
+        # Define headers
+        headers = ["Contract", "Last", "Change", "Open", "High", "Low", "Previous", "Volume", "Open Int", "Time"]
+
+        # Create dictionary with contract names as keys
+        data_dict = {}
+        for row in rows:
+            if (len(row) - 2) == len(headers):  # Ensure each row has the correct number of columns
+                contract_name = row[1]  # Assuming the contract name is in the second column
+                date_str = parse_contract_date(contract_name)
+
+                # Exclude the first and last columns from the row
+                modified_row = row[1:-1]
+
+                # Create a dictionary for the row based on the modified headers
+                row_dict = {headers[i]: modified_row[i] for i in range(len(headers))}
+                data_dict[date_str] = row_dict
+
+    except Exception as e:
+        print(f"Error: {e}")
+
+    finally:
+        # Close the WebDriver
+        driver.quit()
+    
+    return data_dict
+
+
+def get_live_prices(futures_commodities_data):
+    for com, data in futures_commodities_data.items():
+        data['futures'] = get_futures_prices(data['url_code'])
+        print(f'Commodity info gathered {com}')
+    return futures_commodities_data
+
+def update_futures_prices_in_db(futures_commodities_data):
+    for com, data in futures_commodities_data.items():
+        currency_code = data.get('currency')
+        commodity = Commodity.objects.get(name=com)
+        currency = Currency.objects.get(code=currency_code)
+        futures = data.get('futures')
+        if futures:
+            # Clear all existing futures_prices for this commodity before inserting new ones
+            CommodityPrice.objects.filter(commodity=commodity).update(futures_price=None)
+            for date, data in futures.items():
+                # Extract relevant data
+                try:
+                    price_str = re.sub(r'[^\d.,]', '', data.get('Last'))
+                    price = float(price_str.replace(',', ''))
+                except ValueError:
+                    price = None
+                if price and date and currency_code and commodity.id:
+                    # Update or create the CommodityPrice record
+                    today = datetime.today().strftime("%Y-%m-%d")
+                    if date == today:
+                        # Insert price into the 'price' field
+                        obj, created = CommodityPrice.objects.update_or_create(
+                            commodity=commodity,
+                            currency=currency,
+                            date=date if date != 'Cash' else today,  # Store 'Cash' as today's date in the DB
+                            defaults={'price': price}
+                        )
+                    else:
+                        obj, created = CommodityPrice.objects.update_or_create(
+                            commodity=commodity,
+                            currency=currency,
+                            date=date,
+                            defaults={'futures_price': price}
+                        )
+                        
+                    # Optionally, print to verify
+                    if created:
+                        print(f"Created new CommodityPrice record: {obj}")
+                    else:
+                        print(f"Updated CommodityPrice record: {obj}")
+        else:
+            print(f"No futures prices available for {com}")
+
+
+# futures_commodities_data = get_live_prices(futures_commodities_data_input)
+# update_futures_prices_in_db(futures_commodities_data)

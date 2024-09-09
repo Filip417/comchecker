@@ -1,0 +1,41 @@
+# Excel files
+*.xlsx
+
+# Python
+*.pyc
+*.pyo
+*.pyd
+__pycache__/
+*.sqlite3
+
+# Django specific
+/static/
+/media/
+
+# Environment variables
+.env
+
+# Virtual environments
+venv/
+env/
+.venv/
+ENV/
+
+# Node.js (if applicable, for frontend tools like Tailwind or webpack)
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# IDE-specific files
+.vscode/
+.idea/
+
+# Byte-compiled / optimized / DLL files
+*.egg
+*.egg-info/
+dist/
+build/

@@ -1,0 +1,185 @@
+{% extends "main/layout.html" %}
+{% block content %}
+{% load static %}
+<div class="bg-[#e9e9e9] min-h-screen p-4 sm:p-8">
+    <div class="bg-white  rounded-2xl p-6 sm:p-16 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <form id="form-create" method="post">
+        {% csrf_token %}
+        <div class='grid grid-cols-1 gap-3 lg:gap-5'>
+
+            
+            <!-- image input -->
+            <div class="hidden">
+                <label for="file" class="block text-sm text-gray-500 dark:text-gray-300">Image</label>
+            
+                <label for="dropzone-file" id="dropzone-label" class="flex flex-col items-center w-full max-w-lg p-5 mx-auto mt-2 text-center bg-white border-2 border-gray-300 border-dashed cursor-pointer dark:bg-gray-900 dark:border-gray-700 rounded-xl">
+                    <img id="file-preview" class="w-32 h-32 object-cover rounded-lg mb-2 hidden" src="#" alt="Preview" />
+                    <svg id="file-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8 text-gray-500 dark:text-gray-400">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 16.5V9.75m0 0l3 3m-3-3l-3 3M6.75 19.5a4.5 4.5 0 01-1.41-8.775 5.25 5.25 0 0110.233-2.33 3 3 0 013.758 3.848A3.752 3.752 0 0118 19.5H6.75z" />
+                    </svg>
+                    
+                    <h2 id="file-name" class="mt-1 font-medium tracking-wide text-gray-700 dark:text-gray-200">Upload or Drag & drop image file here</h2>
+            
+                    <p id="file-description" class="mt-2 text-xs tracking-wide text-gray-500 dark:text-gray-400">We recommend using high quality .jpg or .png files less than 10MB</p>
+            
+                    <input name="image-file" id="dropzone-file" type="file" class="hidden" />
+                </label>
+            </div>
+
+            <!-- privacy statement -->
+            <p class="mt-3 text-xs text-gray-400 dark:text-gray-600">
+                Information saved is confidential and will not be shared.
+            </p>
+
+
+            <!-- title input -->
+            <div>
+                <label for="Name" class="block text-sm text-gray-500 dark:text-gray-300">Name</label>
+                <input value="{%if product %}{{product.slug}}{%endif%}" name="slug" type="text" hidden class="hidden mt-2 w-full placeholder-gray-400/70 dark:placeholder-gray-500 rounded-lg border border-gray-200 bg-white px-5 py-2.5 text-gray-700 focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-300 dark:focus:border-blue-300" />
+                <input required value="{%if product %}{{product.name}}{%endif%}" name="title" type="text" placeholder="Add a product name" class="block  mt-2 w-full placeholder-gray-400/70 dark:placeholder-gray-500 rounded-lg border border-gray-200 bg-white px-5 py-2.5 text-gray-700 focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-300 dark:focus:border-blue-300" />
+            </div>
+
+            <!-- description input -->
+            <div>
+                <label for="Description" class="block text-sm text-gray-500 dark:text-gray-300">Description</label>
+            
+                <textarea required name="description"
+                placeholder="You may mention function, dimensions, weight, color, key features or uses."
+                class="block  mt-2 w-full placeholder-gray-400/70 dark:placeholder-gray-500 rounded-lg border border-gray-200 bg-white px-4 h-32 py-2.5 text-gray-700 focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-300 dark:focus:border-blue-300"
+                                >{%if product %}{{product.description}}{%endif%}</textarea>
+                
+                <p class="mt-3 text-xs text-gray-400 dark:text-gray-600 whitespace-pre-line"
+                >Write description to more easily identify the product.
+                </p>
+            </div>
+
+            <!-- category input -->
+            <div>
+                <label for="Category" class="block text-sm text-gray-500 dark:text-gray-300">Category</label>
+        
+                <select name="category" id="categories"
+                class="block  mt-2 w-full placeholder-gray-400/70 dark:placeholder-gray-500 rounded-lg border border-gray-200 bg-white px-5 py-2.5 text-gray-700 focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-300 dark:focus:border-blue-300">
+                {% if product %}
+                <option value="{{product.category_3}}" selected>{{product.category_3}}</option>
+                {% else %}
+                <option value="" selected disabled hidden>Select Category</option>
+                {% endif %} 
+                    {% for cat in categories %}
+                    <option value="{{cat}}">{{cat}}</option>
+                    {% endfor %}
+                    <option value="">Other</option>
+                </select>
+            </div>
+
+            <!-- content input -->
+            <div>
+                <div class="flex flex-row space-x-3">
+                    <label for="Content" class="block text-sm text-gray-500 dark:text-gray-300">Content</label>
+                    <button id="add-row">
+                        <svg width="24" height="24" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="16" cy="16" r="16" fill="#008F0E"/>
+                            <path d="M16 22.7368L16 9.26313" stroke="#E9E9E9" stroke-width="3" stroke-linecap="round"/>
+                            <path d="M16 22.7368L16 9.26313" stroke="#E9E9E9" stroke-width="3" stroke-linecap="round"/>
+                            <path d="M16 22.7368L16 9.26313" stroke="#E9E9E9" stroke-width="3" stroke-linecap="round"/>
+                            <path d="M9.26318 16H22.7369" stroke="#E9E9E9" stroke-width="3" stroke-linecap="round"/>
+                            <path d="M9.26318 16H22.7369" stroke="#E9E9E9" stroke-width="3" stroke-linecap="round"/>
+                            <path d="M9.26318 16H22.7369" stroke="#E9E9E9" stroke-width="3" stroke-linecap="round"/>
+                        </svg>
+                    </button>
+                    <label for="Content" class="block text-xs text-gray-500 dark:text-gray-300">
+                        {% if materialproportions.0.unit %}
+                        • units: {{materialproportions.0.unit}}
+                        {% else %}
+                        • default units: % of total mass
+                        {% endif %}
+                    </label>
+                </div>
+                <div class="flex flex-col" id="rows-container">
+                    {% if materialproportions %}
+                    <!-- Rows loaded from product -->
+                    {% for material in materialproportions %}
+                    <div id="row-{{ forloop.counter }}" class="flex flex-row items-center">
+                        <a href="#" class="delete-row mr-2">
+                        <svg width="24" height="24" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="16" cy="16" r="16" fill="#FF0000"></circle>
+                            <path d="M9.26318 16H22.7369" stroke="#E9E9E9" stroke-width="3" stroke-linecap="round"></path>
+                            <path d="M9.26318 16H22.7369" stroke="#E9E9E9" stroke-width="3" stroke-linecap="round"></path>
+                            <path d="M9.26318 16H22.7369" stroke="#E9E9E9" stroke-width="3" stroke-linecap="round"></path>
+                        </svg>
+                    </a><input value="{{material.material}}" type="text" name="content-name-{{ forloop.counter }}" class="rounded-l-lg block mt-2 w-full placeholder-gray-400/70 dark:placeholder-gray-500 border border-gray-200 bg-white px-2.5 py-2.5 text-gray-700 focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-300 dark:focus:border-blue-300" placeholder="Content {{ forloop.counter }}" required="">
+
+                    <select class="block mt-2 w-full placeholder-gray-400/70 dark:placeholder-gray-500 border border-gray-200 bg-white px-2.5 py-2.5 text-gray-700 focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-300 dark:focus:border-blue-300" name="content-commodity-{{ forloop.counter }}" required="">
+                        {% for commodity in commodities %}
+                            <option value="{{ commodity.id }}"
+                            {% if material.commodity.name == commodity.name %} selected {% endif %}
+                            >{{ commodity.name }}</option>
+                        {% endfor %}
+                    </select>
+                    <input value="{{material.proportion}}" type="number" name="content-proportion-{{ forloop.counter }}" class="lg:w-20 w-14 block mt-2 placeholder-gray-400/70 dark:placeholder-gray-500 rounded-r-lg border border-gray-200 bg-white px-2.5 py-2.5 text-gray-700 focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-300 dark:focus:border-blue-300 col-span-1"
+                    placeholder="25" min="0" step="any" required="">
+                    </div>
+                    {% endfor %}
+                    {% else %}
+                    <!-- Initially loaded row -->
+                    <div id="row-0" class="flex flex-row items-center">
+                        <a href="#" class="delete-row mr-2">
+                        <svg width="24" height="24" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="16" cy="16" r="16" fill="#FF0000"></circle>
+                            <path d="M9.26318 16H22.7369" stroke="#E9E9E9" stroke-width="3" stroke-linecap="round"></path>
+                            <path d="M9.26318 16H22.7369" stroke="#E9E9E9" stroke-width="3" stroke-linecap="round"></path>
+                            <path d="M9.26318 16H22.7369" stroke="#E9E9E9" stroke-width="3" stroke-linecap="round"></path>
+                        </svg>
+                    </a><input type="text" name="content-name-0" class="rounded-l-lg block mt-2 w-full placeholder-gray-400/70 dark:placeholder-gray-500 border border-gray-200 bg-white px-2.5 py-2.5 text-gray-700 focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-300 dark:focus:border-blue-300" placeholder="Content 1" required="">
+
+                    <select class="block mt-2 w-full placeholder-gray-400/70 dark:placeholder-gray-500 border border-gray-200 bg-white px-2.5 py-2.5 text-gray-700 focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-300 dark:focus:border-blue-300" name="content-commodity-0" required="">
+                        <option value="" disabled selected hidden>Select Commodity</option>
+                        {% for commodity in commodities %}
+                            <option value="{{ commodity.id }}">{{ commodity.name }}</option>
+                        {% endfor %}
+                    </select>
+
+                    <input type="number" name="content-proportion-0" class="lg:w-20 w-14 block mt-2 placeholder-gray-400/70 dark:placeholder-gray-500 rounded-r-lg border border-gray-200 bg-white px-2.5 py-2.5 text-gray-700 focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-300 dark:focus:border-blue-300 col-span-1"
+                    placeholder="25" min="0" step="any" required="">
+                    </div>
+                    {% endif %}
+                    <!-- More rows added by button -->
+
+                </div>
+            </div>
+
+
+            <!-- save button -->
+
+            <div class="flex flex-row justify-center items-center">
+                <button type="submit" id="save-button" class="w-max flex items-center px-4 py-2 font-medium tracking-wide text-white capitalize transition-colors duration-300 transform bg-blue-600 rounded-lg hover:bg-blue-500 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-80">
+                {% comment %} <svg fill="currentColor" class="w-3 h-3 mx-1" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 407.096 407.096"
+                    xml:space="preserve">
+                <g>
+                    <g>
+                        <path d="M402.115,84.008L323.088,4.981C319.899,1.792,315.574,0,311.063,0H17.005C7.613,0,0,7.614,0,17.005v373.086
+                            c0,9.392,7.613,17.005,17.005,17.005h373.086c9.392,0,17.005-7.613,17.005-17.005V96.032
+                            C407.096,91.523,405.305,87.197,402.115,84.008z M300.664,163.567H67.129V38.862h233.535V163.567z"/>
+                        <path d="M214.051,148.16h43.08c3.131,0,5.668-2.538,5.668-5.669V59.584c0-3.13-2.537-5.668-5.668-5.668h-43.08
+                            c-3.131,0-5.668,2.538-5.668,5.668v82.907C208.383,145.622,210.92,148.16,214.051,148.16z"/>
+                    </g>
+                </g>
+                </svg> {% endcomment %}
+            
+                <span class="mx-1">Save</span>
+                </button>
+            </div>
+        </div>
+        </form>
+    </div>
+</div>
+
+
+<script>
+    const commodities = [
+        {% for commodity in commodities %}
+            {"commodity_id": "{{ commodity.id }}", "commodity_name": "{{ commodity.name }}"}
+            {% if not loop.last %},{% endif %}
+        {% endfor %}
+    ];
+</script>
+{% endblock %}

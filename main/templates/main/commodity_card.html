@@ -1,0 +1,37 @@
+{% load custom_tags %}
+<div class="group relative flex-none snap-center snap-always w-64">
+    <div class="aspect-square w-64 h-64 overflow-hidden rounded-md bg-gray-200 relative">
+        
+      <img src="{% get_commodity_image_url commodity.name %}" alt="Product_name" class="w-64 h-64 object-cover object-center">
+      
+      <!-- Hidden content that appears on hover -->
+      <div class="absolute inset-0 flex justify-between items-start opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-gray-800 bg-opacity-75">
+
+      </div>
+    </div>
+    <div class="mt-4 flex justify-between">
+      <div>
+        <h3 class="text-sm text-gray-700">
+          <a href="/commodity/{{commodity.name}}" class="font-semibold whitespace-normal break-words">
+            <span aria-hidden="true" class="absolute inset-0"></span>
+            {{commodity.name}}
+          </a>
+        </h3>
+        <p class="mt-1 text-sm text-gray-400">
+          {{commodity.price_now|floatformat:2}}
+          {% if commodity.unit != 'Index' %}
+          {{commodity.currency.symbol}}
+          {% endif %}
+          {{commodity.unit}}
+        </p>
+      </div>
+      <p class="text-sm font-semibold text-gray-900">{% if commodity.increasefromlastyear %}
+        {% if commodity.increasefromlastyear > 0 %}
+          <a><span class="text-green-500 font-black">↑</span>{{ commodity.increasefromlastyear | floatformat:"1" }}%</a>
+        {% elif commodity.increasefromlastyear < 0%}
+          <a><span class="text-red-500 font-black">↓</span>{{ commodity.increasefromlastyear | floatformat:"1" }}%</a>
+        {% endif %}
+        {% endif %}
+        </p>
+    </div>
+  </div>

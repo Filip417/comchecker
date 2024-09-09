@@ -1,0 +1,193 @@
+{% extends "main/layout.html" %}
+{% block content %}
+{% load static %}
+<div class="bg-[#e9e9e9] min-h-screen p-4 sm:p-8">
+  <div class="bg-white rounded-2xl p-6 sm:p-16 mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+  <div class="flex flex-col items-center">
+    <img src="{% static 'main/images/user_medium.png' %}" alt="user-image" 
+    class="h-24 w-24 rounded-full "/>
+    {% load custom_tags %}
+    <h2 class="text-[30px] font-semibold">{{request.user.email|slice_email}}</h2>
+    <h2 class="text-gray-400 text-xs">{{request.user.email}}</h2>
+    <div class="mt-5">
+        <a href="/settings" class="bg-gray-200 font-semibold p-2 px-3 rounded-full text-xs">Settings</a>
+    </div>
+    <div class="mt-5">
+        <div class="flex space-x-5 flex-row items-center justify-center">
+
+            <a class="border-b-[3px] border-black font-semibold text-black p-2 px-3 text-xs">Projects</a>
+
+            <div x-data="{ openSort: false }" class="flex">
+                <div class="relative inline-block text-left">
+                  <div>
+                    <button @click="openSort = !openSort" @click.away="openSort = false" type="button" class="group inline-flex justify-center text-sm font-medium text-gray-700 hover:text-gray-900" id="menu-button" aria-expanded="false" aria-haspopup="true">
+                      Sort
+                      <svg class="-mr-1 ml-1 h-5 w-5 flex-shrink-0 text-gray-400 group-hover:text-gray-500" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                        <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
+                      </svg>
+                    </button>
+                  </div>
+      
+                  <!--
+                    Dropdown menu, show/hide based on menu state.
+      
+                    Entering: "transition ease-out duration-100"
+                      From: "transform opacity-0 scale-95"
+                      To: "transform opacity-100 scale-100"
+                    Leaving: "transition ease-in duration-75"
+                      From: "transform opacity-100 scale-100"
+                      To: "transform opacity-0 scale-95"
+                  -->
+                  <div x-show="openSort" x-transition:enter="transition ease-out duration-100" x-transition:enter-start="transform opacity-0 scale-95" x-transition:enter-end="transform opacity-100 scale-100" x-transition:leave="transition ease-in duration-75" x-transition:leave-start="transform opacity-100 scale-100" x-transition:leave-end="transform opacity-0 scale-95"  class="absolute right-0 z-10 mt-2 w-40 origin-top-right rounded-md bg-white shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none" role="menu" aria-orientation="vertical" aria-labelledby="menu-button" tabindex="-1">
+                    <div class="py-1" role="none">
+                      <!--
+                        Active: "bg-gray-100", Not Active: ""
+      
+                        Selected: "font-medium text-gray-900", Not Selected: "text-gray-500"
+                      -->
+
+                      <a href="{% url 'profile' %}?sort=default" 
+                           class="block px-4 py-2 text-sm {% if sort == None or sort == 'default' %}font-medium text-gray-900 bg-gray-100{% else %}text-gray-500{% endif %}" 
+                           role="menuitem" tabindex="-1" id="menu-item-0">Default</a>
+                      <a href="{% url 'profile' %}?sort=az" 
+                           class="block px-4 py-2 text-sm {% if sort == 'az' %}font-medium text-gray-900 bg-gray-100{% else %}text-gray-500{% endif %}" 
+                           role="menuitem" tabindex="-1" id="menu-item-1">A to Z</a>
+                      <a href="{% url 'profile' %}?sort=za" 
+                           class="block px-4 py-2 text-sm {% if sort == 'za' %}font-medium text-gray-900 bg-gray-100{% else %}text-gray-500{% endif %}" 
+                           role="menuitem" tabindex="-1" id="menu-item-2">Z to A</a>
+                      <a href="{% url 'profile' %}?sort=price_desc" 
+                           class="block px-4 py-2 text-sm {% if sort == 'price_desc' %}font-medium text-gray-900 bg-gray-100{% else %}text-gray-500{% endif %}" 
+                           role="menuitem" tabindex="-1" id="menu-item-3">Price %: ↑ to ↓</a>
+                      <a href="{% url 'profile' %}?sort=price_asc" 
+                           class="block px-4 py-2 text-sm {% if sort == 'price_asc' %}font-medium text-gray-900 bg-gray-100{% else %}text-gray-500{% endif %}" 
+                           role="menuitem" tabindex="-1" id="menu-item-4">Price %: ↓ to ↑</a>
+                    </div>
+                  </div>
+                </div>
+        </div>
+
+    </div>
+
+
+
+
+        <div class="flex flex-col">
+          <div class="mt-6 grid grid-cols-2 gap-x-6 gap-y-10 sm:grid-cols-4 lg:grid-cols-6 xl:gap-x-8">
+            <!-- Projects items -->
+            <div class="group relative">
+              <div class="flex flex-row aspect-square overflow-hidden rounded-md bg-gray-200 relative">
+                  <img src="{% get_product_image_url product.epd_id %}" alt="{{product.name}} image" class="h-full w-full object-fill object-center">
+                
+                  <!-- Hidden content that appears on hover -->
+                  <div class="absolute inset-0 flex justify-between items-start opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-gray-800 bg-opacity-75">
+                    <!-- Position button in top right corner -->
+                  </div>
+                </div>
+                <div class="mt-4 flex justify-between">
+                  <div>
+                    <h3 class="text-sm text-gray-700">
+                      <a href="/search?up=True" class="font-semibold">
+                        <span aria-hidden="true" class="absolute inset-0"></span>
+                        Your products
+                      </a>
+                    </h3>
+                    <p class="mt-1 text-xs text-gray-400">{{your_products.count}} products</p>
+                  </div>
+                  <p class="text-sm font-semibold text-gray-900">
+                    {% if your_products_average_1y_increase != 0 %}
+                      {% if your_products_average_1y_increase > 0 %}
+                      <a><span class="text-green-500 font-black">↑</span>{{ your_products_average_1y_increase|floatformat:"1" }}%</a>
+                      {% elif your_products_average_1y_increase < 0 %}
+                          <a><span class="text-red-500 font-black">↓</span>{{ your_products_average_1y_increase|floatformat:"1" }}%</a>
+                      {% endif %}
+                    {% endif %}
+                  </p>
+                </div>
+            </div>
+
+
+            <div class="group relative">
+              <form method="POST" action="{% url 'new_project' %}" class="">
+                {% csrf_token %}
+              <div class="text-wrap flex flex-row aspect-square rounded-md relative">
+            
+              <div class="flex flex-col">
+                <input maxlength="100" type="text" name="new_project_name" placeholder="Project name..." required
+                  class="w-full border-gray-100 border-2 new-project-name resize-none	p-2 text-sm bg-white text-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </input>
+                <textarea maxlength="1000" type="text" name="new_project_description" placeholder="Description..." 
+                  class="mt-2 w-full h-full border-gray-100 border-2 new-project-name resize-none	p-2 text-xs bg-white text-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+              </div>
+
+              </div>
+                <div class="mt-4 flex flex-col text-center">
+                  <div class="w-full">
+                      <button type="submit" 
+                        class="product-button text-white
+                         bg-blue-700 hover:bg-blue-800 
+                        m-2 p-2 text-sm rounded-md focus:outline-none focus:ring-2 z-10"
+                        >
+                        Create project
+                      </button>
+                  </div>
+                </div>
+              </form>
+            </div>
+
+
+            {% for project in your_projects %}
+            <div class="group relative">
+                <div class="flex flex-row aspect-square overflow-hidden rounded-md bg-gray-200 relative">
+                    {% if project.products.all|length > 0 %}
+                        <img src="{% get_product_image_url project.products.all.0.epd_id %}" alt="{{ project.products.all.0.name }} image" class="h-full w-[50%] object-cover object-center">
+                    {% endif %}
+
+                    <div class="flex flex-col">
+                        {% if project.products.all|length > 1 %}
+                            <img src="{% get_product_image_url project.products.all.1.epd_id %}" alt="{{ project.products.all.1.name }} image" class="h-[50%] w-full object-cover object-center">
+                        {% endif %}
+                        
+                        {% if project.products.all|length > 2 %}
+                            <img src="{% get_product_image_url project.products.all.2.epd_id %}" alt="{{ project.products.all.2.name }} image" class="h-[50%] w-full object-cover object-center">
+                        {% endif %}
+                    </div>
+                    <!-- Hidden content that appears on hover -->
+                    <div class="absolute inset-0 flex justify-between items-start opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-gray-800 bg-opacity-75">
+                      <!-- Position button in top right corner -->
+                    </div>
+                  </div>
+                  <div class="mt-4 flex justify-between">
+                    <div>
+                      <h3 class="text-sm text-gray-700">
+                        <a href="/project/{{project.slug}}" class="font-semibold">
+                          <span aria-hidden="true" class="absolute inset-0"></span>
+                          {{project.name|slice:":50"|wordwrap:10}}
+                        </a>
+                      </h3>
+                      {% load custom_tags %}
+                      <p class="mt-1 text-xs text-gray-400">{{project.products.count}} products • {{project.created_at|time_since}}</p>
+                    </div>
+                    <p class="text-sm font-semibold text-gray-900">
+                      {% if project.increasefromlastyear %}
+                        {% if project.increasefromlastyear > 0 %}
+                        <a><span class="text-green-500 font-black">↑</span>{{ project.increasefromlastyear|floatformat:"1" }}%</a>
+                        {% elif project.increasefromlastyear < 0 %}
+                            <a><span class="text-red-500 font-black">↓</span>{{ project.increasefromlastyear|floatformat:"1" }}%</a>
+                        {% endif %}
+                      {% endif %}
+                    </p>
+                  </div>
+              </div>
+            {% endfor %}
+
+            <!-- More projects -->
+              
+
+
+          </div>
+        </div>
+    </div>
+</div>
+</div>
+</div>
+{% endblock %}
