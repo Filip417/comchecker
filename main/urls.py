@@ -26,4 +26,5 @@ urlpatterns = [
     path('new-project/', views.new_project, name="new_project"),
     path('edit-project-name/', views.edit_project_name, name="edit_project_name"),
     path('delete-project/', views.delete_project, name="delete_project"),
+    path('set-notification/', views.set_notification, name="set_notification")
 ]

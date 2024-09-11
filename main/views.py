@@ -1,6 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse
-from .models import Product, Project, MaterialProportion, CommodityPrice, Commodity, CommodityProduction, View
+from .models import Product, Project, Notification, MaterialProportion, CommodityPrice, Commodity, CommodityProduction, View
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.db.models import Q, Count
 from datetime import datetime, timedelta
@@ -244,6 +244,41 @@ def index_logged(request):
     return render(request, 'main/index_logged.html', context=context)
 
 @login_required
+def set_notification(request):
+    if request.method == 'POST':
+        commodity_id = request.POST.get('commodity_id', None)
+        product_id = request.POST.get('product_id', None)
+        project_id = request.POST.get('project_id', None)
+        change = request.POST.get('change', None)
+        change_by = request.POST.get('change_by', None)
+        email_notification = request.POST.get('email_notification')
+        email_notification = True if email_notification == "on" else False
+
+        if (commodity_id or product_id or project_id) and change and change_by:
+            notification = Notification.objects.create(
+                product_id=product_id,
+                commodity_id=commodity_id,
+                project_id=project_id,
+                user=request.user,
+                change=change,
+                change_by=change_by,
+                email_notification=email_notification
+            )
+            date_obj = datetime.strptime(notification.change_by, "%Y-%m-%d")
+            formatted_date = date_obj.strftime("%d %b %Y")
+            if notification.email_notification:
+                messages.success(request,
+            f"Email notification for {notification.change}% change by {formatted_date} has been set.")
+            else:
+                messages.success(request,
+            f"Notification for {notification.change}% change by {formatted_date} has been set.")
+        else:
+            messages.error(request, "Error in seting up notification. Contact support.")
+    
+    referer = request.META.get('HTTP_REFERER', '/')
+    return redirect(referer)
+
+@login_required
 def delete_project(request):
     if request.method == 'POST':
         project_id = request.POST.get('project_id') 
@@ -324,7 +359,7 @@ def edit_product(request, slug):
     # Retrieve the product object, handle the case where it might not exist
     product = get_object_or_404(Product, slug=slug)
 
-    if product.user != request.user:
+    if product.user != request.user and product.user != None:
         messages.error(request, "You have no access to this product")
         return redirect(reverse('logged'))
     
@@ -458,7 +493,7 @@ def product(request, slug):
     # Filter for products from the same manufacturer, excluding the current product
     from_same_manufacturer = Product.objects.filter(manufacturer_name=product.manufacturer_name, user=None).exclude(id=product.id)[:50]
 
-    product.add_view()
+    product.add_view(user=request.user)
 
     owned_projects, shared_projects, your_projects, products_in_projects = get_product_project_variables(request)
 
@@ -511,7 +546,7 @@ def commodity(request, name):
 
     made_from = get_products_by_commodity(commodity, request)[:20]
 
-    commodity.add_view()
+    commodity.add_view(user=request.user)
 
     owned_projects, shared_projects, your_projects, products_in_projects = get_product_project_variables(request)
 
@@ -563,6 +598,8 @@ def project(request, project_slug):
     top_value_commodities = Commodity.objects.filter(id__in=top_value_commodity_ids)
     your_products = Product.objects.filter(user=request.user)
     popular_products = get_popular_items('product', 'week', 20)
+
+    project.add_view(user=request.user)
 
     # User-specific products and projects
     owned_projects, shared_projects, your_projects, products_in_projects = get_product_project_variables(request)
@@ -766,8 +803,11 @@ def search(request):
     return render(request, 'main/search.html', context)
 
 def notifications(request):
+    active_notifications = Notification.objects.filter(user=request.user, activated=False)
+    activated_notifications = Notification.objects.filter(user=request.user, activated=True)
     context = {
-        "name":"name"
+        "active_notifications" : active_notifications,
+        "activated_notifications" : activated_notifications,
     }
     return render(request, "main/notifications.html",context)
 
@@ -1796,7 +1836,7 @@ def save_new_product(request):
         new_product.category_3 = category
         new_product.category_2 = category
         new_product.category_1 = category
-        new_product.manufacturer_name = 'Your product'
+        new_product.manufacturer_name = None
         new_product.manufacturer_country = 'United Kingdom'
         new_product.create_new_slug()
     except ObjectDoesNotExist:

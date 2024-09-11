@@ -65,13 +65,11 @@ class Commodity(models.Model):
         self.production_total = round(total_production)
         self.save()
 
-    def add_view(self):
+    def add_view(self, user=None):
         self.view_count = F('view_count') + 1
         self.save()
-        self.refresh_from_db()  # Update the instance with the new value from the database
-
-        # Record the view in the View model
-        View.objects.create(commodity=self)
+        self.refresh_from_db()
+        View.objects.create(commodity=self, user=user)
     
 class Product(models.Model):
     # Relationships
@@ -105,13 +103,11 @@ class Product(models.Model):
     def __str__(self):
         return self.name
     
-    def add_view(self):
+    def add_view(self, user=None):
         self.view_count = F('view_count') + 1
         self.save()
-        self.refresh_from_db()  # Update the instance with the new value from the database
-        
-        # Record the view in the View model
-        View.objects.create(product=self)
+        self.refresh_from_db()
+        View.objects.create(product=self, user=user)
 
     @property
     def price_history_sources(self):
@@ -165,12 +161,12 @@ class Project(models.Model):
     view_count = models.IntegerField(default=0)
     increasefromlastyear = models.FloatField(null=True, blank=True)
 
-    def add_view(self):
+    def add_view(self, user=None):
         self.view_count = F('view_count') + 1
         self.save()
         self.refresh_from_db()
         # Record the view in the View model
-        View.objects.create(project=self)
+        View.objects.create(project=self, user=user)
 
     def generate_unique_slug(self):
         def generate_random_string(length=8):
@@ -260,21 +256,45 @@ class CommodityPrice(models.Model):
         return f'{self.commodity.name} - {self.currency.code} - {self.date}'
 
 
-
-
-
-
 class View(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, null=True, blank=True)
     commodity = models.ForeignKey(Commodity, on_delete=models.CASCADE, null=True, blank=True)
     project = models.ForeignKey(Project, on_delete=models.CASCADE, null=True, blank=True)
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)  # Track the user who viewed
     viewed_at = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
         if self.product:
-            return f"View of Product: {self.product.name} at {self.viewed_at}"
+            return f"View of Product: {self.product.name} by {self.user} at {self.viewed_at}"
         elif self.commodity:
-            return f"View of Commodity: {self.commodity.name} at {self.viewed_at}"
+            return f"View of Commodity: {self.commodity.name} by {self.user} at {self.viewed_at}"
+        elif self.project:
+            return f"View of Project: {self.project} by {self.user} at {self.viewed_at}"
+        return "View Record"
+
+
+
+class Notification(models.Model):
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, null=True, blank=True)
+    commodity = models.ForeignKey(Commodity, on_delete=models.CASCADE, null=True, blank=True)
+    project = models.ForeignKey(Project, on_delete=models.CASCADE, null=True, blank=True)
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    change = models.FloatField()
+    change_by = models.DateField()
+    email_notification = models.BooleanField()
+
+    created_at = models.DateTimeField(default=timezone.now)
+    activated = models.BooleanField(default=False)
+    activated_at = models.DateTimeField(null=True, blank=True)
+    new = models.BooleanField(default=True)
+    email_sent = models.BooleanField(default=False)
+    email_sent_at = models.DateTimeField(null=True, blank=True)
+
+    def __str__(self):
+        if self.product:
+            return f"Notification of Product: {self.product.name} {self.change} by {self.change_by} at {self.viewed_at}"
+        elif self.commodity:
+            return f"Notification of Commodity: {self.commodity.name} {self.change} by {self.change_by} at {self.viewed_at}"
         return "View Record"
 
 

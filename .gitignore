@@ -6,10 +6,18 @@
 *.pyo
 *.pyd
 __pycache__/
-*.sqlite3
+
+# until demo in development
+# *.sqlite3
+
+# Custom static
+/static/db_v1_demo/
+/static/src/
+/static/main/commodities_images_resized/
+/static/main/images/
+/static/main/images_resized/
 
 # Django specific
-/static/
 /media/
 
 # Environment variables
