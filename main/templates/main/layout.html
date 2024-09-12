@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     {% load static %}
+    {% load custom_tags %}
     <link rel="stylesheet" type="text/css" href="{% static 'main/css/styles.css' %}">
     <link href="{% static 'src/styles.css' %}" rel="stylesheet">
     <script src="{%static 'main/js/js.js' %}">
@@ -55,7 +56,7 @@
                 <a href="/create" class="px-2.5 py-2 text-gray-700 transition-colors duration-300 transform rounded-lg dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 lg:mx-2">Create</a>
                 <a href="/search?commodity=show" class="px-2.5 py-2 text-gray-700 transition-colors duration-300 transform rounded-lg dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 lg:mx-2">Commodities</a>
                 <a href="/search?product=show" class="px-2.5 py-2 text-gray-700 transition-colors duration-300 transform rounded-lg dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 lg:mx-2">Products</a>
-                <a href="#" class="lg:hidden px-2.5 py-2 text-gray-700 transition-colors duration-300 transform rounded-lg dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 lg:mx-2">Notifications</a>
+                <a href="/notifications" class="lg:hidden px-2.5 py-2 text-gray-700 transition-colors duration-300 transform rounded-lg dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 lg:mx-2">Notifications</a>
                 {% else %}
                 {% endif %}
             </div>
@@ -83,22 +84,43 @@
                         class="absolute right-0 z-20 w-64 mt-2 overflow-hidden origin-top-right bg-white rounded-md shadow-lg sm:w-80 dark:bg-gray-800"
                     >
                         <div class="py-2">
-                            <a href="#" class="flex items-center px-4 py-3 -mx-2 transition-colors duration-300 transform border-b border-gray-100 hover:bg-gray-50 dark:hover:bg-gray-700 dark:border-gray-700">
-                                <img class="flex-shrink-0 object-cover w-8 h-8 mx-1 rounded-full" src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=334&q=80" alt="avatar" />
-                                <p class="mx-2 text-sm text-gray-600 dark:text-white"><span class="font-bold" href="#">Sara Salah</span> replied on the <span class="text-blue-500 hover:underline" href="#">Upload Image</span> artical . 2m</p>
+                            {% for notification in request.new_notifications %}
+                                {% if notification.product %}
+                            <a href="/product/{{notification.product.slug}}" class="flex items-center px-4 py-3 -mx-2 transition-colors duration-300 transform border-b border-gray-100 hover:bg-gray-50 dark:hover:bg-gray-700 dark:border-gray-700">
+                                <img src="{% get_product_image_url notification.product.epd_id %}" alt="{{ notification.product.name }}" class="flex-shrink-0 object-cover w-8 h-8 mx-1 rounded-full" />
+                                <p class="mx-2 text-sm text-gray-600 dark:text-white">
+                                    <span class="font-bold" href="#">
+                                        
+                                        {{notification.product.name|slice:"30"}}</span>
+                                         is expected to change by {{notification.change}}%
+                                         • {{notification.activated_at|time_since}} ago</p>
                             </a>
-                            <a href="#" class="flex items-center px-4 py-3 -mx-2 transition-colors duration-300 transform border-b border-gray-100 hover:bg-gray-50 dark:hover:bg-gray-700 dark:border-gray-700">
-                                <img class="flex-shrink-0 object-cover w-8 h-8 mx-1 rounded-full" src="https://images.unsplash.com/photo-1531427186611-ecfd6d936c79?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=634&q=80" alt="avatar" />
-                                <p class="mx-2 text-sm text-gray-600 dark:text-white"><span class="font-bold" href="#">Slick Net</span> start following you . 45m</p>
+                                {% elif notification.project %}
+                            <a href="/project/{{notification.project.slug}}" class="flex items-center px-4 py-3 -mx-2 transition-colors duration-300 transform border-b border-gray-100 hover:bg-gray-50 dark:hover:bg-gray-700 dark:border-gray-700">
+                                <img src="{% get_product_image_url notification.project.products.all.0.epd_id %}" alt="{{ notification.project.products.all.0.name }}" class="flex-shrink-0 object-cover w-8 h-8 mx-1 rounded-full" />
+                                <p class="mx-2 text-sm text-gray-600 dark:text-white">
+                                    <span class="font-bold" href="#">
+                                        
+                                        {{notification.project.name|slice:"30"}}</span>
+                                            is expected to change by {{notification.change}}% 
+                                            • {{notification.activated_at|time_since}} ago</p>
                             </a>
-                            <a href="#" class="flex items-center px-4 py-3 -mx-2 transition-colors duration-300 transform border-b border-gray-100 hover:bg-gray-50 dark:hover:bg-gray-700 dark:border-gray-700">
-                                <img class="flex-shrink-0 object-cover w-8 h-8 mx-1 rounded-full" src="https://images.unsplash.com/photo-1450297350677-623de575f31c?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=334&q=80" alt="avatar" />
-                                <p class="mx-2 text-sm text-gray-600 dark:text-white"><span class="font-bold" href="#">Jane Doe</span> Like Your reply on <span class="text-blue-500 hover:underline" href="#">Test with TDD</span> artical . 1h</p>
+                                {% elif notification.commodity %}
+                            <a href="/commodity/{{notification.commodity.name}}" class="flex items-center px-4 py-3 -mx-2 transition-colors duration-300 transform border-b border-gray-100 hover:bg-gray-50 dark:hover:bg-gray-700 dark:border-gray-700">
+                                <img src="{% get_commodity_image_url notification.commodity.name %}" alt="{{notification.commodity.name}}" class="flex-shrink-0 object-cover w-8 h-8 mx-1 rounded-full" />
+                                <p class="mx-2 text-sm text-gray-600 dark:text-white">
+                                    <span class="font-bold" href="#">
+                                        
+                                        {{notification.commodity.name|slice:"30"}}</span>
+                                            is expected to change by {{notification.change}}%
+                                            • {{notification.activated_at|time_since}} ago</p>
                             </a>
-                            <a href="#" class="flex items-center px-4 py-3 -mx-2 transition-colors duration-300 transform hover:bg-gray-100 dark:hover:bg-gray-700">
-                                <img class="flex-shrink-0 object-cover w-8 h-8 mx-1 rounded-full" src="https://images.unsplash.com/photo-1580489944761-15a19d654956?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=398&q=80" alt="avatar" />
-                                <p class="mx-2 text-sm text-gray-600 dark:text-white"><span class="font-bold" href="#">Abigail Bennett</span> start following you . 3h</p>
-                            </a>
+                                {% endif %}
+                            {% empty %}
+                            <div class="flex items-center px-4 py-3 -mx-2 transition-colors duration-300 transform border-b border-gray-100 hover:bg-gray-50 dark:hover:bg-gray-700 dark:border-gray-700">
+                                <p class="mx-2 text-sm text-gray-600 dark:text-white text-center">Set new notifications directly from product, commodity or project page.</p>
+                            </div>
+                            {% endfor %}
                         </div>
                         <a href="/notifications" class="block py-2 font-bold text-center text-white bg-gray-800 dark:bg-gray-700 hover:underline">See all notifications</a>
                     </div>

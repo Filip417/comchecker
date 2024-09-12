@@ -138,7 +138,7 @@ class Product(models.Model):
         random_suffix = generate_random_string()
         unique_slug = base_slug + random_suffix
         num = 1
-        while Project.objects.filter(slug=unique_slug).exists():
+        while Product.objects.filter(slug=unique_slug).exists():
             unique_slug = f"{base_slug}-{num}"
             num += 1
         return unique_slug
@@ -286,7 +286,8 @@ class Notification(models.Model):
     created_at = models.DateTimeField(default=timezone.now)
     activated = models.BooleanField(default=False)
     activated_at = models.DateTimeField(null=True, blank=True)
-    new = models.BooleanField(default=True)
+    seen_activated = models.BooleanField(default=False)
+    seen_activated_at = models.DateTimeField(null=True, blank=True)
     email_sent = models.BooleanField(default=False)
     email_sent_at = models.DateTimeField(null=True, blank=True)
 

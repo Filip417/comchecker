@@ -38,15 +38,12 @@ import pandas as pd
 from django.http import JsonResponse
 from itertools import chain
 from django.db.models import Sum, Count
+from functools import wraps
+from .decorators import show_new_notifications, logged_in_cant_access
+from django.utils import timezone
 
 
-#Decorator
-def logged_in_cant_access(view_func):
-    def wrapper(request, *args, **kwargs):
-        if request.user.is_authenticated:
-            return redirect(reverse('logged'))  # Redirect to 'logged' view if user is authenticated
-        return view_func(request, *args, **kwargs)
-    return wrapper
+
 
 
 # Views
@@ -193,6 +190,7 @@ def user_logout(request):
     logout(request)
     return redirect('index')
 
+@show_new_notifications
 @login_required
 def index_logged(request):
     # Adjust this view for a logged-in user's dashboard or main page
@@ -242,6 +240,20 @@ def index_logged(request):
         "products_in_projects": json.dumps(products_in_projects),
     }
     return render(request, 'main/index_logged.html', context=context)
+
+@login_required
+def delete_notification(request):
+    if request.method == 'POST':
+        notification_id = request.POST.get('notification_id', None)
+        if (notification_id):
+            notification = get_object_or_404(Notification, id=notification_id, user=request.user)
+            try:
+                notification.delete()
+                messages.success(request, "Notification has been deleted.")
+            except:
+                messages.error(request, "Error in deleting notification. Contact support.")
+    referer = request.META.get('HTTP_REFERER', '/')
+    return redirect(referer)
 
 @login_required
 def set_notification(request):
@@ -802,12 +814,25 @@ def search(request):
 
     return render(request, 'main/search.html', context)
 
+@show_new_notifications
+@login_required
 def notifications(request):
-    active_notifications = Notification.objects.filter(user=request.user, activated=False)
+    active_notifications = Notification.objects.filter(user=request.user, activated=False).order_by('-created_at')
     activated_notifications = Notification.objects.filter(user=request.user, activated=True)
+    # TODO add when activation feature ready to order correctly .order_by('activated_at')
+
+    new_activated_count = activated_notifications.filter(seen_activated=False).count()
+    activated_notifications.filter(seen_activated=False).update(
+        seen_activated=True, seen_activated_at=timezone.now())
+
+    for notification in activated_notifications:
+        time_diff = timezone.now() - notification.seen_activated_at
+        notification.is_recent = time_diff.total_seconds() < 5
+
     context = {
         "active_notifications" : active_notifications,
         "activated_notifications" : activated_notifications,
+        "new_activated_count" : new_activated_count,
     }
     return render(request, "main/notifications.html",context)
 
