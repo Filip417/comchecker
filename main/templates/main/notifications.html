@@ -62,9 +62,14 @@
 
                             <th scope="col" class="px-4 py-3.5 text-sm font-normal text-left rtl:text-right text-gray-500 dark:text-gray-400">
                               <a class="flex items-center gap-x-2">
-                                  <span>Price reached</span>
+                                  <span>Activated</span>
                                 </a>
                           </th>
+                          <th scope="col" class="px-4 py-3.5 text-sm font-normal text-left rtl:text-right text-gray-500 dark:text-gray-400">
+                            <a class="flex items-center gap-x-2">
+                                <span>Activated %</span>
+                              </a>
+                        </th>
 
 
                             <th scope="col" class="px-4 py-3.5 text-sm font-normal text-left rtl:text-right text-gray-500 dark:text-gray-400">
@@ -161,6 +166,9 @@
                         </td>
                         <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap">
                             {{notification.activated_at|time_since}} ago
+                        </td>
+                        <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap">
+                            {{notification.activated_value| floatformat:"2"}}
                         </td>
                         <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap">
                             {% if notification.email_sent %}

@@ -484,6 +484,52 @@
   </section>
 
 
+    <!-- Project products -->
+    <section class="my-5 container px-4 mx-auto">
+        <h2 class="text-lg font-medium text-gray-800 dark:text-white">{{project.name}} product{{ project.products.all.count|pluralize:"s" }}</h2>
+    
+        <p class="mt-1 text-sm text-gray-500 dark:text-gray-300">{{ project.products.all.count }} product{{ project.products.all.count|pluralize:"s" }}</p>
+    
+        <div class="flex flex-col mt-6">
+    
+            <!-- Section 1 -->
+        <section class="relative">
+            <!-- Arrow left -->
+            <div class="absolute left-0 inset-y-0 cursor-pointer z-10 arrow-left">
+                <div class="px-2 sm:px-6 h-full items-center flex bg-gradient-to-l from-white/60 to-white/80 relative">
+                    <!-- Background container with opacity -->
+                </div>
+                <div class="w-[32px] flex justify-center absolute top-1/2 transform -translate-y-1/2 left-2">
+                    <!-- SVG icon without opacity -->
+                    <svg class="arrow-icon rotate-180 duration-300 ease-in-out hidden sm:block" xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 35 35" fill="none">
+                        <path d="M17.0749 17.4296C17.0748 9.65152 0.457965 4.34819 0.457917 0.812575C0.457869 -2.72304 34.8993 9.2351 34.8993 17.7204C34.8994 26.2056 0.811422 37.2285 0.811418 33.6931C0.811414 30.1576 17.075 25.2076 17.0749 17.4296Z" fill="#2563EB"/>
+                    </svg>
+                </div>
+            </div>
+    
+            <!-- Arrow right -->
+            <div class="absolute inset-y-0 right-0 cursor-pointer z-10 arrow-right">
+                <div class="px-2 sm:px-6 h-full items-center flex bg-gradient-to-r from-white/60 to-white/80 relative">
+                    <!-- Background container with opacity -->
+                </div>
+                <div class="w-[32px] flex justify-center absolute top-1/2 transform -translate-y-1/2 right-2">
+                    <!-- SVG icon without opacity -->
+                    <svg class="arrow-icon duration-300 ease-in-out hidden sm:block" xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 35 35" fill="none">
+                        <path d="M17.0749 17.4296C17.0748 9.65152 0.457965 4.34819 0.457917 0.812575C0.457869 -2.72304 34.8993 9.2351 34.8993 17.7204C34.8994 26.2056 0.811422 37.2285 0.811418 33.6931C0.811414 30.1576 17.075 25.2076 17.0749 17.4296Z" fill="#2563EB"/>
+                    </svg>
+                </div>
+            </div>
+    
+            
+    
+            <div class="flex space-x-2 snap-x snap-mandatory flex-nowrap overflow-x-auto overflow-visible no-scrollbar scroll-container">
+    
+            {% for product in project.products.all %}
+                {% include 'main/product_card.html' with product=product %}
+            {% endfor %}
+        </section>
+        </div>
+      </section>
 
 
   <!-- Similar products -->

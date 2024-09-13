@@ -18,6 +18,7 @@ import random
 import time
 import pandas as pd
 import os
+from datetime import datetime, date
 # from commodities_data import commodities_data
 
 # Set the Django settings module environment variable
@@ -38,7 +39,9 @@ from main.models import (
     Commodity, 
     CommodityProduction, 
     Currency, 
-    CommodityPrice
+    CommodityPrice,
+    Notification,
+    Project,
 )
 
 
@@ -570,3 +573,182 @@ def update_futures_prices_in_db(futures_commodities_data):
 
 # futures_commodities_data = get_live_prices(futures_commodities_data_input)
 # update_futures_prices_in_db(futures_commodities_data)
+
+from datetime import timedelta
+from django.utils import timezone
+
+def check_all_notifications_and_send_emails():
+    notifications_to_check = Notification.objects.filter(user__isnull=False, activated=False)
+    for notification in notifications_to_check:
+        check_notification_and_send_email(notification.id)
+    
+
+def check_notification_and_send_email(notification_id):
+    notification_to_check = Notification.objects.get(id=notification_id, user__isnull=False, activated=False)
+
+    def get_closest_commodity_price(commodity_id, target_date):
+        # First, check if there's an exact match for the given date
+        exact_price = CommodityPrice.objects.filter(commodity_id=commodity_id, date=target_date).first()
+
+        if exact_price:
+            # If price exists, use it; if not, use projected_price
+            if exact_price.price:
+                return exact_price.price
+            elif exact_price.projected_price:
+                return exact_price.projected_price
+
+        # Define a range for the search
+        date_range_start = target_date - timedelta(days=365)
+        date_range_end = target_date + timedelta(days=365)
+
+        # Retrieve all prices within the date range
+        possible_prices = CommodityPrice.objects.filter(
+            commodity_id=commodity_id,
+            date__range=(date_range_start, date_range_end),
+        ).order_by('date')
+
+        if not possible_prices.exists():
+            return None  # No prices found in the date range
+
+        # Find the closest date in the possible prices
+        closest_price = min(possible_prices, key=lambda x: abs(x.date - target_date))
+        closest_past = possible_prices.filter(date__lte=target_date).order_by('-date').first()
+        closest_future = possible_prices.filter(date__gte=target_date).order_by('date').first()
+
+        if closest_past:
+            days_to_closest_past = (target_date - closest_past.date).days
+            if closest_past.price:
+                closest_past_price = closest_past.price
+            elif closest_past.projected_price:
+                closest_past_price = closest_past.projected_price
+        
+        if closest_future:
+            days_to_closest_future = (closest_future.date - target_date).days
+            if closest_future.price:
+                closest_future_price = closest_future.price
+            elif closest_future.projected_price:
+                closest_future_price = closest_future.projected_price
+
+        total_days = days_to_closest_past + days_to_closest_future
+        new_commodity_price = closest_past_price * days_to_closest_past / total_days + closest_future_price * days_to_closest_future / total_days
+        
+        if not closest_past:
+            new_commodity_price = closest_future
+        
+        if not closest_future:
+            new_commodity_price = closest_past
+
+        return new_commodity_price
+
+    def get_closest_product_price(product_id, target_date):
+        # Fetch all material proportions for the product
+        materials_proportions = MaterialProportion.objects.filter(product_id=product_id).select_related('commodity')
+
+        if not materials_proportions.exists():
+            return None  # No materials found for the product
+
+        total_product_price = 0.0
+
+        for materialproportion in materials_proportions:
+            commodity = materialproportion.commodity
+
+            # Get the closest commodity price for the given date
+            closest_commodity_price = get_closest_commodity_price(commodity.id, target_date)
+
+            if closest_commodity_price is None:
+                continue  # Skip if no price found for the commodity
+
+            # Calculate the price contribution for this material
+            rate_for_price_kg = commodity.rate_for_price_kg
+            currency_rate = commodity.currency.rate
+
+            material_price = (
+                closest_commodity_price * materialproportion.proportion * rate_for_price_kg / currency_rate
+            )
+
+            # Accumulate the total product price
+            total_product_price += material_price
+
+        return total_product_price if total_product_price > 0 else None  # Return total price or None if no price found
+
+    def get_closest_project_price(project_id, target_date):
+        # Fetch the project
+        project = Project.objects.prefetch_related('products').get(id=project_id)
+
+        # Fetch all products associated with the project
+        products = project.products.all()
+
+        if not products.exists():
+            return None  # No products found in the project
+
+        total_price = 0.0
+        product_count = 0
+
+        for product in products:
+            # Get the closest product price for the given date
+            closest_product_price = get_closest_product_price(product.id, target_date)
+
+            if closest_product_price is None:
+                continue  # Skip if no price found for the product
+
+            # Accumulate the total price and count of valid products
+            total_price += closest_product_price
+            product_count += 1
+
+        # Calculate the average price across all products
+        if product_count == 0:
+            return None  # No valid prices found
+
+        average_price = total_price / product_count
+
+        return average_price
+
+    def update_notification_db(notification_id, new_activated_value):
+        try:
+            # Use get() to fetch the notification instance or raise an exception if it doesn't exist
+            notification = Notification.objects.get(id=notification_id)
+            notification.activated = True
+            notification.activated_at = timezone.now()
+            notification.activated_value = new_activated_value
+            notification.save()
+            return True
+        except Notification.DoesNotExist:
+            # Return False if the notification doesn't exist
+            return False
+
+    def send_notification_email(notification_id):
+        # TODO
+        pass
+
+    if notification_to_check:
+        notification = notification_to_check
+        if notification.product:
+            creation_price = get_closest_product_price(notification.product.id, notification.created_at.date())
+            future_check_price = get_closest_product_price(notification.product.id, notification.change_by)
+        elif notification.commodity:
+            creation_price = get_closest_commodity_price(notification.commodity.id, notification.created_at.date())
+            future_check_price = get_closest_commodity_price(notification.commodity.id, notification.change_by)
+        elif notification.project:
+            creation_price = get_closest_project_price(notification.project.id, notification.created_at.date())
+            future_check_price = get_closest_project_price(notification.project.id, notification.change_by)
+
+        print(f'Creation price: {creation_price}')
+        print(f'Future Check price: {future_check_price}')
+        if creation_price and future_check_price:
+            calculated_change = (future_check_price - creation_price) / creation_price * 100
+            change_to_check = notification.change
+            print(f'Calculated change: {calculated_change}')
+            print(f'Change to check: {change_to_check}')
+            if change_to_check >= 0 and calculated_change >= change_to_check:
+                update_notification_db(notification.id, calculated_change)
+                print('Notification updated 1')
+            elif change_to_check < 0 and calculated_change < change_to_check:
+                updated = update_notification_db(notification.id, calculated_change)
+                if updated:
+                    print('Notification updated 2')
+                else:
+                    print('Notification not updated 0')
+            else:
+                print('Notification not updated 1')
+        else:
+            print('Notification not updated 2')

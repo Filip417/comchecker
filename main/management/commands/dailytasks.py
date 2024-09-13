@@ -12,6 +12,7 @@ from ...update_prices import (
     update_live_commodity_prices,
     futures_commodities_data_input,
     update_futures_prices_in_db,
+    check_all_notifications_and_send_emails,
 )
 
 from ...project_pricesv2 import (
@@ -29,30 +30,33 @@ class Command(BaseCommand):
     def handle(self, *args, **kwargs):
         try:
             # Currencies
-            API_KEY = settings.CURRENCIES_API_KEY
-            update_currencies(API_KEY)
+            # API_KEY = settings.CURRENCIES_API_KEY
+            # update_currencies(API_KEY)
 
-            # Live prices
-            new_dict = get_live_prices_commodities(commodities_data)
-            directory_to_save = r'C:\Users\sawin\Documents\Commodity Project\django_project\comchecker\main'
-            save_to_excel(new_dict, directory_to_save)
-            update_live_commodity_prices(new_dict)
+            # # Live prices
+            # new_dict = get_live_prices_commodities(commodities_data)
+            # directory_to_save = r'C:\Users\sawin\Documents\Commodity Project\django_project\comchecker\main'
+            # save_to_excel(new_dict, directory_to_save)
+            # update_live_commodity_prices(new_dict)
 
-            # Futures prices
-            futures_commodities_data = get_live_prices(futures_commodities_data_input)
-            update_futures_prices_in_db(futures_commodities_data)
+            # # Futures prices
+            # futures_commodities_data = get_live_prices(futures_commodities_data_input)
+            # update_futures_prices_in_db(futures_commodities_data)
 
-            # Update values
-            products = Product.objects.all()
-            commodities = Commodity.objects.all()
-            add_1y_increase_to_products(products)
-            add_1y_increase_to_commodities(commodities)
-            add_price_now(commodities)
-            add_top_value_commodities(products)
-            update_total_production(commodities)
+            # # Update values
+            # products = Product.objects.all()
+            # commodities = Commodity.objects.all()
+            # add_1y_increase_to_products(products)
+            # add_1y_increase_to_commodities(commodities)
+            # add_price_now(commodities)
+            # add_top_value_commodities(products)
+            # update_total_production(commodities)
 
             # Forecast prices
             # update_forecast_prices()
+
+            # Check notifications
+            check_all_notifications_and_send_emails()
 
             self.stdout.write(self.style.SUCCESS('Successfully executed dailytasks'))
             logger.info('dailytasks executed successfully')

@@ -99,4 +99,4 @@ def time_since(value):
             value_in_units = int(seconds // period_seconds)
             return f"{value_in_units}{period_name}"
 
-    return "just now"
+    return "0min"

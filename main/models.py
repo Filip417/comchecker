@@ -286,6 +286,7 @@ class Notification(models.Model):
     created_at = models.DateTimeField(default=timezone.now)
     activated = models.BooleanField(default=False)
     activated_at = models.DateTimeField(null=True, blank=True)
+    activated_value = models.FloatField(null=True, blank=True)
     seen_activated = models.BooleanField(default=False)
     seen_activated_at = models.DateTimeField(null=True, blank=True)
     email_sent = models.BooleanField(default=False)
