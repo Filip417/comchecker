@@ -12,62 +12,188 @@
     <!-- Settings title -->
     <div class="flex flex-row space-x-3">
     <h1 class="text-3xl font-bold tracking-wide text-gray-800 dark:text-white">Settings</h1>
-    <button class="px-3 py-1 text-xs font-medium tracking-wide text-gray-800 capitalize transition-colors duration-300 transform bg-gray-200 rounded-lg hover:bg-gray-300 focus:outline-none focus:ring focus:ring-gray-400 focus:ring-opacity-80">
-      Save </button>
-      <button class="px-3 py-1 text-xs font-medium tracking-wide text-gray-800 capitalize transition-colors duration-300 transform bg-gray-200 rounded-lg hover:bg-gray-300 focus:outline-none focus:ring focus:ring-gray-400 focus:ring-opacity-80">
-        Reset </button>
     </div>
 
     <hr class="mt-5 border-gray-200 dark:border-gray-700 ">
     <!-- Profile settings -->
     <section class="my-5 container">
       <a href="#" class="pointer-events-none flex items-center text-sm text-gray-800 capitalize transition-colors duration-300 transform dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-white">
-        <span class="text-lg font-medium">Profile</span>
         <svg class="w-5 h-5 mx-1" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M7 8C7 5.23858 9.23858 3 12 3C14.7614 3 17 5.23858 17 8C17 10.7614 14.7614 13 12 13C9.23858 13 7 10.7614 7 8ZM12 11C13.6569 11 15 9.65685 15 8C15 6.34315 13.6569 5 12 5C10.3431 5 9 6.34315 9 8C9 9.65685 10.3431 11 12 11Z" fill="currentColor"></path>
           <path d="M6.34315 16.3431C4.84285 17.8434 4 19.8783 4 22H6C6 20.4087 6.63214 18.8826 7.75736 17.7574C8.88258 16.6321 10.4087 16 12 16C13.5913 16 15.1174 16.6321 16.2426 17.7574C17.3679 18.8826 18 20.4087 18 22H20C20 19.8783 19.1571 17.8434 17.6569 16.3431C16.1566 14.8429 14.1217 14 12 14C9.87827 14 7.84344 14.8429 6.34315 16.3431Z" fill="currentColor"></path>
       </svg>
+        <span class="text-lg font-medium">Profile</span>
         </a>
-        <p class="mt-1 text-sm text-gray-500 dark:text-gray-300">Information here is visible only to you.</p>
+        <p class="mt-1 text-sm text-gray-500 dark:text-gray-300">Information here is visible only to you</p>
 
         <div class="flex flex-col mt-6 mx-5 space-y-5">
           <div>
             <label for="Email" class="block text-sm text-gray-500 dark:text-gray-300">Email</label>
         
-            <input type="text" placeholder="your profile needs an email" value="username@company.com" class="block  mt-2 w-full placeholder-gray-400/70 dark:placeholder-gray-500 rounded-lg border border-gray-200 bg-white px-5 py-2.5 text-gray-700 focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-300 dark:focus:border-blue-300" />
+            <a class="select-none bg-gray-100 block mt-2 w-full placeholder-gray-400/70 dark:placeholder-gray-500 rounded-lg border border-gray-200 px-5 py-2.5 text-gray-700 focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-300 dark:focus:border-blue-300">
+              {{user.email}}
+            </a>
+
+            <!-- Change email modal -->
+            <section>
+              <div x-data="{ isOpen: false }" class="relative flex mt-2 " id="changing-plan-modal">
+                <button @click="isOpen = true" class="px-6 py-2 font-medium tracking-wide text-gray-800 capitalize transition-colors duration-300 transform bg-gray-200 rounded-lg hover:bg-gray-300 focus:outline-none focus:ring focus:ring-gray-400 focus:ring-opacity-80">
+                  Change email
+                </button>
+            
+                <div x-show="isOpen" class="z-20 fixed inset-0 bg-black bg-opacity-25 transition-opacity ease-linear duration-300" @click="open = false"></div>
+
+                <div x-show="isOpen" 
+                    x-transition:enter="transition duration-300 ease-out"
+                    x-transition:enter-start="translate-y-4 opacity-0 sm:translate-y-0 sm:scale-95"
+                    x-transition:enter-end="translate-y-0 opacity-100 sm:scale-100"
+                    x-transition:leave="transition duration-150 ease-in"
+                    x-transition:leave-start="translate-y-0 opacity-100 sm:scale-100"
+                    x-transition:leave-end="translate-y-4 opacity-0 sm:translate-y-0 sm:scale-95"
+                    class="fixed inset-0 z-30 overflow-y-auto" 
+                    aria-labelledby="modal-title" role="dialog" aria-modal="true"
+                >
+                    <div class="flex items-end justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+                        <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+            
+                        <div @click.away="isOpen = false" class="relative inline-block px-4 pt-5 pb-4 overflow-hidden text-left align-bottom transition-all transform bg-white rounded-lg shadow-xl rtl:text-right dark:bg-gray-900 sm:my-8 sm:align-middle sm:max-w-sm sm:w-full sm:p-6">
+                          <form method="post" action="{% url 'change_email' %}">
+                            {% csrf_token %}
+                            <div>
+                                <div class="flex items-center justify-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 text-gray-700 dark:text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
+                                    </svg>
+                                </div>
+            
+                                <div class="mt-2 text-center">
+                                    <h3 class="text-lg font-medium leading-6 text-gray-800 capitalize dark:text-white" id="modal-title">Changing email</h3>
+                                    <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">
+                                      Enter your new email address and confirm with password
+                                      </p>
+                                      <input type="email" name="new-email" placeholder="Enter new email" class="block  mt-2 w-full placeholder-gray-400/70 dark:placeholder-gray-500 rounded-lg border border-gray-200 bg-white px-5 py-2.5 text-gray-700 focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-300 dark:focus:border-blue-300">
+                                      </input>
+                                      <input type="password" name="password-confirmation" placeholder="Enter password" class="block  mt-2 w-full placeholder-gray-400/70 dark:placeholder-gray-500 rounded-lg border border-gray-200 bg-white px-5 py-2.5 text-gray-700 focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-300 dark:focus:border-blue-300">
+                                      </input>
+                                </div>
+                            </div>
+            
+                            <div class="mt-5 sm:flex sm:items-center justify-center">
+                              <button @click="isOpen = false" type="button" class="w-full px-4 py-2 mt-2 text-sm font-medium tracking-wide text-gray-700 capitalize transition-colors duration-300 transform border border-gray-200 rounded-md sm:mt-0 sm:w-auto sm:mx-2 dark:text-gray-200 dark:border-gray-700 dark:hover:bg-gray-800 hover:bg-gray-100 focus:outline-none focus:ring focus:ring-gray-300 focus:ring-opacity-40">
+                              Hide
+                            </button>
+            
+                                <div class="sm:flex sm:items-center ">
+            
+                                    <button type="submit" class="w-full px-4 py-2 mt-2 text-sm font-medium tracking-wide text-white capitalize transition-colors duration-300 transform bg-red-600 rounded-md sm:w-auto sm:mt-0 hover:bg-red-700 focus:outline-none focus:ring focus:ring-red-800 focus:ring-opacity-40">
+                                        Change email
+                                    </button>
+                                </div>
+                            </div>
+
+                          </form>
+
+                        </div>
+                    </div>
+                </div>
+              </div>
+          </section>
           </div>
 
           <div>
             <label for="Password" class="block text-sm text-gray-500 dark:text-gray-300">Password</label>
         
-            <input type="password" placeholder="Password" aria-label="Password" class="block  mt-2 w-full placeholder-gray-400/70 dark:placeholder-gray-500 rounded-lg border border-gray-200 bg-white px-5 py-2.5 text-gray-700 focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-300 dark:focus:border-blue-300" />
+            <!-- Change password modal -->
+            <section>
+              <div x-data="{ isOpen: false }" class="relative flex mt-2 " id="changing-plan-modal">
+                <button @click="isOpen = true" class="px-6 py-2 font-medium tracking-wide text-gray-800 capitalize transition-colors duration-300 transform bg-gray-200 rounded-lg hover:bg-gray-300 focus:outline-none focus:ring focus:ring-gray-400 focus:ring-opacity-80">
+                  Change password
+                </button>
+            
+                <div x-show="isOpen" class="z-20 fixed inset-0 bg-black bg-opacity-25 transition-opacity ease-linear duration-300" @click="open = false"></div>
+
+                <div x-show="isOpen" 
+                    x-transition:enter="transition duration-300 ease-out"
+                    x-transition:enter-start="translate-y-4 opacity-0 sm:translate-y-0 sm:scale-95"
+                    x-transition:enter-end="translate-y-0 opacity-100 sm:scale-100"
+                    x-transition:leave="transition duration-150 ease-in"
+                    x-transition:leave-start="translate-y-0 opacity-100 sm:scale-100"
+                    x-transition:leave-end="translate-y-4 opacity-0 sm:translate-y-0 sm:scale-95"
+                    class="fixed inset-0 z-30 overflow-y-auto" 
+                    aria-labelledby="modal-title" role="dialog" aria-modal="true"
+                >
+                    <div class="flex items-end justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+                        <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+            
+                        <div @click.away="isOpen = false" class="relative inline-block px-4 pt-5 pb-4 overflow-hidden text-left align-bottom transition-all transform bg-white rounded-lg shadow-xl rtl:text-right dark:bg-gray-900 sm:my-8 sm:align-middle sm:max-w-sm sm:w-full sm:p-6">
+                          <form method="post" action="{% url 'change_password' %}">
+                            {% csrf_token %}
+                            <div>
+                                <div class="flex items-center justify-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 text-gray-700 dark:text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
+                                    </svg>
+                                </div>
+            
+                                <div class="mt-2 text-center">
+                                    <h3 class="text-lg font-medium leading-6 text-gray-800 capitalize dark:text-white" id="modal-title">Changing password</h3>
+                                    <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">
+                                      Enter your new password  and confirm with old password
+                                      </p>
+                                      <input type="password" name="new-password" placeholder="Enter new password" class="block  mt-2 w-full placeholder-gray-400/70 dark:placeholder-gray-500 rounded-lg border border-gray-200 bg-white px-5 py-2.5 text-gray-700 focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-300 dark:focus:border-blue-300">
+                                      </input>
+                                      <input type="password" name="new-password-confirmation" placeholder="Confirm new password" class="block  mt-2 w-full placeholder-gray-400/70 dark:placeholder-gray-500 rounded-lg border border-gray-200 bg-white px-5 py-2.5 text-gray-700 focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-300 dark:focus:border-blue-300">
+                                      </input>
+                                      <input type="password" name="password-confirmation" placeholder="Enter existing password" class="block  mt-2 w-full placeholder-gray-400/70 dark:placeholder-gray-500 rounded-lg border border-gray-200 bg-white px-5 py-2.5 text-gray-700 focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-300 dark:focus:border-blue-300">
+                                      </input>
+                                </div>
+                            </div>
+            
+                            <div class="mt-5 sm:flex sm:items-center justify-center">
+                              <button @click="isOpen = false" type="button" class="w-full px-4 py-2 mt-2 text-sm font-medium tracking-wide text-gray-700 capitalize transition-colors duration-300 transform border border-gray-200 rounded-md sm:mt-0 sm:w-auto sm:mx-2 dark:text-gray-200 dark:border-gray-700 dark:hover:bg-gray-800 hover:bg-gray-100 focus:outline-none focus:ring focus:ring-gray-300 focus:ring-opacity-40">
+                              Hide
+                            </button>
+            
+                                <div class="sm:flex sm:items-center ">
+            
+                                    <button class="w-full px-4 py-2 mt-2 text-sm font-medium tracking-wide text-white capitalize transition-colors duration-300 transform bg-red-600 rounded-md sm:w-auto sm:mt-0 hover:bg-red-700 focus:outline-none focus:ring focus:ring-red-800 focus:ring-opacity-40">
+                                        Change password
+                                    </button>
+                                </div>
+                            </div>
+
+                          </form>
+
+                        </div>
+                    </div>
+                </div>
+              </div>
+          </section>
           </div>
 
           <div>
             <label for="Language" class="block text-sm text-gray-500 dark:text-gray-300">Language</label>
     
-            <select name="language" id="language" required
-            class="block  mt-2 w-full placeholder-gray-400/70 dark:placeholder-gray-500 rounded-lg border border-gray-200 bg-white px-5 py-2.5 text-gray-700 focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-300 dark:focus:border-blue-300">
-                <option value="en" selected>English</option>
-                <option value="de">German</option>
-                <option value="fr">French</option>
-                <option value="it">Italian</option>
-                <option value="es">Spanish</option>
-            </select>
+            <a class="select-none bg-gray-100 block mt-2 w-full placeholder-gray-400/70 dark:placeholder-gray-500 rounded-lg border border-gray-200 px-5 py-2.5 text-gray-700 focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-300 dark:focus:border-blue-300">
+              English
+            </a>
         </div>
 
-        <div>
-          <label for="Currency" class="block text-sm text-gray-500 dark:text-gray-300">Currency</label>
-  
-          <select name="currency" id="currency" required
-          class="block  mt-2 w-full placeholder-gray-400/70 dark:placeholder-gray-500 rounded-lg border border-gray-200 bg-white px-5 py-2.5 text-gray-700 focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-300 dark:focus:border-blue-300">
-              <option value="usd" selected>USD</option>
-              <option value="gbp">GBP</option>
-              <option value="eur">EUR</option>
-              <option value="jpy">JPY</option>
-              <option value="cad">CAD</option>
-          </select>
-      </div>
+            <div>
+              <label for="Currency" class="block text-sm text-gray-500 dark:text-gray-300">Currency</label>
+      
+              <a class="select-none bg-gray-100 block mt-2 w-full placeholder-gray-400/70 dark:placeholder-gray-500 rounded-lg border border-gray-200 px-5 py-2.5 text-gray-700 focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-300 dark:focus:border-blue-300">
+                Default (as traded with live exchange rates)
+              </a>
+          </div>
+
+          <div>
+            <label for="darkmode" class="block text-sm text-gray-500 dark:text-gray-300">Dark / Light mode</label>
+    
+            <a class="select-none bg-gray-100 block mt-2 w-full placeholder-gray-400/70 dark:placeholder-gray-500 rounded-lg border border-gray-200 px-5 py-2.5 text-gray-700 focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-300 dark:focus:border-blue-300">
+              Managed by your device settings
+            </a>
+        </div>
 
         </div>
     </section>
@@ -104,7 +230,8 @@
         </style>
         <div class="my-5 flex flex-col" x-data="{ sectionOpen: { membership1: false } }" >
         <!-- Expand/collapse section button -->
-        <button @click="sectionOpen.membership1 = !sectionOpen.membership1" type="button" class="flex w-full items-center justify-between bg-white text-gray-400 hover:text-gray-500" aria-controls="membership-section-0" :aria-expanded="sectionOpen.membership1.toString()">
+        <button @click="sectionOpen.membership1 = !sectionOpen.membership1" type="button"
+        class="flex w-full items-center justify-between bg-white text-gray-400 hover:text-gray-500 hover:underline" aria-controls="membership-section-0" :aria-expanded="sectionOpen.membership1.toString()">
             <span class="text-lg font-medium text-gray-800 dark:text-white">Change plan</span>
             <span class="ml-6 flex items-center">
                 <!-- Expand icon, show/hide based on section open state. -->
@@ -509,7 +636,8 @@
           </style>
           <div class="my-5 flex flex-col" x-data="{ sectionOpen: { membership2: false } }" >
           <!-- Expand/collapse section button -->
-          <button @click="sectionOpen.membership2 = !sectionOpen.membership2" type="button" class="flex w-full items-center justify-between bg-white text-gray-400 hover:text-gray-500" aria-controls="membership-section-0" :aria-expanded="sectionOpen.membership2.toString()">
+          <button @click="sectionOpen.membership2 = !sectionOpen.membership2" type="button"
+          class="flex w-full items-center justify-between bg-white text-gray-400 hover:text-gray-500 hover:underline" aria-controls="membership-section-0" :aria-expanded="sectionOpen.membership2.toString()">
               <span class="text-lg font-medium text-gray-800 dark:text-white">Payment methods</span>
               <span class="ml-6 flex items-center">
                   <!-- Expand icon, show/hide based on section open state. -->
@@ -684,7 +812,8 @@
           </style>
           <div class="my-5 flex flex-col" x-data="{ sectionOpen: { membership3: false } }" >
           <!-- Expand/collapse section button -->
-          <button @click="sectionOpen.membership3 = !sectionOpen.membership3" type="button" class="flex w-full items-center justify-between bg-white text-gray-400 hover:text-gray-500" aria-controls="membership-section-0" :aria-expanded="sectionOpen.membership3.toString()">
+          <button @click="sectionOpen.membership3 = !sectionOpen.membership3" type="button"
+          class="flex w-full items-center justify-between bg-white text-gray-400 hover:text-gray-500 hover:underline" aria-controls="membership-section-0" :aria-expanded="sectionOpen.membership3.toString()">
               <span class="text-lg font-medium text-gray-800 dark:text-white">Payment history</span>
               <span class="ml-6 flex items-center">
                   <!-- Expand icon, show/hide based on section open state. -->
@@ -700,7 +829,7 @@
           
           <div x-show="sectionOpen.membership3 " id="membership-section-0" x-cloak>  
 
-            <p class="mt-1 text-sm text-gray-500 dark:text-gray-300">Showing invoices within the past 12 months. </p>
+            <p class="my-2 text-sm text-gray-500 dark:text-gray-300">Showing invoices within the past 12 months. </p>
 
                 <!-- Payment history table -->
                 <section class="container px-4 mx-auto">
@@ -841,61 +970,68 @@
         <svg class="w-5 h-5 mx-1" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M21 19H3C1.89543 19 1 18.1046 1 17V16H3V7C3 5.89543 3.89543 5 5 5H19C20.1046 5 21 5.89543 21 7V16H23V17C23 18.1046 22.1046 19 21 19ZM5 7V16H19V7H5Z" fill="currentColor"></path>
       </svg>
-        <span class="text-lg font-medium">Privacy and data</span>
+        <span class="text-lg font-medium">Privacy, data and notifications</span>
         </a>
         <div class="flex flex-col mt-6 mx-5">
 
-        <!-- Cookies -->
-        <section class="px-4 mx-auto container">
-          <a href="#" class="pointer-events-none flex items-center text-sm text-gray-800 capitalize transition-colors duration-300 transform dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-white">
-            <span class="text-lg font-medium">Cookies</span>
-            </a>
-            <p class="mt-1 text-sm text-gray-500 dark:text-gray-300"></p>
+        <!-- Settings form -->
+        <section class="px-4 mx-auto container"> 
+            <form method="post" action="{% url 'update_settings' %}">
+              {% csrf_token %}
 
 
-
-            <div>
-              <div class="flex items-center">
+              <div class="my-2 flex items-center">
                 <label class="relative inline-flex items-center mb-5">
-              <input type="checkbox" value="" class="sr-only peer" disabled="" checked>
-                <div class="cursor-default w-9 h-5 bg-gray-200 hover:bg-gray-300 peer-focus:outline-0  rounded-full peer transition-all ease-in-out duration-500 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all  peer-checked:bg-indigo-600 hover:peer-checked:bg-indigo-700 ">
+              <input type="checkbox" name="essential" class="sr-only peer" disabled="" {% if user.userprofile.cookie_essential %}checked{% endif %}>
+                <div class="cursor-not-allowed w-9 h-5 bg-gray-200 hover:bg-gray-300 peer-focus:outline-0  rounded-full peer transition-all ease-in-out duration-500 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all  peer-checked:bg-indigo-600 hover:peer-checked:bg-indigo-700 ">
                 </div>
                 </label>
                 <div class="block ml-3">
-                <span class="text-sm font-normal text-gray-600 mb-1">Essential</span>
+                <span class="text-sm font-normal text-gray-600 mb-1">Essential Cookies</span>
                 <br>
                 <span class="text-xs font-normal text-gray-400 ">Helps provide the basics. These cookies are necessary for website to function and provide you with services available through the site. For example, cookies that keep you logged in.</span>
               </div>
             </div>
-
-              <div class="flex items-center">
+            
+              
+              <div class="my-2 flex items-center">
                 <label class="relative inline-flex items-center mb-5 cursor-pointer">
-                <input type="checkbox" value="" class="sr-only peer">
+                <input type="checkbox" name="personalisation" class="sr-only peer" {% if user.userprofile.cookie_personalisation %}checked{% endif %}>
                 <div class="w-9 h-5 bg-gray-200 hover:bg-gray-300 peer-focus:outline-0  rounded-full peer transition-all ease-in-out duration-500 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all  peer-checked:bg-indigo-600 hover:peer-checked:bg-indigo-700 "></div>
                 </label>
                 <div class="block ml-3">
-                <span class="text-sm font-normal text-gray-600 mb-1">Personalization</span>
+                <span class="text-sm font-normal text-gray-600 mb-1">Personalisation Cookies</span>
                 <br>
-                <span class="text-xs font-normal text-gray-400">Helps show more relevant content. These cookies help us customize product recommendations.</span>
+                <span class="text-xs font-normal text-gray-400">Helps show more relevant content. These cookies help us customise product recommendations.</span>
               </div>
             </div>
 
-            <div class="flex items-center ">
+
+
+            <div class="my-2 flex items-center">
               <label class="relative inline-flex items-center mb-5 cursor-pointer">
-              <input type="checkbox" value="" class="sr-only peer">
-              <div class="w-9 h-5 bg-gray-200 hover:bg-gray-300 peer-focus:outline-0  rounded-full peer transition-all ease-in-out duration-500 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all  peer-checked:bg-indigo-600 hover:peer-checked:bg-indigo-700 "></div>
+                <input type="checkbox" name="email_notification" class="sr-only peer" {% if user.userprofile.email_notification %}checked{% endif %}>
+                <div class="w-9 h-5 bg-gray-200 hover:bg-gray-300 peer-focus:outline-0  rounded-full peer transition-all ease-in-out duration-500 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all  peer-checked:bg-indigo-600 hover:peer-checked:bg-indigo-700 ">
+              </div>
               </label>
               <div class="block ml-3">
-              <span class="text-sm font-normal text-gray-600 mb-1">Analytics</span>
+              <span class="text-sm font-normal text-gray-600 mb-1">Email Notifications</span>
               <br>
-              <span class="text-xs font-normal text-gray-400 ">Helps improve the site. These cookies collect information about how you use Pinterest, and how you interact with ads on the site.</span>
-            </div>
+              <span class="text-xs font-normal text-gray-400">Turn on and off receiving email notifications on all your set alerts.</span>
             </div>
           </div>
+
+          <button type="submit" class="px-3 py-1 text-xs font-medium tracking-wide text-gray-800 capitalize transition-colors duration-300 transform bg-gray-200 rounded-lg hover:bg-gray-300 focus:outline-none focus:ring focus:ring-gray-400 focus:ring-opacity-80">
+            Save </button>
+
+        </form>
+
         </section>
 
+        <hr class="mt-5 border-gray-200 dark:border-gray-700 ">
+
         <!-- Delete account and data -->
-        <section class="mt-10 px-4 mx-auto container">
+        <section class="mt-5 px-4 mx-auto container">
           <a href="#" class="pointer-events-none flex items-center text-sm text-gray-800 capitalize transition-colors duration-300 transform dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-white">
             <span class="text-lg font-medium">Delete account and data</span>
             </a>
@@ -929,6 +1065,8 @@
                                   <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
                       
                                   <div @click.away="isOpen = false" class="relative inline-block px-4 pt-5 pb-4 overflow-hidden text-left align-bottom transition-all transform bg-white rounded-lg shadow-xl rtl:text-right dark:bg-gray-900 sm:my-8 sm:align-middle sm:max-w-sm sm:w-full sm:p-6">
+                                    <form method="post" action="{% url 'delete_account' %}">
+                                      {% csrf_token %}
                                       <div>
                                           <div class="flex items-center justify-center">
                                               <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 text-gray-700 dark:text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -941,9 +1079,11 @@
                                               <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">
                                                  This action is not reversible, you will lose all your data and your current membership will no longer be valid.
                                                 </p>
-                                                <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">
+                                                <a href="/help" class="mt-2 text-sm text-gray-500 dark:text-gray-400">
                                                   Please contact us how we could improve the service.
-                                                </p>
+                                                </a>
+                                                <input type="password" name="password-confirmation" placeholder="Enter password" class="block  mt-2 w-full placeholder-gray-400/70 dark:placeholder-gray-500 rounded-lg border border-gray-200 bg-white px-5 py-2.5 text-gray-700 focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-300 dark:focus:border-blue-300">
+                                                </input>
                                           </div>
                                       </div>
                       
@@ -960,6 +1100,8 @@
                                           </div>
                                       </div>
                                   </div>
+                                </form>
+
                               </div>
                           </div>
                         </div>
@@ -972,36 +1114,9 @@
         </div>
     </section>
     
-    <hr class="mt-5 border-gray-200 dark:border-gray-700 ">
-    <!-- Notifications settings -->
-    <section class="my-5 container">
-      <a href="#" class="pointer-events-none flex items-center text-sm text-gray-800 capitalize transition-colors duration-300 transform dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-white">
-        <svg class="w-5 h-5 text-gray-800 dark:text-white" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M12 22C10.8954 22 10 21.1046 10 20H14C14 21.1046 13.1046 22 12 22ZM20 19H4V17L6 16V10.5C6 7.038 7.421 4.793 10 4.18V2H13C12.3479 2.86394 11.9967 3.91762 12 5C12 5.25138 12.0187 5.50241 12.056 5.751H12C10.7799 5.67197 9.60301 6.21765 8.875 7.2C8.25255 8.18456 7.94714 9.33638 8 10.5V17H16V10.5C16 10.289 15.993 10.086 15.979 9.9C16.6405 10.0366 17.3226 10.039 17.985 9.907C17.996 10.118 18 10.319 18 10.507V16L20 17V19ZM17 8C16.3958 8.00073 15.8055 7.81839 15.307 7.477C14.1288 6.67158 13.6811 5.14761 14.2365 3.8329C14.7919 2.5182 16.1966 1.77678 17.5954 2.06004C18.9942 2.34329 19.9998 3.5728 20 5C20 6.65685 18.6569 8 17 8Z" fill="currentColor"></path>
-        </svg>
-        <span class="text-lg font-medium">Notifications</span>
-        </a>
-        <div class="flex flex-col mt-6 mx-5">
-
-          <div class="flex items-center">
-            <label class="relative inline-flex items-center mb-5 cursor-pointer">
-              <input type="checkbox" value="" class="sr-only peer" checked>
-              <div class="w-9 h-5 bg-gray-200 hover:bg-gray-300 peer-focus:outline-0  rounded-full peer transition-all ease-in-out duration-500 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all  peer-checked:bg-indigo-600 hover:peer-checked:bg-indigo-700 ">
-            </div>
-            </label>
-            <div class="block ml-3">
-            <span class="text-sm font-normal text-gray-600 mb-1">Email Notifications</span>
-            <br>
-            <span class="text-xs font-normal text-gray-400">Turn on and off receiving email notifications on all your set alerts.</span>
-          </div>
-        </div>
-
-        </div>
-    </section>
 
 
     </div>
-
   </div>
 </div>
 

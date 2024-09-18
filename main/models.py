@@ -12,6 +12,24 @@ import random
 import string
 
 
+class UserProfile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    email_notification = models.BooleanField(default=True)
+    cookie_essential = models.BooleanField(default=True)
+    cookie_personalisation = models.BooleanField(default=False)
+    
+    def __str__(self):
+        return self.user.username
+
+@receiver(post_save, sender=User)
+def create_user_profile(sender, instance, created, **kwargs):
+    if created:
+        UserProfile.objects.create(user=instance)
+
+@receiver(post_save, sender=User)
+def save_user_profile(sender, instance, **kwargs):
+    instance.userprofile.save()
+
 class Currency(models.Model):
     code = models.CharField(max_length=3, unique=True)
     name = models.CharField(max_length=50)
@@ -21,9 +39,6 @@ class Currency(models.Model):
 
     def __str__(self):
         return self.code
-
-
-
 
 
 class Commodity(models.Model):

@@ -28,4 +28,10 @@ urlpatterns = [
     path('delete-project/', views.delete_project, name="delete_project"),
     path('set-notification/', views.set_notification, name="set_notification"),
     path('delete-notification/', views.delete_notification, name="delete_notification"),
+    path('update-settings/', views.update_settings, name='update_settings'),
+    path('change-email/',views.change_email, name="change_email"),
+    path('change-password/',views.change_password, name="change_password"),
+    path('help/', views.help, name="help"),
+    path('logged-contact-form/', views.logged_contact_form, name="logged_contact_form"),
+    path('delete-account/', views.delete_account, name="delete_account"),
 ]

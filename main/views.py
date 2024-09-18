@@ -6,7 +6,7 @@ from django.db.models import Q, Count
 from datetime import datetime
 import json
 from collections import defaultdict
-from django.contrib.auth import login, authenticate, logout
+from django.contrib.auth import login, authenticate, logout, update_session_auth_hash
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.contrib.auth.models import User
@@ -18,7 +18,7 @@ from django.contrib.auth.tokens import default_token_generator
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes
 from django.template.loader import render_to_string
-from django.contrib.auth.hashers import make_password
+from django.contrib.auth.hashers import check_password
 from django.db.models import Count
 from itertools import chain
 from django.db.models import Sum, Count
@@ -43,36 +43,39 @@ def register(request):
         password1 = request.POST.get('password1')
         password2 = request.POST.get('password2')
 
-        user = User.objects.filter(username=email)
-        if user.exists():
+        # Check if the email is already registered
+        if User.objects.filter(username=email).exists():
             messages.info(request, "Email already used, log in.")
-            return redirect('/login/')
+            return redirect(reverse('login'))
 
+        # Check if passwords match
         if password1 != password2:
             messages.error(request, "Passwords do not match.")
-            return redirect('/register/')
+            return redirect(reverse('register'))
         
         # Validate password complexity
         try:
             validate_password(password1)
         except ValidationError as e:
             messages.error(request, "\n".join(e))
-            return redirect('/register/')
+            return redirect(reverse('register'))
 
-        # Hash the password
-        hashed_password = make_password(password1)
-
-        # Create a new User object with the provided information
-        user = User.objects.create_user(
+        # Create a new user and use set_password to hash the password
+        user = User(
             username=email,
-            email=email,
-            password=hashed_password
+            email=email
         )
+        user.set_password(password1)  # Correctly set the password
+        user.save()
 
+        # Automatically log the user in after registration
         login(request, user)
-        messages.success(request, "Account created Successfully!")
+        messages.success(request, "Account created successfully!")
         return redirect(reverse('logged'))
+
+    # If the request method is not POST, render the registration form
     return render(request, 'main/register.html')
+
 
 @logged_in_cant_access
 def user_login(request):
@@ -833,3 +836,143 @@ def user_settings(request):
         "name":"name"
     }
     return render(request, "main/settings.html", context)
+
+
+@login_required
+def update_settings(request):
+    if request.method == 'POST':
+        profile = request.user.userprofile
+        
+        profile.cookie_personalisation = 'personalisation' in request.POST
+        profile.email_notification = 'email_notification' in request.POST
+        
+        profile.save()
+        return redirect('settings')
+
+
+
+@login_required
+def change_email(request):
+    if request.method == 'POST':
+        password_confirmation = request.POST.get("password-confirmation")
+        new_email = request.POST.get("new-email")
+
+        # Check if fields are provided
+        if password_confirmation and new_email:
+            user = request.user
+
+            # Check if the password is correct
+            if not check_password(password_confirmation, user.password):
+                messages.error(request, 'Incorrect password.')
+                return redirect('settings')
+
+            # Check if the new email is already in use
+            if User.objects.filter(email=new_email).exists():
+                messages.error(request, "The new email is already in use by another account.")
+                return redirect('settings')
+
+            # Update the user's email and username
+            user.email = new_email
+            user.username = new_email
+            user.save()
+
+            # Log the user back in with the updated email/username
+            login(request, user)
+
+            messages.success(request, "Email updated successfully!")
+            return redirect('settings')
+
+    # If the request is not POST or fields are missing, show an error
+    messages.error(request, "Error in updating email.")
+    return redirect('settings')
+
+
+@login_required
+def help(request):
+    return render(request, 'main/help.html')
+
+
+@login_required
+def change_password(request):
+    if request.method == 'POST':
+        password_confirmation = request.POST.get("password-confirmation")
+        new_password = request.POST.get("new-password")
+        new_password_confirmation = request.POST.get("new-password-confirmation")
+
+        if password_confirmation and new_password and new_password_confirmation:
+            
+            if new_password == new_password_confirmation:
+                user = request.user
+
+                # Check if the existing password is correct
+                if check_password(password_confirmation, user.password):
+                    try:
+                        # Validate the new password using Django's built-in validators
+                        validate_password(new_password, user)
+                    except ValidationError as e:
+                        # Join and display validation error messages
+                        messages.error(request, "\n".join(e))
+                        return redirect('settings')
+                    
+                    # Hash the new password and save it
+                    user.set_password(new_password)
+                    user.save()
+                    update_session_auth_hash(request, user)
+
+                    # Provide feedback to the user
+                    messages.success(request, "New password set successfully!")
+                    return redirect('settings')  # Optional: You could log the user out here for security reasons
+                else:
+                    messages.error(request, "Incorrect existing password.")
+                    return redirect('settings')
+            else:
+                messages.error(request, "New passwords do not match.")
+                return redirect('settings')
+
+    # If it's not a POST request, return a general error message
+    messages.error(request, "Error in setting up new password.")
+    return redirect('settings')
+
+
+@login_required
+def delete_account(request):
+    if request.method == 'POST':
+        password_confirmation = request.POST.get("password-confirmation")
+        user = request.user
+        
+        if check_password(password_confirmation, user.password):
+            # Optionally: Send a confirmation email or ask for an additional confirmation step
+            
+            # Deactivate or delete the user account
+            user.delete()  # You could deactivate the account instead of deleting it if needed
+
+            # Log the user out after deletion
+            logout(request)
+
+            # Provide feedback to the user
+            messages.success(request, "Account deleted successfully.")
+            return redirect('index')  # Or another page after successful deletion
+        else:
+            messages.error(request, "Incorrect password.")
+            return redirect('settings')
+
+    messages.error(request, "Error in deleting account.")
+    return redirect('settings')
+
+
+@login_required
+def logged_contact_form(request):
+    if request.method == "POST":
+        text_content = request.POST.get("text-content")
+        if text_content:
+            user_email = request.user.email
+            send_mail(
+                f'New Contact Form Submission from {user_email}',
+                f'{text_content}\n\nfrom {user_email}',
+                settings.EMAIL_HOST_USER,  # Sender's email
+                [settings.EMAIL_HOST_USER],  # Recipient's email
+                fail_silently=False,
+            )
+            messages.success(request, 'Email has been sent, thank you for contacting us.')
+            return redirect('help')
+    return redirect('help')
