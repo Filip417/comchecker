@@ -100,3 +100,12 @@ def time_since(value):
             return f"{value_in_units}{period_name}"
 
     return "0min"
+
+@register.filter
+def word_break(value, length):
+    """
+    Insert a space or a break character in words that are longer than 'length'.
+    """
+    words = value.split()
+    broken_words = [w if len(w) <= length else ' '.join([w[i:i+length] for i in range(0, len(w), length)]) for w in words]
+    return ' '.join(broken_words)

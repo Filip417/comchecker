@@ -17,7 +17,7 @@
 </head>
 <body>
 
-    <nav x-data="{ isOpen: false }" class="relative bg-white shadow dark:bg-gray-800">
+    <nav x-data="{ isOpen: false }" class="sticky top-0 bg-white shadow dark:bg-gray-800 z-50">
     <div class="container px-6 py-3 mx-auto lg:flex">
         <div class="flex items-center justify-between">
             <a href="/">
@@ -53,9 +53,63 @@
         <div x-cloak :class="[isOpen ? 'translate-x-0 opacity-100 ' : 'opacity-0 -translate-x-full']" class="absolute inset-x-0 z-20 w-full px-6 py-4 transition-all duration-300 ease-in-out bg-white dark:bg-gray-800 lg:mt-0 lg:p-0 lg:top-0 lg:relative lg:opacity-100 lg:translate-x-0 lg:flex lg:items-center lg:justify-between">
             <div class="flex flex-col px-2 -mx-4 lg:flex-row lg:mx-0 xl:mx-10 lg:py-0">
                 {% if user.is_authenticated %}
-                <a href="/create" class="px-2.5 py-2 text-gray-700 transition-colors duration-300 transform rounded-lg dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 lg:mx-2">Create</a>
-                <a href="/search?commodity=show" class="px-2.5 py-2 text-gray-700 transition-colors duration-300 transform rounded-lg dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 lg:mx-2">Commodities</a>
-                <a href="/search?product=show" class="px-2.5 py-2 text-gray-700 transition-colors duration-300 transform rounded-lg dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 lg:mx-2">Products</a>
+                <a href="/create" class="px-2.5 py-2 text-white transition-colors duration-300 transform rounded-lg dark:text-gray-200 bg-blue-600 hover:bg-blue-500 dark:hover:bg-gray-700 lg:mx-2">Create</a>
+                <a href="/search?commodity=show" class="lg:hidden px-2.5 py-2 text-gray-700 transition-colors duration-300 transform rounded-lg dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 lg:mx-2">Commodities</a>
+                <div x-data="{ isOpen: false }" class="max-lg:hidden relative" @mouseenter="isOpen = true" @mouseleave="isOpen = false">
+                    <!-- Dropdown toggle button -->
+                    <div class="block py-2">
+                        <a href="/search?commodity=show" class="px-2.5 py-2 text-gray-700 transition-colors duration-300 transform rounded-lg dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 lg:mx-2">Commodities</a>
+                    </div>
+                
+                    <!-- Dropdown menu -->
+                    <div x-show="isOpen"
+                        x-init="$el.classList.remove('hidden')" 
+                        x-transition:enter="transition ease-out duration-100"
+                        x-transition:enter-start="opacity-0 scale-90"
+                        x-transition:enter-end="opacity-100 scale-100"
+                        x-transition:leave="transition ease-in duration-100"
+                        x-transition:leave-start="opacity-100 scale-100"
+                        x-transition:leave-end="opacity-0 scale-90" 
+                        class="hidden absolute right-0 z-20 w-48 py-2 mt-2 origin-top-right bg-white rounded-md shadow-xl dark:bg-gray-800"
+                    >
+                        <a href="/search?comtype=Price&commodity=show" class="block px-4 py-3 text-sm text-gray-600 capitalize transition-colors duration-300 transform dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-white"> Price </a>
+                        <a href="/search?comtype=Index&commodity=show" class="block px-4 py-3 text-sm text-gray-600 capitalize transition-colors duration-300 transform dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-white"> Index </a>
+                    </div>
+                </div>
+
+                <a href="/search?product=show" class="lg:hidden px-2.5 py-2 text-gray-700 transition-colors duration-300 transform rounded-lg dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 lg:mx-2">Products</a>
+                <div x-data="{ isOpen: false }" class="max-lg:hidden relative" @mouseenter="isOpen = true" @mouseleave="isOpen = false">
+                    <!-- Dropdown toggle button -->
+                    <div class="block py-2">
+                        <a href="/search?product=show" class="px-2.5 py-2 text-gray-700 transition-colors duration-300 transform rounded-lg dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 lg:mx-2">Products</a>
+                    </div>
+                
+                    <!-- Dropdown menu -->
+                    <div x-show="isOpen"
+                        x-init="$el.classList.remove('hidden')" 
+                        x-transition:enter="transition ease-out duration-100"
+                        x-transition:enter-start="opacity-0 scale-90"
+                        x-transition:enter-end="opacity-100 scale-100"
+                        x-transition:leave="transition ease-in duration-100"
+                        x-transition:leave-start="opacity-100 scale-100"
+                        x-transition:leave-end="opacity-0 scale-90" 
+                        class="hidden absolute right-0 z-20 w-48 py-2 mt-2 origin-top-right bg-white rounded-md shadow-xl dark:bg-gray-800"
+                    >
+                    <a href="/search?category=Construction+Materials" class="block px-4 py-3 text-sm text-gray-600 capitalize transition-colors duration-300 transform dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-white">Construction Materials</a>
+                    <a href="/search?category=Doors+%26+Windows" class="block px-4 py-3 text-sm text-gray-600 capitalize transition-colors duration-300 transform dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-white">Doors & Windows</a>
+                    <a href="/search?category=Electrical" class="block px-4 py-3 text-sm text-gray-600 capitalize transition-colors duration-300 transform dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-white">Electrical</a>
+                    <a href="/search?category=Finishes+%26+Coatings" class="block px-4 py-3 text-sm text-gray-600 capitalize transition-colors duration-300 transform dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-white">Finished & Coatings</a>
+                    <a href="/search?category=Flooring" class="block px-4 py-3 text-sm text-gray-600 capitalize transition-colors duration-300 transform dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-white">Flooring</a>
+                    <a href="/search?category=Insulation" class="block px-4 py-3 text-sm text-gray-600 capitalize transition-colors duration-300 transform dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-white">Insulation</a>
+                    <a href="/search?category=Metal" class="block px-4 py-3 text-sm text-gray-600 capitalize transition-colors duration-300 transform dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-white">Metal</a>
+                    <a href="/search?category=Other" class="block px-4 py-3 text-sm text-gray-600 capitalize transition-colors duration-300 transform dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-white"> Other </a>
+                    <a href="/search?category=Panels%2C+Boards+%26+Structural" class="block px-4 py-3 text-sm text-gray-600 capitalize transition-colors duration-300 transform dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-white"> Panels, Boards & Structural </a>
+                    <a href="/search?category=Plumbing+%26+HVAC" class="block px-4 py-3 text-sm text-gray-600 capitalize transition-colors duration-300 transform dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-white"> Plumbing & HVAC </a>
+                    <a href="/search?category=Wood" class="block px-4 py-3 text-sm text-gray-600 capitalize transition-colors duration-300 transform dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-white"> Wood </a>
+
+                    </div>
+                </div>
+
                 <a href="/notifications" class="lg:hidden px-2.5 py-2 text-gray-700 transition-colors duration-300 transform rounded-lg dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 lg:mx-2">Notifications</a>
                 {% else %}
                 {% endif %}
@@ -73,7 +127,9 @@
                     </button>
                 
                     <!-- Dropdown menu -->
-                    <div x-show="isOpen" 
+                    <div 
+                        x-show="isOpen"
+                        x-init="$el.classList.remove('hidden')" 
                         @click.away="isOpen = false"
                         x-transition:enter="transition ease-out duration-100"
                         x-transition:enter-start="opacity-0 scale-90"
@@ -81,7 +137,7 @@
                         x-transition:leave="transition ease-in duration-100"
                         x-transition:leave-start="opacity-100 scale-100"
                         x-transition:leave-end="opacity-0 scale-90" 
-                        class="absolute right-0 z-20 w-64 mt-2 overflow-hidden origin-top-right bg-white rounded-md shadow-lg sm:w-80 dark:bg-gray-800"
+                        class="hidden absolute right-0 z-20 w-64 mt-2 overflow-hidden origin-top-right bg-white rounded-md shadow-lg sm:w-80 dark:bg-gray-800"
                     >
                         <div class="py-2">
                             {% for notification in request.new_notifications %}
@@ -146,6 +202,7 @@
                 
                     <!-- Dropdown menu -->
                     <div x-show="isOpen"
+                        x-init="$el.classList.remove('hidden')" 
                         @click.away="isOpen = false"
                         x-transition:enter="transition ease-out duration-100"
                         x-transition:enter-start="opacity-0 scale-90"
@@ -153,18 +210,8 @@
                         x-transition:leave="transition ease-in duration-100"
                         x-transition:leave-start="opacity-100 scale-100"
                         x-transition:leave-end="opacity-0 scale-90"
-                        class="absolute right-0 z-20 w-48 py-2 mt-2 origin-top-right bg-white rounded-md shadow-xl dark:bg-gray-800"
+                        class="hidden absolute right-0 z-20 w-48 py-2 mt-2 origin-top-right bg-white rounded-md shadow-xl dark:bg-gray-800"
                     >
-                        <a href="/profile" class="flex items-center px-3 py-3 text-sm text-gray-600 capitalize transition-colors duration-300 transform dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-white">
-                            <svg class="w-5 h-5 mx-1" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M7 8C7 5.23858 9.23858 3 12 3C14.7614 3 17 5.23858 17 8C17 10.7614 14.7614 13 12 13C9.23858 13 7 10.7614 7 8ZM12 11C13.6569 11 15 9.65685 15 8C15 6.34315 13.6569 5 12 5C10.3431 5 9 6.34315 9 8C9 9.65685 10.3431 11 12 11Z" fill="currentColor"></path>
-                                <path d="M6.34315 16.3431C4.84285 17.8434 4 19.8783 4 22H6C6 20.4087 6.63214 18.8826 7.75736 17.7574C8.88258 16.6321 10.4087 16 12 16C13.5913 16 15.1174 16.6321 16.2426 17.7574C17.3679 18.8826 18 20.4087 18 22H20C20 19.8783 19.1571 17.8434 17.6569 16.3431C16.1566 14.8429 14.1217 14 12 14C9.87827 14 7.84344 14.8429 6.34315 16.3431Z" fill="currentColor"></path>
-                            </svg>
-                
-                            <span class="mx-1">
-                                view profile
-                            </span>
-                        </a>
                 
                         <a href="/settings" class="flex items-center p-3 text-sm text-gray-600 capitalize transition-colors duration-300 transform dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-white">
                             <svg class="w-5 h-5 mx-1" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -175,9 +222,7 @@
                                 Settings
                             </span>
                         </a>
-                
-                        <hr class="border-gray-200 dark:border-gray-700 ">
-                
+
                         <a href="/help" class="flex items-center p-3 text-sm text-gray-600 capitalize transition-colors duration-300 transform dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-white">
                             <svg class="w-5 h-5 mx-1" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M12 22C6.47967 21.9939 2.00606 17.5203 2 12V11.8C2.10993 6.30452 6.63459 1.92794 12.1307 2.00087C17.6268 2.07379 22.0337 6.56887 21.9978 12.0653C21.9619 17.5618 17.4966 21.9989 12 22ZM11.984 20H12C16.4167 19.9956 19.9942 16.4127 19.992 11.996C19.9898 7.57928 16.4087 3.99999 11.992 3.99999C7.57528 3.99999 3.99421 7.57928 3.992 11.996C3.98979 16.4127 7.56729 19.9956 11.984 20ZM13 18H11V16H13V18ZM13 15H11C10.9684 13.6977 11.6461 12.4808 12.77 11.822C13.43 11.316 14 10.88 14 9.99999C14 8.89542 13.1046 7.99999 12 7.99999C10.8954 7.99999 10 8.89542 10 9.99999H8V9.90999C8.01608 8.48093 8.79333 7.16899 10.039 6.46839C11.2846 5.76778 12.8094 5.78493 14.039 6.51339C15.2685 7.24184 16.0161 8.57093 16 9.99999C15.9284 11.079 15.3497 12.0602 14.44 12.645C13.6177 13.1612 13.0847 14.0328 13 15Z" fill="currentColor"></path>
@@ -187,6 +232,9 @@
                                 Help
                             </span>
                         </a>
+                        
+                        <hr class="border-gray-200 dark:border-gray-700 ">
+
                         <a href="/logout" class="flex items-center p-3 text-sm text-gray-600 capitalize transition-colors duration-300 transform dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-white">
                             <svg class="w-5 h-5 mx-1" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M19 21H10C8.89543 21 8 20.1046 8 19V15H10V19H19V5H10V9H8V5C8 3.89543 8.89543 3 10 3H19C20.1046 3 21 3.89543 21 5V19C21 20.1046 20.1046 21 19 21ZM12 16V13H3V11H12V8L17 12L12 16Z" fill="currentColor"></path>
@@ -220,7 +268,7 @@
     <!-- Example messages container -->
     <div class="fixed bottom-5 right-5 z-50">
         {% for message in messages %}
-        <div class="flex w-full max-w-sm overflow-hidden bg-white rounded-lg shadow-md dark:bg-gray-800">
+        <div class="mb-2 flex w-full max-w-sm overflow-hidden bg-white rounded-lg shadow-md dark:bg-gray-800">
             <div class="flex items-center justify-center w-12
                     {% if message.tags == 'success' %}bg-emerald-500
                     {% elif message.tags == 'error' %}bg-red-500
@@ -248,14 +296,14 @@
         
             <div class="px-4 py-2 -mx-3">
                 <div class="mx-3">
-                    <span class="font-semibold
+                    <span class="font-semibold text-sm md:text-base
                     {% if message.tags == 'success' %}text-emerald-500 dark:text-emerald-400
                     {% elif message.tags == 'error' %}text-red-500 dark:text-red-400
                     {% elif message.tags == 'info' %}text-blue-500 dark:text-blue-400
                     {% elif message.tags == 'warning' %}text-yellow-400 dark:text-yellow-300
                     {% endif %}
                      ">{{ message.tags|title }}</span>
-                    <p class="text-sm text-gray-600 dark:text-gray-200">{{ message }}</p>
+                    <p class="text-xs md:text-sm text-gray-600 dark:text-gray-200">{{ message }}</p>
                 </div>
             </div>
         </div>

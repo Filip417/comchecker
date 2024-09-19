@@ -24,7 +24,7 @@
 
       Off-canvas filters for mobile, show/hide based on off-canvas filters state.
     -->
-    <div class="relative z-45 xl:hidden" role="dialog" aria-modal="true">
+    <div x-init="$el.classList.remove('hidden')" class="hidden relative z-50 xl:hidden" role="dialog" aria-modal="true">
       <!--
         Off-canvas menu backdrop, show/hide based on off-canvas menu state.
 
@@ -329,7 +329,6 @@
                   {% if price_source in selected_commodities_price_source %}
                       checked
                   {% endif %}
-                  
                   >
                   <label for="filter-compricesource-{{ forloop.counter0 }}" class="ml-3 text-sm text-gray-600">{{ price_source|slice:":50" }}</label>
               </div>
@@ -342,19 +341,61 @@
     {% if user_has_products %}
     <div class="border-b border-gray-200 py-6">
       <h3 class="-my-3 flow-root">
-        <div x-data="{ checked: {{ only_user_products_selected|lower }} }">
+        <div x-data="{ checked: {{ only_user_products_selected|yesno:'true,false' }} }">
           <button type="button" 
-                  class="flex w-full items-center justify-between bg-white py-3 text-sm text-gray-400 hover:text-gray-500"
-                  x-on:click="checked = !checked">
+              class="flex w-full items-center justify-between bg-white py-3 text-sm text-gray-400 hover:text-gray-500"
+              x-on:click="checked = !checked">
               <span class="font-medium text-gray-900">Show only your products</span>
               <span class="ml-6 flex items-center">
-                <input id="filter-user-products" name="up" value="True" type="checkbox" 
-                       class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
-                       x-model="checked">
+                  <input id="filter-user-products" name="up" value="True" type="checkbox" 
+                         class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                         x-model="checked">
               </span>
           </button>
         </div>
       </h3>
+    </div>
+    {% endif %}
+
+    {% if visible_commodities_type %}
+      <div class="border-b border-gray-200 py-6">
+        <h3 class="-my-3 flow-root">
+            <!-- Expand/collapse section button -->
+            <button @click="sectionOpen.comtype = !sectionOpen.comtype" type="button" class="flex w-full items-center justify-between bg-white py-3 text-sm text-gray-400 hover:text-gray-500" aria-controls="filter-section-comtype" :aria-expanded="sectionOpen.comtype">
+                <span class="font-medium text-gray-900">Commodity type</span>
+                <span class="ml-6 flex items-center">
+                    <!-- Expand icon, show/hide based on section open state. -->
+                    <svg x-show="!sectionOpen.comtype" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                        <path d="M10.75 4.75a.75.75 0 00-1.5 0v4.5h-4.5a.75.75 0 000 1.5h4.5v4.5a.75.75 0 001.5 0v-4.5h4.5a.75.75 0 000-1.5h-4.5v-4.5z" />
+                    </svg>
+                    <!-- Collapse icon, show/hide based on section open state. -->
+                    <svg x-show="sectionOpen.comtype"
+                    x-init="$el.classList.remove('hidden')"
+                    class="hidden h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                        <path fill-rule="evenodd" d="M4 10a.75.75 0 01.75-.75h10.5a.75.75 0 010 1.5H4.75A.75.75 0 014 10z" clip-rule="evenodd" />
+                    </svg>
+                </span>
+            </button>
+        </h3>
+        <!-- Filter section, show/hide based on section state. -->
+        <div x-show="sectionOpen.comtype"
+        x-init="$el.classList.remove('hidden')"
+        class="hidden pt-6" id="filter-section-comtype">
+            <div class="space-y-4 max-h-64 overflow-auto">
+              {% for type in visible_commodities_type %}
+              <div class="flex items-center">
+                  <input id="filter-comtype-{{ forloop.counter0 }}" name="comtype" value="{{ type }}" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                  {% if type in selected_comtype %}
+                      checked
+                  
+                  {% endif %}
+                  
+                  >
+                  <label for="filter-comtype-{{ forloop.counter0 }}" class="ml-3 text-sm text-gray-600">{{ type|slice:":50" }}</label>
+              </div>
+              {% endfor %}
+            </div>
+        </div>
     </div>
     {% endif %}
 
@@ -374,7 +415,9 @@
       <div class="flex items-baseline justify-between border-b border-gray-200 pb-6 pt-6">
 
         <h1 class="text-2xl font-bold tracking-tight text-gray-900">
-          {% if search_query %} Results for '{{search_query}}'{% else %}{% endif %}
+          {% if search_query %} Results for '{{search_query}}'{% else %}
+          
+          {% endif %}
         </h1> 
 
         <div x-data="{ openSort: false }" class="flex items-center">
@@ -398,7 +441,9 @@
                 From: "transform opacity-100 scale-100"
                 To: "transform opacity-0 scale-95"
             -->
-            <div x-show="openSort" x-transition:enter="transition ease-out duration-100" x-transition:enter-start="transform opacity-0 scale-95" x-transition:enter-end="transform opacity-100 scale-100" x-transition:leave="transition ease-in duration-75" x-transition:leave-start="transform opacity-100 scale-100" x-transition:leave-end="transform opacity-0 scale-95"  class="absolute right-0 z-20 mt-2 w-40 origin-top-right rounded-md bg-white shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none" role="menu" aria-orientation="vertical" aria-labelledby="menu-button" tabindex="-1">
+            <div x-show="openSort" x-transition:enter="transition ease-out duration-100" x-transition:enter-start="transform opacity-0 scale-95" x-transition:enter-end="transform opacity-100 scale-100" x-transition:leave="transition ease-in duration-75" x-transition:leave-start="transform opacity-100 scale-100" x-transition:leave-end="transform opacity-0 scale-95"
+            x-init="$el.classList.remove('hidden')" 
+            class="hidden absolute right-0 z-20 mt-2 w-40 origin-top-right rounded-md bg-white shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none" role="menu" aria-orientation="vertical" aria-labelledby="menu-button" tabindex="-1">
               <div class="py-1" role="none">
                 <a href="{% url 'search' %}?{% build_query sort='default' %}" 
                    class="block px-4 py-2 text-sm {% if sort == None or sort == 'default' %}font-medium text-gray-900 bg-gray-100{% else %}text-gray-500{% endif %}" 
@@ -467,14 +512,18 @@
                                 <path d="M10.75 4.75a.75.75 0 00-1.5 0v4.5h-4.5a.75.75 0 000 1.5h4.5v4.5a.75.75 0 001.5 0v-4.5h4.5a.75.75 0 000-1.5h-4.5v-4.5z" />
                             </svg>
                             <!-- Collapse icon, show/hide based on section open state. -->
-                            <svg x-show="sectionOpen.category" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                            <svg x-show="sectionOpen.category"
+                            x-init="$el.classList.remove('hidden')"
+                            class="hidden h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                                 <path fill-rule="evenodd" d="M4 10a.75.75 0 01.75-.75h10.5a.75.75 0 010 1.5H4.75A.75.75 0 014 10z" clip-rule="evenodd" />
                             </svg>
                         </span>
                     </button>
                 </h3>
                 <!-- Filter section, show/hide based on section state. -->
-                <div x-show="sectionOpen.category" class="pt-6" id="filter-section-category">
+                <div x-show="sectionOpen.category"
+                x-init="$el.classList.remove('hidden')"
+                class="hidden pt-6" id="filter-section-category">
                     <div class="space-y-4 max-h-64 overflow-auto">
                       {% for category in visible_categories %}
                       <div class="flex items-center">
@@ -503,14 +552,18 @@
                                 <path d="M10.75 4.75a.75.75 0 00-1.5 0v4.5h-4.5a.75.75 0 000 1.5h4.5v4.5a.75.75 0 001.5 0v-4.5h4.5a.75.75 0 000-1.5h-4.5v-4.5z" />
                             </svg>
                             <!-- Collapse icon, show/hide based on section open state. -->
-                            <svg x-show="sectionOpen.topcommodity" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                            <svg x-show="sectionOpen.topcommodity"
+                            x-init="$el.classList.remove('hidden')"
+                            class="hidden h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                                 <path fill-rule="evenodd" d="M4 10a.75.75 0 01.75-.75h10.5a.75.75 0 010 1.5H4.75A.75.75 0 014 10z" clip-rule="evenodd" />
                             </svg>
                         </span>
                     </button>
                 </h3>
                 <!-- Filter section, show/hide based on section state. -->
-                <div x-show="sectionOpen.topcommodity" class="pt-6" id="filter-section-topcommodity">
+                <div x-show="sectionOpen.topcommodity"
+                  x-init="$el.classList.remove('hidden')"
+                  class="hidden pt-6" id="filter-section-topcommodity">
                     <div class="space-y-4 max-h-64 overflow-auto">
                       {% for commodity in visible_top_commodities %}
                       <div class="flex items-center">
@@ -540,14 +593,18 @@
                                 <path d="M10.75 4.75a.75.75 0 00-1.5 0v4.5h-4.5a.75.75 0 000 1.5h4.5v4.5a.75.75 0 001.5 0v-4.5h4.5a.75.75 0 000-1.5h-4.5v-4.5z" />
                             </svg>
                             <!-- Collapse icon, show/hide based on section open state. -->
-                            <svg x-show="sectionOpen.manufacturer" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                            <svg x-show="sectionOpen.manufacturer"
+                            x-init="$el.classList.remove('hidden')"
+                            class="hidden h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                                 <path fill-rule="evenodd" d="M4 10a.75.75 0 01.75-.75h10.5a.75.75 0 010 1.5H4.75A.75.75 0 014 10z" clip-rule="evenodd" />
                             </svg>
                         </span>
                     </button>
                 </h3>
                 <!-- Filter section, show/hide based on section state. -->
-                <div x-show="sectionOpen.manufacturer" class="pt-6" id="filter-section-manufacturer">
+                <div x-show="sectionOpen.manufacturer"
+                x-init="$el.classList.remove('hidden')"
+                class="hidden pt-6" id="filter-section-manufacturer">
                     <div class="space-y-4 max-h-64 overflow-auto">
                       {% for manufacturer in visible_manufacturers %}
                       <div class="flex items-center">
@@ -578,14 +635,18 @@
                               <path d="M10.75 4.75a.75.75 0 00-1.5 0v4.5h-4.5a.75.75 0 000 1.5h4.5v4.5a.75.75 0 001.5 0v-4.5h4.5a.75.75 0 000-1.5h-4.5v-4.5z" />
                           </svg>
                           <!-- Collapse icon, show/hide based on section open state. -->
-                          <svg x-show="sectionOpen.manufacturercountry" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                          <svg x-show="sectionOpen.manufacturercountry"
+                          x-init="$el.classList.remove('hidden')"
+                          class="hidden h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                               <path fill-rule="evenodd" d="M4 10a.75.75 0 01.75-.75h10.5a.75.75 0 010 1.5H4.75A.75.75 0 014 10z" clip-rule="evenodd" />
                           </svg>
                       </span>
                   </button>
               </h3>
               <!-- Filter section, show/hide based on section state. -->
-              <div x-show="sectionOpen.manufacturercountry" class="pt-6" id="filter-section-manufacturer">
+              <div x-show="sectionOpen.manufacturercountry"
+              x-init="$el.classList.remove('hidden')"
+              class="hidden pt-6" id="filter-section-manufacturer">
                   <div class="space-y-4 max-h-64 overflow-auto">
                     {% for country in visible_manufacturer_countries %}
                     <div class="flex items-center">
@@ -615,14 +676,18 @@
                             <path d="M10.75 4.75a.75.75 0 00-1.5 0v4.5h-4.5a.75.75 0 000 1.5h4.5v4.5a.75.75 0 001.5 0v-4.5h4.5a.75.75 0 000-1.5h-4.5v-4.5z" />
                         </svg>
                         <!-- Collapse icon, show/hide based on section open state. -->
-                        <svg x-show="sectionOpen.price" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                        <svg x-show="sectionOpen.price"
+                        x-init="$el.classList.remove('hidden')"
+                        class="hidden h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                             <path fill-rule="evenodd" d="M4 10a.75.75 0 01.75-.75h10.5a.75.75 0 010 1.5H4.75A.75.75 0 014 10z" clip-rule="evenodd" />
                         </svg>
                     </span>
                 </button>
             </h3>
             <!-- Filter section, show/hide based on section state. -->
-            <div x-show="sectionOpen.price" class="pt-6" id="filter-section-price">
+            <div x-show="sectionOpen.price"
+            x-init="$el.classList.remove('hidden')"
+            class="hidden pt-6" id="filter-section-price">
               <div class="flex flex-row space-x-10 ">
                 <div>
                   <label for="min-range-input" class="sr-only">Labels range min</label>
@@ -653,14 +718,18 @@
                           <path d="M10.75 4.75a.75.75 0 00-1.5 0v4.5h-4.5a.75.75 0 000 1.5h4.5v4.5a.75.75 0 001.5 0v-4.5h4.5a.75.75 0 000-1.5h-4.5v-4.5z" />
                       </svg>
                       <!-- Collapse icon, show/hide based on section open state. -->
-                      <svg x-show="sectionOpen.compro" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                      <svg x-show="sectionOpen.compro"
+                      x-init="$el.classList.remove('hidden')"
+                      class="hidden h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                           <path fill-rule="evenodd" d="M4 10a.75.75 0 01.75-.75h10.5a.75.75 0 010 1.5H4.75A.75.75 0 014 10z" clip-rule="evenodd" />
                       </svg>
                   </span>
               </button>
           </h3>
           <!-- Filter section, show/hide based on section state. -->
-          <div x-show="sectionOpen.compro" class="pt-6" id="filter-section-compro">
+          <div x-show="sectionOpen.compro"
+          x-init="$el.classList.remove('hidden')"
+          class="hidden pt-6" id="filter-section-compro">
               <div class="space-y-4 max-h-64 overflow-auto">
 
                 <div class="flex items-center">
@@ -693,14 +762,18 @@
                         <path d="M10.75 4.75a.75.75 0 00-1.5 0v4.5h-4.5a.75.75 0 000 1.5h4.5v4.5a.75.75 0 001.5 0v-4.5h4.5a.75.75 0 000-1.5h-4.5v-4.5z" />
                     </svg>
                     <!-- Collapse icon, show/hide based on section open state. -->
-                    <svg x-show="sectionOpen.compricesource" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                    <svg x-show="sectionOpen.compricesource"
+                    x-init="$el.classList.remove('hidden')"
+                    class="hidden h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                         <path fill-rule="evenodd" d="M4 10a.75.75 0 01.75-.75h10.5a.75.75 0 010 1.5H4.75A.75.75 0 014 10z" clip-rule="evenodd" />
                     </svg>
                 </span>
             </button>
         </h3>
         <!-- Filter section, show/hide based on section state. -->
-        <div x-show="sectionOpen.compricesource" class="pt-6" id="filter-section-compricesource">
+        <div x-show="sectionOpen.compricesource"
+        x-init="$el.classList.remove('hidden')"
+        class="hidden pt-6" id="filter-section-compricesource">
             <div class="space-y-4 max-h-64 overflow-auto">
               {% for price_source in visible_commodities_price_source %}
               <div class="flex items-center">
@@ -721,19 +794,61 @@
     {% if user_has_products %}
     <div class="border-b border-gray-200 py-6">
       <h3 class="-my-3 flow-root">
-        <div x-data="{ checked: {{ only_user_products_selected|lower }} }">
+        <div x-data="{ checked: {{ only_user_products_selected|yesno:'true,false' }} }">
           <button type="button" 
-                  class="flex w-full items-center justify-between bg-white py-3 text-sm text-gray-400 hover:text-gray-500"
-                  x-on:click="checked = !checked">
+              class="flex w-full items-center justify-between bg-white py-3 text-sm text-gray-400 hover:text-gray-500"
+              x-on:click="checked = !checked">
               <span class="font-medium text-gray-900">Show only your products</span>
               <span class="ml-6 flex items-center">
-                <input id="filter-user-products" name="up" value="True" type="checkbox" 
-                       class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
-                       x-model="checked">
+                  <input id="filter-user-products" name="up" value="True" type="checkbox" 
+                         class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                         x-model="checked">
               </span>
           </button>
-        </div>
+      </div>
       </h3>
+    </div>
+    {% endif %}
+
+
+    {% if visible_commodities_type %}
+      <div class="border-b border-gray-200 py-6">
+        <h3 class="-my-3 flow-root">
+            <!-- Expand/collapse section button -->
+            <button @click="sectionOpen.comtype = !sectionOpen.comtype" type="button" class="flex w-full items-center justify-between bg-white py-3 text-sm text-gray-400 hover:text-gray-500" aria-controls="filter-section-comtype" :aria-expanded="sectionOpen.comtype">
+                <span class="font-medium text-gray-900">Commodity type</span>
+                <span class="ml-6 flex items-center">
+                    <!-- Expand icon, show/hide based on section open state. -->
+                    <svg x-show="!sectionOpen.comtype" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                        <path d="M10.75 4.75a.75.75 0 00-1.5 0v4.5h-4.5a.75.75 0 000 1.5h4.5v4.5a.75.75 0 001.5 0v-4.5h4.5a.75.75 0 000-1.5h-4.5v-4.5z" />
+                    </svg>
+                    <!-- Collapse icon, show/hide based on section open state. -->
+                    <svg x-show="sectionOpen.comtype"
+                    x-init="$el.classList.remove('hidden')"
+                    class="hidden h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                        <path fill-rule="evenodd" d="M4 10a.75.75 0 01.75-.75h10.5a.75.75 0 010 1.5H4.75A.75.75 0 014 10z" clip-rule="evenodd" />
+                    </svg>
+                </span>
+            </button>
+        </h3>
+        <!-- Filter section, show/hide based on section state. -->
+        <div x-show="sectionOpen.comtype"
+        x-init="$el.classList.remove('hidden')"
+        class="hidden pt-6" id="filter-section-comtype">
+            <div class="space-y-4 max-h-64 overflow-auto">
+              {% for type in visible_commodities_type %}
+              <div class="flex items-center">
+                  <input id="filter-comtype-{{ forloop.counter0 }}" name="comtype" value="{{ type }}" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                  {% if type in selected_comtype %}
+                      checked
+                  {% endif %}
+                  
+                  >
+                  <label for="filter-comtype-{{ forloop.counter0 }}" class="ml-3 text-sm text-gray-600">{{ type|slice:":50" }}</label>
+              </div>
+              {% endfor %}
+            </div>
+        </div>
     </div>
     {% endif %}
 
@@ -756,7 +871,7 @@
               <div>
               <h2 class="text-lg font-semibold tracking-tight text-gray-700">Products</h2>
               </div>
-              <div class="mt-6 grid grid-cols-2 gap-x-6 gap-y-10 md:grid-cols-4 2xl:grid-cols-6 xl:gap-x-6">
+              <div class="mt-6 grid grid-cols-2 gap-x-6 gap-y-10 md:grid-cols-4 2xl:grid-cols-6 ">
                 
                 {% for product in page %}
                 <div class="product-container group relative">
@@ -776,7 +891,7 @@
                               <option value="new">New project</option>
                           </select>
                           
-                          <input maxlength="100" type="text" name="new_project_name" placeholder="" class="new-project-name hidden absolute top-10 left-0 mt-2 ml-2 px-1 py-1 text-xs bg-white text-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 z-10" />
+                          <input maxlength="100" type="text" name="new_project_name" required placeholder="" class="new-project-name hidden absolute top-10 left-0 mt-2 ml-2 px-1 py-1 text-xs bg-white text-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 z-10" />
                       
                           <button type="submit" 
                                   class="product-button text-white
@@ -790,13 +905,13 @@
                   </div>
                   <div class="mt-4 flex justify-between">
                     <div>
-                      <h3 class="text-sm text-gray-700">
+                      <h3 class="text-xs md:text-sm text-gray-700">
                         <a href="/product/{{product.slug}}" class="font-semibold text-wrap">
                           <span aria-hidden="true" class="absolute inset-0"></span>
-                          {{ product.name|slice:":200"|wordwrap:10 }}
+                          {{ product.name|slice:":50"|word_break:14}}
                         </a>
                       </h3>
-                      <p class="mt-1 text-sm text-gray-600 text-wrap">{{product.category_1}}</p>
+                      <p class="mt-1 text-xs text-gray-600 text-wrap">{{product.category_1}}</p>
                       <p class="mt-1 text-xs text-gray-400 text-wrap">{{product.manufacturer_name}}</p>
                     </div>
 

@@ -126,6 +126,7 @@ def password_reset(request):
             messages.success(request, 'Check your email for the password reset link.')
             return redirect('login')
         except User.DoesNotExist:
+            # TODO change for messages.success(request, 'Check your email for the password reset link.') in production
             messages.error(request, 'Email address not found.')
     return render(request, 'main/password_reset.html')
 
@@ -265,8 +266,8 @@ def set_notification(request):
             )
             date_obj = datetime.strptime(notification.change_by, "%Y-%m-%d")
             formatted_date = date_obj.strftime("%d %b %Y")
-            check_notification_and_send_email(notification.id)
-            if notification.email_notification:
+            updated, sent = check_notification_and_send_email(notification.id)
+            if notification.email_notification and updated and sent:
                 messages.success(request,
             f"Email notification for {notification.change}% change by {formatted_date} has been set.")
             else:
@@ -296,24 +297,29 @@ def edit_project_name(request):
         new_project_name = request.POST.get('new_project_name', None)
         new_project_description = request.POST.get('new_project_description', None)
         project_id = request.POST.get('project_id') 
-        if new_project_name and project_id:
+        if new_project_name and project_id and new_project_name.strip() != '':
             project = get_object_or_404(Project, id=project_id, user=request.user)
             project.name = new_project_name
             project.slug = project.generate_unique_slug()
             project.description = new_project_description
             project.save()
+            messages.success(request, 'Project changes updated')
+        else:
+            messages.error(request, 'Cannot change project name to empty field')
     return redirect('project', project_slug=project.slug)
 
 @login_required
 def new_project(request):
     if request.method == 'POST':
-        new_project_name = request.POST.get('new_project_name', 'Unnamed Project')
+        new_project_name = request.POST.get('new_project_name', None)
         new_project_description = request.POST.get('new_project_description', None)
-        project = Project.objects.create(user=request.user, name=new_project_name, description=new_project_description)
-        project.calculate_increase()
-        project.save()
-        messages.success(request, f"New project {project.name} has been created.")
-    
+        if new_project_name and new_project_name.strip() != '':
+            project = Project.objects.create(user=request.user, name=new_project_name, description=new_project_description)
+            project.calculate_increase()
+            project.save()
+            messages.success(request, f"New project {project.name} has been created.")
+        else:
+            messages.error(request, 'Cannot be empty name to create new project')
     return redirect('project', project_slug=project.slug)
 
 @login_required
@@ -330,8 +336,13 @@ def change_product_to_project(request, product_id):
         # Check if a new project is being created or an existing one is selected
         if project_id == 'new':
             # Create a new project (You can extend this logic based on your form)
-            new_project_name = request.POST.get('new_project_name', 'Unnamed Project')
-            project = Project.objects.create(user=request.user, name=new_project_name)
+            new_project_name = request.POST.get('new_project_name', None)
+            if new_project_name and new_project_name.strip() != '':
+                project = Project.objects.create(user=request.user, name=new_project_name)
+                messages.success(request, f"New project {project.name} has been created.")
+            else:
+                messages.error(request, 'Cannot be empty name to create new project')
+                return redirect(request.META.get('HTTP_REFERER', '/'))
             # Check if project has been saved and has an id
             if not project.id:
                 messages.error(request, "Failed to create the project.")
@@ -697,6 +708,10 @@ def search(request):
     if only_user_products_selected:
         products = products.filter(user=request.user)
 
+    selected_comtype = request.GET.getlist('comtype')
+    if selected_comtype:
+        commodities = commodities.filter(price_history_type__in=selected_comtype)
+
     # Apply price change filters
     pchangemin = request.GET.get('pchangemin')
     pchangemax = request.GET.get('pchangemax')
@@ -725,6 +740,7 @@ def search(request):
     # Get list of visible price sources
     visible_commodities_price_source = commodities.values_list('price_history_source', flat=True).distinct().order_by('price_history_source')
 
+    visible_commodities_type = commodities.values_list('price_history_type', flat=True).distinct().order_by('price_history_type')
     # Get list of visible top commodities for products
     # Order A-Z
     # visible_top_commodities = products.filter(top_value_commodity__isnull=False).values_list('top_value_commodity__name', flat=True).distinct().order_by('top_value_commodity__name')
@@ -794,6 +810,8 @@ def search(request):
         "visible_commodities_price_source":visible_commodities_price_source,
         "selected_top_commodities":selected_top_commodities,
         "visible_top_commodities":visible_top_commodities,
+        "selected_comtype":selected_comtype,
+        "visible_commodities_type":visible_commodities_type,
         "sort":sort,
         "pchangemin":pchangemin,
         "pchangemax":pchangemax,
@@ -964,7 +982,7 @@ def delete_account(request):
 def logged_contact_form(request):
     if request.method == "POST":
         text_content = request.POST.get("text-content")
-        if text_content:
+        if text_content and text_content.strip() != '':
             user_email = request.user.email
             send_mail(
                 f'New Contact Form Submission from {user_email}',

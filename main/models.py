@@ -309,9 +309,9 @@ class Notification(models.Model):
 
     def __str__(self):
         if self.product:
-            return f"Notification of Product: {self.product.name} {self.change} by {self.change_by} at {self.viewed_at}"
+            return f"Notification of Product: {self.product.name} {self.change} by {self.change_by}"
         elif self.commodity:
-            return f"Notification of Commodity: {self.commodity.name} {self.change} by {self.change_by} at {self.viewed_at}"
+            return f"Notification of Commodity: {self.commodity.name} {self.change} by {self.change_by}"
         return "View Record"
 
 

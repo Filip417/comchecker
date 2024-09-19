@@ -2,26 +2,30 @@
 {% block content %}
 {% load static %}
       
-<div class="bg-white">
+<div class="bg-[#e9e9e9] min-h-screen p-4 sm:p-8">
+    <div class="bg-white rounded-2xl p-6 sm:p-16 mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
 
 <!-- Title card -->
-<section class="mt-10 container px-4 mx-auto">
-  <div class="flex sm:flex-row flex-col max-sm:items-center">
-    <div class="relative rounded-md sm:mr-5 lg:mr-10 max-sm:mb-5">
-      <div class="w-64 h-64 flex flex-row aspect-square overflow-hidden rounded-md bg-gray-200 relative">
+<section class="container mx-auto">
+  <div class="flex lg:flex-row flex-col max-lg:items-center">
+    <div class="relative sm:mr-5 lg:mr-10 max-sm:mb-5">
+      <div class="rounded-md min-w-64 max-h-64 max-w-64 flex flex-row aspect-square overflow-hidden bg-gray-200 relative">
       <!-- Can change object-cover to cover-fill tbd -->
        {% load custom_tags %}
       {% if project.products.all|length > 0 %}
-          <img src="{% get_product_image_url project.products.all.0.epd_id %}" alt="{{ project.products.all.0.name }} image" class="h-full w-[50%] object-cover object-center">
+          <img src="{% get_product_image_url project.products.all.0.epd_id %}" alt="{{ project.products.all.0.name }} image"
+          class="h-full w-[50%] object-cover object-center">
       {% endif %}
 
       <div class="flex flex-col">
           {% if project.products.all|length > 1 %}
-              <img src="{% get_product_image_url project.products.all.1.epd_id %}" alt="{{ project.products.all.1.name }} image" class="h-[50%] w-full object-cover object-center">
+              <img src="{% get_product_image_url project.products.all.1.epd_id %}" alt="{{ project.products.all.1.name }} image"
+              class="h-[50%] w-full object-cover object-center">
           {% endif %}
           
           {% if project.products.all|length > 2 %}
-              <img src="{% get_product_image_url project.products.all.2.epd_id %}" alt="{{ project.products.all.2.name }} image" class="h-[50%] w-full object-cover object-center">
+              <img src="{% get_product_image_url project.products.all.2.epd_id %}" alt="{{ project.products.all.2.name }} image"
+              class="h-[50%] w-full object-cover object-center">
           {% endif %}
       </div>
       <div class="absolute bottom-0 w-full">
@@ -39,33 +43,40 @@
       </div>
     </div>
   </div>
-    <div class="flex flex-col space-y-3">
-      <h1 class="text-3xl font-bold tracking-wide text-gray-800 dark:text-white">{{project.name}}</h1>
-      <h2 class="text-base font-semibold text-gray-600 dark:text-grat-100">
+    <div class="flex flex-col space-y-1 lg:space-y-2">
+      <h1 class="text-xl lg:text-3xl font-bold tracking-wide text-gray-800 dark:text-white">{{project.name}}</h1>
+      <h2 class="text-sm lg:text-base font-semibold text-gray-600 dark:text-grat-100">
         {% for cat in product_categories %}
             {{cat}}
         {% if not forloop.last %} • {% endif %}
         {% endfor %}
       </h2>
-      <h3 class="text-sm font-semibold text-gray-400 dark:text-grat-200">{{project.products.count}} products</h3>
+      <h3 class="text-xs lg:text-sm font-semibold text-gray-400 dark:text-grat-200">{{project.products.count}} products</h3>
 
         <!-- Edit name modal -->
+        <div class="flex flex-row space-x-2">
         <section>
           <div x-data="{ isOpen: false }" class="relative flex" id="changing-plan-modal">
-            <button @click="isOpen = true" class="w-max flex items-center px-2 py-1 font-medium tracking-wide text-white capitalize transition-colors duration-300 transform bg-blue-600 rounded-lg hover:bg-blue-500 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-80">
-              Edit
+            <button @click="isOpen = true" class="w-max flex items-center px-4 py-2 font-medium tracking-wide text-white capitalize transition-colors duration-300 transform bg-orange-500 rounded-lg hover:bg-orange-400 focus:outline-none focus:ring focus:ring-orange-300 focus:ring-opacity-80">       
+                
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mx-1">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
+                </svg>
+        
+                <span class="mx-1 max-lg:hidden">Edit</span>
             </button>
         
-            <div x-show="isOpen" class="z-20 fixed inset-0 bg-black bg-opacity-25 transition-opacity ease-linear duration-300" @click="open = false"></div>
+            <div x-show="isOpen" x-init="$el.classList.remove('hidden')" class="hidden z-20 fixed inset-0 bg-black bg-opacity-25 transition-opacity ease-linear duration-300" @click="open = false"></div>
 
-            <div x-show="isOpen" 
+            <div x-show="isOpen"
+                x-init="$el.classList.remove('hidden')"
                 x-transition:enter="transition duration-300 ease-out"
                 x-transition:enter-start="translate-y-4 opacity-0 sm:translate-y-0 sm:scale-95"
                 x-transition:enter-end="translate-y-0 opacity-100 sm:scale-100"
                 x-transition:leave="transition duration-150 ease-in"
                 x-transition:leave-start="translate-y-0 opacity-100 sm:scale-100"
                 x-transition:leave-end="translate-y-4 opacity-0 sm:translate-y-0 sm:scale-95"
-                class="fixed inset-0 z-30 overflow-y-auto" 
+                class="hidden fixed inset-0 z-30 overflow-y-auto" 
                 aria-labelledby="modal-title" role="dialog" aria-modal="true"
             >
                 <div class="flex items-end justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
@@ -115,20 +126,25 @@
         <!-- Delete project modal -->
         <section>
         <div x-data="{ isOpen: false }" class="relative flex" id="changing-plan-modal">
-            <button @click="isOpen = true" class="w-max flex items-center px-2 py-1 font-medium tracking-wide text-white capitalize transition-colors duration-300 transform bg-red-600 rounded-lg hover:bg-red-500 focus:outline-none focus:ring focus:ring-red-300 focus:ring-opacity-80">
-            Delete
+            <button @click="isOpen = true" class="flex items-center px-4 py-2 font-medium tracking-wide text-white capitalize transition-colors duration-300 transform bg-red-600 rounded-lg hover:bg-red-500 focus:outline-none focus:ring focus:ring-red-300 focus:ring-opacity-80">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mx-1">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
+                </svg>
+            
+                <span class="mx-1 max-lg:hidden">Delete</span>
             </button>
         
-            <div x-show="isOpen" class="z-20 fixed inset-0 bg-black bg-opacity-25 transition-opacity ease-linear duration-300" @click="open = false"></div>
+            <div x-show="isOpen" x-init="$el.classList.remove('hidden')" class="hidden z-20 fixed inset-0 bg-black bg-opacity-25 transition-opacity ease-linear duration-300" @click="open = false"></div>
 
-            <div x-show="isOpen" 
+            <div x-show="isOpen"
+                x-init="$el.classList.remove('hidden')"
                 x-transition:enter="transition duration-300 ease-out"
                 x-transition:enter-start="translate-y-4 opacity-0 sm:translate-y-0 sm:scale-95"
                 x-transition:enter-end="translate-y-0 opacity-100 sm:scale-100"
                 x-transition:leave="transition duration-150 ease-in"
                 x-transition:leave-start="translate-y-0 opacity-100 sm:scale-100"
                 x-transition:leave-end="translate-y-4 opacity-0 sm:translate-y-0 sm:scale-95"
-                class="fixed inset-0 z-30 overflow-y-auto" 
+                class="hidden fixed inset-0 z-30 overflow-y-auto" 
                 aria-labelledby="modal-title" role="dialog" aria-modal="true"
             >
                 <div class="flex items-end justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
@@ -168,22 +184,25 @@
         <!-- Notification project modal -->
         <section>
             <div x-data="{ isOpen: false }" class="relative flex" id="notification-modal">
-                <button @click="isOpen = true"  class="w-max flex items-center my-2 px-2 py-1 font-medium tracking-wide text-white capitalize transition-colors duration-300 transform bg-gray-800 rounded-lg hover:bg-gray-600 focus:outline-none focus:ring focus:ring-gray-300 focus:ring-opacity-80">
+                <button @click="isOpen = true"  class="flex items-center px-4 py-2 font-medium tracking-wide text-white capitalize transition-colors duration-300 transform bg-blue-900 rounded-lg hover:bg-blue-800 focus:outline-none focus:ring focus:ring-blue-600 focus:ring-opacity-80">
                     <svg class="w-5 h-5 mx-1" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                         <path d="M12 22C10.8954 22 10 21.1046 10 20H14C14 21.1046 13.1046 22 12 22ZM20 19H4V17L6 16V10.5C6 7.038 7.421 4.793 10 4.18V2H13C12.3479 2.86394 11.9967 3.91762 12 5C12 5.25138 12.0187 5.50241 12.056 5.751H12C10.7799 5.67197 9.60301 6.21765 8.875 7.2C8.25255 8.18456 7.94714 9.33638 8 10.5V17H16V10.5C16 10.289 15.993 10.086 15.979 9.9C16.6405 10.0366 17.3226 10.039 17.985 9.907C17.996 10.118 18 10.319 18 10.507V16L20 17V19ZM17 8C16.3958 8.00073 15.8055 7.81839 15.307 7.477C14.1288 6.67158 13.6811 5.14761 14.2365 3.8329C14.7919 2.5182 16.1966 1.77678 17.5954 2.06004C18.9942 2.34329 19.9998 3.5728 20 5C20 6.65685 18.6569 8 17 8Z" fill="currentColor"></path>
                     </svg>
+                
+                    <span class="mx-1 max-lg:hidden">Notification</span>
                 </button>
             
-                <div x-show="isOpen" class="z-20 fixed inset-0 bg-black bg-opacity-25 transition-opacity ease-linear duration-300" @click="open = false"></div>
+                <div x-show="isOpen" x-init="$el.classList.remove('hidden')" class="hidden z-20 fixed inset-0 bg-black bg-opacity-25 transition-opacity ease-linear duration-300" @click="open = false"></div>
 
-                <div x-show="isOpen" 
+                <div x-show="isOpen"
+                    x-init="$el.classList.remove('hidden')"
                     x-transition:enter="transition duration-300 ease-out"
                     x-transition:enter-start="translate-y-4 opacity-0 sm:translate-y-0 sm:scale-95"
                     x-transition:enter-end="translate-y-0 opacity-100 sm:scale-100"
                     x-transition:leave="transition duration-150 ease-in"
                     x-transition:leave-start="translate-y-0 opacity-100 sm:scale-100"
                     x-transition:leave-end="translate-y-4 opacity-0 sm:translate-y-0 sm:scale-95"
-                    class="fixed inset-0 z-30 overflow-y-auto" 
+                    class="hidden fixed inset-0 z-30 overflow-y-auto" 
                     aria-labelledby="modal-title" role="dialog" aria-modal="true"
                 >
                     <div class="flex items-end justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
@@ -194,11 +213,6 @@
                             <h3 class="text-lg font-medium leading-6 text-gray-800 capitalize dark:text-white" id="modal-title">
                                 Set notification
                             </h3>
-                            <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">
-                                You will be notified when
-                                {{commodity.name}} {{commodity.price_history_type}}
-                                is expected to change
-                            </p>
         
                             <form class="mt-4" method="POST" action="{% url 'set_notification' %}">
                             {% csrf_token %}
@@ -211,6 +225,7 @@
                     </div>
                 </div>
     </section>
+</div>
 
 
 
@@ -221,13 +236,17 @@
 
     <!-- More details -->
     {% if project.description %}
-    <section class="my-5 container px-4 mx-auto">
+    <section class="my-5 container mx-auto">
       <div>
                   <!-- Tabs Navigation -->
                   <div class="flex overflow-x-auto overflow-y-hidden border-b border-gray-200 whitespace-nowrap dark:border-gray-700">
                       <!-- Basic Description Tab -->
+                      
                       <a class="text-blue-600 border-blue-500 dark:border-blue-400 dark:text-blue-300 inline-flex items-center h-10 px-4 -mb-px text-sm text-center bg-transparent border-b-2 sm:text-base whitespace-nowrap focus:outline-none">
-                          Description
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 mx-1 sm:w-6 sm:h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path xmlns="http://www.w3.org/2000/svg" d="M21,7H3V4A1,1,0,0,1,4,3H20a1,1,0,0,1,1,1ZM3,20V9H21V20a1,1,0,0,1-1,1H4A1,1,0,0,1,3,20Zm3-6H18V12H6Zm0,4h6V16H6Z"/>
+                        </svg>  
+                        Description
                       </a>
                   </div>
               
@@ -246,20 +265,21 @@
 
 
     <!-- Table -->
-    <section class="container px-4 mx-auto my-5">
+    {% if project.products.all.count != 0 %}
+    <section class="container mx-auto my-5">
       <div class="flex items-center gap-x-3">
         <h2 class="text-lg font-medium text-gray-800 dark:text-white">Pricing table</h2>
         <span class="px-3 py-1 text-xs text-blue-600 bg-blue-100 rounded-full dark:bg-gray-800 dark:text-blue-400">
           {{project.products.count}} product{{ project.products.count|pluralize:"s" }}</span>
       </div>
-      <p class="mt-1 text-sm text-gray-500 dark:text-gray-300">
+      <p class="text-sm text-gray-500 dark:text-gray-300">
         Historical and forecast data  • source:
         {% for source in unique_sources %} {{ source }} {% if not forloop.last %}, {% endif %} {% endfor %}
       </p>
   
-      <div class="flex flex-col mt-6">
-          <div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
-              <div class="inline-block min-w-full py-2 align-middle md:px-6 lg:px-8">
+      <div class="flex flex-col mt-2">
+          <div class="overflow-x-auto">
+              <div class="inline-block min-w-full py-2 align-middle">
                   <div class="overflow-hidden border border-gray-200 dark:border-gray-700 md:rounded-lg">
   
                       <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
@@ -338,6 +358,7 @@
                                     
                                         <!-- Dropdown menu -->
                                         <div x-show="isOpen"
+                                            x-init="$el.classList.remove('hidden')"
                                             @click.away="isOpen = false"
                                             x-transition:enter="transition ease-out duration-100"
                                             x-transition:enter-start="opacity-0 scale-90"
@@ -345,7 +366,7 @@
                                             x-transition:leave="transition ease-in duration-100"
                                             x-transition:leave-start="opacity-100 scale-100"
                                             x-transition:leave-end="opacity-0 scale-90"
-                                            class="font-medium absolute right-0 z-50 w-48 py-2 mt-2 origin-top-right bg-white rounded-md shadow-xl dark:bg-gray-800"
+                                            class="hidden font-medium absolute right-0 z-30 w-48 py-2 mt-2 origin-top-right bg-white rounded-md shadow-xl dark:bg-gray-800"
                                         >
                                             <!-- Export to Excel -->
                                             <form method="post" action="{% url 'project' project_slug=project.slug %}">
@@ -482,20 +503,22 @@
           </div>
       </div>      
   </section>
+  {% endif %}
 
 
     <!-- Project products -->
-    <section class="my-5 container px-4 mx-auto">
+    {% if project.products.all.count != 0 %}
+    <section class="my-5 container mx-auto">
         <h2 class="text-lg font-medium text-gray-800 dark:text-white">{{project.name}} product{{ project.products.all.count|pluralize:"s" }}</h2>
     
-        <p class="mt-1 text-sm text-gray-500 dark:text-gray-300">{{ project.products.all.count }} product{{ project.products.all.count|pluralize:"s" }}</p>
+        <p class="text-sm text-gray-500 dark:text-gray-300">{{ project.products.all.count }} product{{ project.products.all.count|pluralize:"s" }}</p>
     
-        <div class="flex flex-col mt-6">
+        <div class="flex flex-col mt-2">
     
             <!-- Section 1 -->
         <section class="relative">
             <!-- Arrow left -->
-            <div class="absolute left-0 inset-y-0 cursor-pointer z-10 arrow-left">
+            <div x-init="$el.classList.remove('hidden')" class="hidden absolute left-0 inset-y-0 cursor-pointer z-10 arrow-left">
                 <div class="px-2 sm:px-6 h-full items-center flex bg-gradient-to-l from-white/60 to-white/80 relative">
                     <!-- Background container with opacity -->
                 </div>
@@ -508,7 +531,7 @@
             </div>
     
             <!-- Arrow right -->
-            <div class="absolute inset-y-0 right-0 cursor-pointer z-10 arrow-right">
+            <div x-init="$el.classList.remove('hidden')" class="hidden absolute inset-y-0 right-0 cursor-pointer z-10 arrow-right">
                 <div class="px-2 sm:px-6 h-full items-center flex bg-gradient-to-r from-white/60 to-white/80 relative">
                     <!-- Background container with opacity -->
                 </div>
@@ -530,20 +553,22 @@
         </section>
         </div>
       </section>
+      {% endif %}
 
 
   <!-- Similar products -->
-  <section class="my-5 container px-4 mx-auto">
+  {% if similar_products %}
+  <section class="my-5 container mx-auto">
     <h2 class="text-lg font-medium text-gray-800 dark:text-white">Similar to project products</h2>
 
-    <p class="mt-1 text-sm text-gray-500 dark:text-gray-300">Based on product specifics</p>
+    <p class="text-sm text-gray-500 dark:text-gray-300">Based on product specifics</p>
 
-    <div class="flex flex-col mt-6">
+    <div class="flex flex-col mt-2">
 
         <!-- Section 1 -->
     <section class="relative">
         <!-- Arrow left -->
-        <div class="absolute left-0 inset-y-0 cursor-pointer z-10 arrow-left">
+        <div x-init="$el.classList.remove('hidden')" class="hidden absolute left-0 inset-y-0 cursor-pointer z-10 arrow-left">
             <div class="px-2 sm:px-6 h-full items-center flex bg-gradient-to-l from-white/60 to-white/80 relative">
                 <!-- Background container with opacity -->
             </div>
@@ -556,7 +581,7 @@
         </div>
 
         <!-- Arrow right -->
-        <div class="absolute inset-y-0 right-0 cursor-pointer z-10 arrow-right">
+        <div x-init="$el.classList.remove('hidden')" class="hidden absolute inset-y-0 right-0 cursor-pointer z-10 arrow-right">
             <div class="px-2 sm:px-6 h-full items-center flex bg-gradient-to-r from-white/60 to-white/80 relative">
                 <!-- Background container with opacity -->
             </div>
@@ -578,19 +603,21 @@
     </section>
     </div>
   </section>
+  {% endif %}
 
+{% if top_value_commodities %}
   <!-- Top Value Commodities -->
-  <section class="my-5 container px-4 mx-auto">
+  <section class="my-5 container mx-auto">
     <h2 class="text-lg font-medium text-gray-800 dark:text-white">Valuable commodities in this project</h2>
 
-    <p class="mt-1 text-sm text-gray-500 dark:text-gray-300">Based on commodities proportion and price</p>
+    <p class="text-sm text-gray-500 dark:text-gray-300">Based on commodities proportion and price</p>
 
-    <div class="flex flex-col mt-6">
+    <div class="flex flex-col mt-2">
 
         <!-- Section 1 -->
     <section class="relative">
         <!-- Arrow left -->
-        <div class="absolute left-0 inset-y-0 cursor-pointer z-10 arrow-left">
+        <div x-init="$el.classList.remove('hidden')" class="hidden absolute left-0 inset-y-0 cursor-pointer z-10 arrow-left">
             <div class="px-2 sm:px-6 h-full items-center flex bg-gradient-to-l from-white/60 to-white/80 relative">
                 <!-- Background container with opacity -->
             </div>
@@ -603,7 +630,7 @@
         </div>
 
         <!-- Arrow right -->
-        <div class="absolute inset-y-0 right-0 cursor-pointer z-10 arrow-right">
+        <div x-init="$el.classList.remove('hidden')" class="hidden absolute inset-y-0 right-0 cursor-pointer z-10 arrow-right">
             <div class="px-2 sm:px-6 h-full items-center flex bg-gradient-to-r from-white/60 to-white/80 relative">
                 <!-- Background container with opacity -->
             </div>
@@ -624,28 +651,30 @@
         {% endfor %}
     </section>
     </div>
-</section>
+    </section>
+    {% endif %}
 
 
  <!-- Your products -->
- <section class="my-5 container px-4 mx-auto">
+ <section class="my-5 container mx-auto">
   <div class="flex items-center gap-x-3">
   <h2 class="text-lg font-medium text-gray-800 dark:text-white">
-    {% if your_products.count == 0 %} Try creating your custom product
-    <a href="/create" class="text-base px-2.5 py-2 text-white bg-blue-600 transition-colors duration-300 transform rounded-lg dark:text-gray-200 hover:bg-blue-700 dark:hover:bg-blue-700 lg:mx-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
-      Create</a>
-    {% else %} Your products {% endif %}</h2>
+    {% if your_products.count == 0 %} <a href="/create" class="text-base px-2.5 py-2 text-white bg-blue-600 transition-colors duration-300 transform rounded-lg dark:text-gray-200 hover:bg-blue-700 dark:hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+        Create</a>
+        your custom product
+      {% else %} Your products {% endif %}</h2>
 
-    <span class="px-3 py-1 text-xs text-blue-600 bg-blue-100 rounded-full dark:bg-gray-800 dark:text-blue-400">
-      {% if your_products.count == 0 %}
-    {% else %} {{your_products.count}} product{{ your_products.count|pluralize:"s" }} {% endif %}</span>
+      {% if your_products.count != 0 %}
+      <span class="px-3 py-1 text-xs text-blue-600 bg-blue-100 rounded-full dark:bg-gray-800 dark:text-blue-400">
+      {{your_products.count}} product{{ your_products.count|pluralize:"s" }} </span>
+      {% endif %}
     </div>
 
-  <div class="flex flex-col mt-6">
+  <div class="flex flex-col mt-2">
 
   <section class="relative">
       <!-- Arrow left -->
-      <div class="absolute left-0 inset-y-0 cursor-pointer z-10 arrow-left">
+      <div x-init="$el.classList.remove('hidden')" class="hidden absolute left-0 inset-y-0 cursor-pointer z-10 arrow-left">
           <div class="px-2 sm:px-6 h-full items-center flex bg-gradient-to-l from-white/60 to-white/80 relative">
               <!-- Background container with opacity -->
           </div>
@@ -658,7 +687,7 @@
       </div>
 
       <!-- Arrow right -->
-      <div class="absolute inset-y-0 right-0 cursor-pointer z-10 arrow-right">
+      <div x-init="$el.classList.remove('hidden')" class="hidden absolute inset-y-0 right-0 cursor-pointer z-10 arrow-right">
           <div class="px-2 sm:px-6 h-full items-center flex bg-gradient-to-r from-white/60 to-white/80 relative">
               <!-- Background container with opacity -->
           </div>
@@ -683,16 +712,16 @@
 </section>
 
 <!-- Most popular products -->
-<section class="my-5 container px-4 mx-auto">
+<section class="my-5 container mx-auto">
     <h2 class="text-lg font-medium text-gray-800 dark:text-white">Most popular products</h2>
 
-    <p class="mt-1 text-sm text-gray-500 dark:text-gray-300">This week</p>
+    <p class="text-sm text-gray-500 dark:text-gray-300">This week</p>
 
-    <div class="flex flex-col mt-6">
+    <div class="flex flex-col mt-2">
 
     <section class="relative">
         <!-- Arrow left -->
-        <div class="absolute left-0 inset-y-0 cursor-pointer z-10 arrow-left">
+        <div x-init="$el.classList.remove('hidden')" class="hidden absolute left-0 inset-y-0 cursor-pointer z-10 arrow-left">
             <div class="px-2 sm:px-6 h-full items-center flex bg-gradient-to-l from-white/60 to-white/80 relative">
                 <!-- Background container with opacity -->
             </div>
@@ -705,7 +734,7 @@
         </div>
 
         <!-- Arrow right -->
-        <div class="absolute inset-y-0 right-0 cursor-pointer z-10 arrow-right">
+        <div x-init="$el.classList.remove('hidden')" class="hidden absolute inset-y-0 right-0 cursor-pointer z-10 arrow-right">
             <div class="px-2 sm:px-6 h-full items-center flex bg-gradient-to-r from-white/60 to-white/80 relative">
                 <!-- Background container with opacity -->
             </div>
@@ -732,7 +761,8 @@
 
   </div>
 </div>
-
+</div>
+</div>
 
 
 

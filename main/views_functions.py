@@ -504,6 +504,7 @@ def get_closest_commodity_price(commodity_id, target_date):
     closest_past = possible_prices.filter(date__lte=target_date).order_by('-date').first()
     closest_future = possible_prices.filter(date__gte=target_date).order_by('date').first()
 
+    closest_past_price = None
     if closest_past:
         days_to_closest_past = (target_date - closest_past.date).days
         if closest_past.price:
@@ -511,6 +512,7 @@ def get_closest_commodity_price(commodity_id, target_date):
         elif closest_past.projected_price:
             closest_past_price = closest_past.projected_price
     
+    closest_future_price = None
     if closest_future:
         days_to_closest_future = (closest_future.date - target_date).days
         if closest_future.price:
@@ -519,13 +521,14 @@ def get_closest_commodity_price(commodity_id, target_date):
             closest_future_price = closest_future.projected_price
 
     total_days = days_to_closest_past + days_to_closest_future
-    new_commodity_price = closest_past_price * days_to_closest_past / total_days + closest_future_price * days_to_closest_future / total_days
+    if closest_past_price and closest_future_price:
+        new_commodity_price = closest_past_price * days_to_closest_past / total_days + closest_future_price * days_to_closest_future / total_days
     
-    if not closest_past:
-        new_commodity_price = closest_future
+    if not closest_past_price:
+        new_commodity_price = closest_future_price
     
-    if not closest_future:
-        new_commodity_price = closest_past
+    if not closest_future_price:
+        new_commodity_price = closest_past_price
 
     return new_commodity_price
 

@@ -4,6 +4,8 @@ from django.db.models.functions import Abs
 import sys
 import os
 import freecurrencyapi
+from django.core.mail import send_mail
+from django.conf import settings
 
 # Live prices update
 import requests
@@ -584,6 +586,8 @@ def check_all_notifications_and_send_emails():
     
 
 def check_notification_and_send_email(notification_id):
+    updated = False
+    sent = False
     notification_to_check = Notification.objects.get(id=notification_id, user__isnull=False, activated=False)
 
     def get_closest_commodity_price(commodity_id, target_date):
@@ -717,8 +721,29 @@ def check_notification_and_send_email(notification_id):
             return False
 
     def send_notification_email(notification_id):
-        # TODO
-        pass
+        # TODO sending proper email from template
+        try:
+            # Use get() to fetch the notification instance or raise an exception if it doesn't exist
+            notification = Notification.objects.get(id=notification_id)
+            if notification.email_notification:
+                user = notification.user
+                if not user.userprofile.email_notification:
+                    return False
+                user_email = user.email
+                send_mail(
+                f'Notification {notification} activated',
+                f'{notification}\n\n email sent to {user_email}',
+                settings.EMAIL_HOST_USER,  # Sender's email
+                [user_email],  # Recipient's email
+                fail_silently=False,
+                )
+                notification.email_sent = True
+                notification.email_sent_at = timezone.now()
+                notification.save()
+                return True
+        except Notification.DoesNotExist:
+            # Return False if the notification doesn't exist
+            return False
 
     if notification_to_check:
         notification = notification_to_check
@@ -732,23 +757,12 @@ def check_notification_and_send_email(notification_id):
             creation_price = get_closest_project_price(notification.project.id, notification.created_at.date())
             future_check_price = get_closest_project_price(notification.project.id, notification.change_by)
 
-        print(f'Creation price: {creation_price}')
-        print(f'Future Check price: {future_check_price}')
         if creation_price and future_check_price:
             calculated_change = (future_check_price - creation_price) / creation_price * 100
             change_to_check = notification.change
             print(f'Calculated change: {calculated_change}')
             print(f'Change to check: {change_to_check}')
-            if change_to_check >= 0 and calculated_change >= change_to_check:
-                update_notification_db(notification.id, calculated_change)
-                print('Notification updated 1')
-            elif change_to_check < 0 and calculated_change < change_to_check:
+            if (change_to_check >= 0 and calculated_change >= change_to_check) or (change_to_check < 0 and calculated_change < change_to_check):
                 updated = update_notification_db(notification.id, calculated_change)
-                if updated:
-                    print('Notification updated 2')
-                else:
-                    print('Notification not updated 0')
-            else:
-                print('Notification not updated 1')
-        else:
-            print('Notification not updated 2')
+                sent = send_notification_email(notification_id=notification.id)
+    return updated, sent

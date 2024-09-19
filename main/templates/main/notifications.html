@@ -6,7 +6,7 @@
 
     {% if activated_notifications.count > 0 %}
     <!-- Section 1 Notifications -->
-    <section class="m-5">
+    <section class="my-5">
         
       <div class="flex items-center gap-x-3">
         <h2 class="text-lg font-medium text-gray-800 dark:text-white">Notifications</h2>
@@ -15,9 +15,9 @@
             {{new_activated_count}} new</span>
       </div>
 
-      <div class="flex flex-col mt-6">
-        <div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
-            <div class="inline-block min-w-full py-2 align-middle md:px-6 lg:px-8">
+      <div class="flex flex-col mt-2">
+        <div class="overflow-x-auto">
+            <div class="inline-block min-w-full py-2 align-middle">
                 <div class="overflow-hidden border border-gray-200 dark:border-gray-700 md:rounded-lg">
                     <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                       <thead class="bg-gray-50 dark:bg-gray-800">
@@ -85,47 +85,57 @@
                     {% for notification in activated_notifications %}
                     <tr  
                         {% if notification.is_recent %}
-                            class="bg-gray-200"
+                            class="bg-gray-100"
                         {% else %}
                             class="bg-white"
                         {% endif %}
                     >
-                        <td class="px-4 py-4 text-sm font-medium text-gray-700 whitespace-nowrap">
-                            <div class="inline-flex items-center gap-x-3">
-                                <div class="flex w-max items-center gap-x-2">
-                                    <img
-                                    class="object-cover w-10 h-10 rounded"
-                                    {% if notification.product %}
-                                    src="{% get_product_image_url notification.product.epd_id %}" alt="{{ notification.product.name }}"
-                                    {% elif notification.commodity %}
-                                    src="{% get_commodity_image_url notification.commodity.name %}" alt="{{notification.commodity.name}}"
-                                    {% elif notification.project %}
-                                    src="{% get_product_image_url notification.project.products.all.0.epd_id %}" alt="{{ notification.project.products.all.0.name }}"
-                                    {% endif %}
-                                    >
-                                    <div>
-                                        <h2 class="font-medium text-gray-800 dark:text-white ">
-                            {% if notification.product %}
-                                {{notification.product.name}}
-                            {% elif notification.project %}
-                             {{ notification.project.name }}
-                            {% elif notification.commodity %}
-                                {{notification.commodity.name}}
-                            {% endif %}
-                                        </h2>
-                                        <p class="text-sm font-normal text-gray-600 dark:text-gray-400">
-                            {% if notification.product %}
-                                {{notification.product.manufacturer_name}}
-                            {% elif notification.project %}
-                             {{ notification.project.description|slice:":25" }}...
-                            {% elif notification.commodity %}
-                                {{notification.commodity.basic_description|slice:":25"}}...
-                            {% endif %}
-                        </p>
-                                    </div>
+                    <td class="px-4 py-4 text-sm font-medium text-gray-700 whitespace-nowrap">
+                        <a
+                        {% if notification.product %}
+                        href="/product/{{notification.product.slug}}"
+                        {% elif notification.commodity %}
+                        href="/commodity/{{notification.commodity.name}}"
+                        {% elif notification.project %}
+                        href="/project/{{notification.project.slug}}"
+                        {% endif %}
+                        >
+                        <div class="inline-flex items-center gap-x-3">
+                            <div class="flex w-max items-center gap-x-2">
+                                <img
+                                class="object-cover w-10 h-10 rounded"
+                                {% if notification.product %}
+                                src="{% get_product_image_url notification.product.epd_id %}" alt="{{ notification.product.name }}"
+                                {% elif notification.commodity %}
+                                src="{% get_commodity_image_url notification.commodity.name %}" alt="{{notification.commodity.name}}"
+                                {% elif notification.project %}
+                                src="{% get_product_image_url notification.project.products.all.0.epd_id %}" alt="{{ notification.project.products.all.0.name }}"
+                                {% endif %}
+                                >
+                                <div>
+                                    <h2 class="hover:underline font-medium text-gray-800 dark:text-white ">
+                        {% if notification.product %}
+                            {{notification.product.name}}
+                        {% elif notification.project %}
+                         {{ notification.project.name }}
+                        {% elif notification.commodity %}
+                            {{notification.commodity.name}}
+                        {% endif %}
+                                    </h2>
+                                    <p class="text-sm font-normal text-gray-600 dark:text-gray-400">
+                        {% if notification.product %}
+                            {{notification.product.manufacturer_name}}
+                        {% elif notification.project %}
+                         {{ notification.project.description|slice:":25" }}...
+                        {% elif notification.commodity %}
+                            {{notification.commodity.basic_description|slice:":25"}}...
+                        {% endif %}
+                    </p>
                                 </div>
                             </div>
-                        </td>
+                        </div>
+                    </a>
+                    </td>
                         <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap">
                             {% if notification.product %}
                                 {{notification.product.category_3}}
@@ -206,13 +216,13 @@
     </div>
     </section>
     
-    <hr class="border-gray-200 dark:border-gray-700 my-10">
+    <hr class="border-gray-200 dark:border-gray-700">
     {% endif %}
 
 
     {% if active_notifications.count > 0 %}
     <!-- Section 2 Currently set notifications-->
-    <section class="m-5">
+    <section class="my-5">
         
       <div class="flex items-center gap-x-3">
         <h2 class="text-lg font-medium text-gray-800 dark:text-white">Monitoring</h2>
@@ -221,9 +231,9 @@
             {{active_notifications.count}} item{{ active_notifications.count|pluralize:"s" }}</span>
       </div>
 
-      <div class="flex flex-col mt-6">
-        <div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
-            <div class="inline-block min-w-full py-2 align-middle md:px-6 lg:px-8">
+      <div class="flex flex-col mt-2">
+        <div class="overflow-x-auto">
+            <div class="inline-block min-w-full py-2 align-middle">
                 <div class="overflow-hidden border border-gray-200 dark:border-gray-700 md:rounded-lg">
                     <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                       <thead class="bg-gray-50 dark:bg-gray-800">
@@ -274,6 +284,15 @@
                             {% for notification in active_notifications %}
                             <tr>
                                 <td class="px-4 py-4 text-sm font-medium text-gray-700 whitespace-nowrap">
+                                    <a
+                                    {% if notification.product %}
+                                    href="/product/{{notification.product.slug}}"
+                                    {% elif notification.commodity %}
+                                    href="/commodity/{{notification.commodity.name}}"
+                                    {% elif notification.project %}
+                                    href="/project/{{notification.project.slug}}"
+                                    {% endif %}
+                                    >
                                     <div class="inline-flex items-center gap-x-3">
                                         <div class="flex w-max items-center gap-x-2">
                                             <img
@@ -287,7 +306,7 @@
                                             {% endif %}
                                             >
                                             <div>
-                                                <h2 class="font-medium text-gray-800 dark:text-white ">
+                                                <h2 class="hover:underline font-medium text-gray-800 dark:text-white ">
                                     {% if notification.product %}
                                         {{notification.product.name}}
                                     {% elif notification.project %}
@@ -308,6 +327,7 @@
                                             </div>
                                         </div>
                                     </div>
+                                </a>
                                 </td>
                                 <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap">
                                     {% if notification.product %}
@@ -381,16 +401,34 @@
      
 
     <!-- Section 3 -->
-    <hr class="my-10 border-gray-200 dark:border-gray-700 ">
+    <hr class="border-gray-200 dark:border-gray-700">
     {% endif %} 
 
-    <section class="m-5 mt-10">
+    <section class="my-5">
         <div class="flex flex-col">
             <div class="self-center w-full text-md text-gray-600 text-center tracking-wide">
-                    Set new notifications directly from product, commodity or project page.
+                Set new notifications directly from product, commodity or project page.
             </div>
         </div>
     </section>
+
+
+    <!-- Section 4 -->
+    <section class="my-10">
+        <div>
+            <p class="text-[5px] text-gray-500 dark:text-gray-300">
+                Change % is calculated from 'When' date to when notification is set.
+            </p>
+            <p class="text-[5px] text-gray-500 dark:text-gray-300">
+                Change by % &gt0 activates when change % is higher.
+            </p>
+            <p class="text-[5px] text-gray-500 dark:text-gray-300">
+                Change by % &lt0 activates when change % is lower.
+            </p>
+        </div>
+    </section>
+
+
 
 </div>
 {% endblock %}
