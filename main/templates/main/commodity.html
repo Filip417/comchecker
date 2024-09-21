@@ -4,8 +4,8 @@
 {% load custom_tags %}
 
 
-<div class="bg-[#e9e9e9] min-h-screen p-4 sm:p-8">
-  <div class="bg-white rounded-2xl p-6 sm:p-16 mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+<div class="bg-[#e9e9e9] dark:bg-gray-900 min-h-screen p-4 sm:p-8">
+  <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 sm:p-16 mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
 
 
     <!-- Title card -->
@@ -31,16 +31,16 @@
     </div>
       <div class="flex flex-col space-y-1 lg:space-y-2">
         <h1 class="text-xl lg:text-3xl font-bold tracking-wide text-gray-800 dark:text-white">{{ commodity.name}}</h1>
-        <h2 class="text-base font-semibold text-gray-600 dark:text-grat-100">{{ commodity.category}}</h2>
+        <h2 class="text-base font-semibold text-gray-600 dark:text-gray-100">{{ commodity.category}}</h2>
         {% if commodity.production_total != 0%}
         <div>
-            <a class="text-xs lg:text-xs font-normal text-gray-500 dark:text-grat-100">
+            <a class="text-xs lg:text-xs font-normal text-gray-500 dark:text-gray-300">
                 World {{ commodity.production_name}}
             </a>
-            <a class="text-xs lg:text-sm font-semibold text-gray-600 dark:text-grat-100">   
+            <a class="text-xs lg:text-sm font-semibold text-gray-600 dark:text-gray-400">   
                 {{ commodity.production_total}}
             </a>
-            <a class="text-xs font-normal text-gray-400 dark:text-grat-100">
+            <a class="text-xs font-normal text-gray-400 dark:text-gray-300">
                 • {{ commodity.production_unit}}
             </a>
         </div>
@@ -107,7 +107,7 @@
                         <!-- Basic Description Tab -->
                         <button
                             @click="activeTab = 'basic'"
-                            :class="activeTab === 'basic' ? 'text-blue-600 border-blue-500 dark:border-blue-400 dark:text-blue-300' : 'text-gray-700 border-transparent dark:text-white'"
+                            :class="activeTab === 'basic' ? 'text-blue-600 border-blue-500 dark:border-blue-400 dark:text-blue-300' : 'text-gray-700 border-transparent dark:text-gray-300'"
                             class="inline-flex items-center h-10 px-4 -mb-px text-sm text-center bg-transparent border-b-2 sm:text-base whitespace-nowrap focus:outline-none">
                             <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 mx-1 sm:w-6 sm:h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path xmlns="http://www.w3.org/2000/svg" d="M21,7H3V4A1,1,0,0,1,4,3H20a1,1,0,0,1,1,1ZM3,20V9H21V20a1,1,0,0,1-1,1H4A1,1,0,0,1,3,20Zm3-6H18V12H6Zm0,4h6V16H6Z"/>
@@ -118,7 +118,7 @@
                         <!-- Use Tab -->
                         <button
                             @click="activeTab = 'use'"
-                            :class="activeTab === 'use' ? 'text-blue-600 border-blue-500 dark:border-blue-400 dark:text-blue-300' : 'text-gray-700 border-transparent dark:text-white'"
+                            :class="activeTab === 'use' ? 'text-blue-600 border-blue-500 dark:border-blue-400 dark:text-blue-300' : 'text-gray-700 border-transparent dark:text-gray-300'"
                             class="inline-flex items-center h-10 px-4 -mb-px text-sm text-center bg-transparent border-b-2 sm:text-base whitespace-nowrap focus:outline-none">
                             <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 mx-1 sm:w-6 sm:h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path xmlns="http://www.w3.org/2000/svg" d="M1,12A11.013,11.013,0,0,1,12,1a1,1,0,0,1,0,2,9,9,0,1,0,3.6,17.252,1,1,0,1,1,.8,1.832A11,11,0,0,1,1,12ZM16.4,1.916a1,1,0,1,0-.8,1.832A9,9,0,0,1,18.427,18.3a1,1,0,1,0,1.428,1.4A11,11,0,0,0,16.4,1.916Z"/>
@@ -129,7 +129,7 @@
                         <!-- World production Tab -->
                         <button
                             @click="activeTab = 'production'"
-                            :class="activeTab === 'production' ? 'text-blue-600 border-blue-500 dark:border-blue-400 dark:text-blue-300' : 'text-gray-700 border-transparent dark:text-white'"
+                            :class="activeTab === 'production' ? 'text-blue-600 border-blue-500 dark:border-blue-400 dark:text-blue-300' : 'text-gray-700 border-transparent dark:text-gray-300'"
                             class="inline-flex items-center h-10 px-4 -mb-px text-sm text-center bg-transparent border-b-2 sm:text-base whitespace-nowrap focus:outline-none">
                             <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 mx-1 sm:w-6 sm:h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path xmlns="http://www.w3.org/2000/svg" d="M22,1H18a1,1,0,0,0-1,1V9H15V7a1,1,0,0,0-1.447-.895L9,8.382V7a1,1,0,0,0-1.447-.895l-6,3A1,1,0,0,0,1,10V22a1,1,0,0,0,1,1H22a1,1,0,0,0,1-1V2A1,1,0,0,0,22,1ZM21,3V5H19V3ZM3,21V10.618l4-2V10a1,1,0,0,0,1.447.895L13,8.618V10a1,1,0,0,0,1,1h4a1,1,0,0,0,1-1V7h2V21Zm2-8H8v2H5Zm5,0h4v2H10Zm6,0h3v2H16ZM5,17H8v2H5Zm5,0h4v2H10Zm6,0h3v2H16Z"/>
@@ -140,7 +140,7 @@
                         <!-- Events, trends, issues Tab -->
                         <button
                         @click="activeTab = 'events'"
-                        :class="activeTab === 'events' ? 'text-blue-600 border-blue-500 dark:border-blue-400 dark:text-blue-300' : 'text-gray-700 border-transparent dark:text-white'"
+                        :class="activeTab === 'events' ? 'text-blue-600 border-blue-500 dark:border-blue-400 dark:text-blue-300' : 'text-gray-700 border-transparent dark:text-gray-300'"
                         class="inline-flex items-center h-10 px-4 -mb-px text-sm text-center bg-transparent border-b-2 sm:text-base whitespace-nowrap focus:outline-none">
                         <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 mx-1 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke="currentColor">
                             <path d="M16.5 9.5L12.3 13.7L10.7 11.3L7.5 14.5" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
@@ -153,7 +153,7 @@
                         <!-- Substitutes Tab -->
                         <button
                         @click="activeTab = 'substitutes'"
-                        :class="activeTab === 'substitutes' ? 'text-blue-600 border-blue-500 dark:border-blue-400 dark:text-blue-300' : 'text-gray-700 border-transparent dark:text-white'"
+                        :class="activeTab === 'substitutes' ? 'text-blue-600 border-blue-500 dark:border-blue-400 dark:text-blue-300' : 'text-gray-700 border-transparent dark:text-gray-300'"
                         class="inline-flex items-center h-10 px-4 -mb-px text-sm text-center bg-transparent border-b-2 sm:text-base whitespace-nowrap focus:outline-none">
                         <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 mx-1 sm:w-6 sm:h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" clip-rule="evenodd" d="M16 3.93a.75.75 0 0 1 1.177-.617l4.432 3.069a.75.75 0 0 1 0 1.233l-4.432 3.069A.75.75 0 0 1 16 10.067V8H4a1 1 0 0 1 0-2h12V3.93zm-9.177 9.383A.75.75 0 0 1 8 13.93V16h12a1 1 0 1 1 0 2H8v2.067a.75.75 0 0 1-1.177.617l-4.432-3.069a.75.75 0 0 1 0-1.233l4.432-3.069z"/>
@@ -164,7 +164,7 @@
                         <!-- Recycling Tab -->
                         <button
                         @click="activeTab = 'recycling'"
-                        :class="activeTab === 'recycling' ? 'text-blue-600 border-blue-500 dark:border-blue-400 dark:text-blue-300' : 'text-gray-700 border-transparent dark:text-white'"
+                        :class="activeTab === 'recycling' ? 'text-blue-600 border-blue-500 dark:border-blue-400 dark:text-blue-300' : 'text-gray-700 border-transparent dark:text-gray-300'"
                         class="inline-flex items-center h-10 px-4 -mb-px text-sm text-center bg-transparent border-b-2 sm:text-base whitespace-nowrap focus:outline-none">
                         <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 mx-1 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 50 50" stroke="currentColor">
                             <g>
@@ -184,7 +184,7 @@
                     </div>
                 
                     <!-- Tabs Content -->
-                    <div class="mt-4 text-xs md:text-base">
+                    <div class="mt-4 text-xs md:text-base dark:text-gray-500">
                         <!-- Basic Description Content -->
                         <div x-show="activeTab === 'basic'" class="p-4 bg-white dark:bg-gray-800">
                             <p class="whitespace-pre-wrap">{{commodity.basic_description}}</p>
@@ -268,51 +268,51 @@
 
 
                                 <th scope="col" class="px-4 py-3.5 text-sm font-normal whitespace-nowrap">
-                                  <div class="text-gray-600 inline px-3 py-1 text-sm font-normal  dark:bg-gray-800">
+                                  <div class="text-gray-600 dark:text-gray-500 inline px-3 py-1 text-sm font-normal  dark:bg-gray-800">
                                       -5y
                                   </div>
                               </th>
                               <th scope="col" class="px-4 py-3.5 text-sm font-normal whitespace-nowrap">
-                                <div class="text-gray-600 inline px-3 py-1 text-sm font-normal  dark:bg-gray-800">
+                                <div class="text-gray-600 dark:text-gray-500 inline px-3 py-1 text-sm font-normal  dark:bg-gray-800">
                                     -2y
                                 </div>
                             </th>
                                 <th scope="col" class="px-4 py-3.5 text-sm font-normal whitespace-nowrap">
-                                  <div class="text-gray-600 inline px-3 py-1 text-sm font-normal  dark:bg-gray-800">
+                                  <div class="text-gray-600 dark:text-gray-500 inline px-3 py-1 text-sm font-normal  dark:bg-gray-800">
                                       -1y
                                   </div>
                               </th>
 
                               <th scope="col" class="px-4 py-3.5 text-sm font-normal whitespace-nowrap">
-                                  <div class="text-gray-600 inline px-3 py-1 text-sm font-normal  dark:bg-gray-800">
+                                  <div class="text-gray-600 dark:text-gray-500 inline px-3 py-1 text-sm font-normal  dark:bg-gray-800">
                                       -6m
                                   </div>
                               </th>
 
                               <th scope="col" class="px-4 py-3.5 text-sm font-normal whitespace-nowrap">
-                                  <div class="text-gray-800 inline px-3 py-1 text-sm font-medium  dark:bg-gray-800">
+                                  <div class="text-gray-800 dark:text-gray-300 inline px-3 py-1 text-sm font-medium  dark:bg-gray-800">
                                       now
                                   </div>
                               </th>
 
                               <th scope="col" class="px-4 py-3.5 text-sm font-normal whitespace-nowrap">
-                                  <div class="text-gray-600 inline px-3 py-1 text-sm font-normal  dark:bg-gray-800">
+                                  <div class="text-gray-600 dark:text-gray-500 inline px-3 py-1 text-sm font-normal  dark:bg-gray-800">
                                       +6m
                                   </div>
                               </th>
 
                               <th scope="col" class="px-4 py-3.5 text-sm font-normal whitespace-nowrap">
-                                  <div class="text-gray-600 inline px-3 py-1 text-sm font-normal  dark:bg-gray-800">
+                                  <div class="text-gray-600 dark:text-gray-500 inline px-3 py-1 text-sm font-normal  dark:bg-gray-800">
                                       +1y
                                   </div>
                               </th>
                               <th scope="col" class="px-4 py-3.5 text-sm font-normal whitespace-nowrap">
-                                <div class="text-gray-600 inline px-3 py-1 text-sm font-normal  dark:bg-gray-800">
+                                <div class="text-gray-600 dark:text-gray-500 inline px-3 py-1 text-sm font-normal  dark:bg-gray-800">
                                     +2y
                                 </div>
                             </th>
                             <th scope="col" class="px-4 py-3.5 text-sm font-normal whitespace-nowrap">
-                                <div class="text-gray-600 inline px-3 py-1 text-sm font-normal  dark:bg-gray-800">
+                                <div class="text-gray-600 dark:text-gray-500 inline px-3 py-1 text-sm font-normal  dark:bg-gray-800">
                                     +5y
                                 </div>
                             </th>
@@ -380,62 +380,62 @@
                                 <td class="px-4 py-4 whitespace-nowrap">
                                     <div class="flex items-center">
                                         <div class="ml-2">
-                                            <div class="text-sm font-medium text-gray-900">
+                                            <div class="text-sm font-medium text-gray-900 dark:text-gray-300">
                                                 {{ forecast }}
                                             </div>
-                                            <div class="text-sm text-gray-500">
+                                            <div class="text-sm text-gray-500 dark:text-gray-300">
 
                                             </div>
                                         </div>
                                     </div>
                                 </td>
                                 <td class="px-4 py-4 text-center whitespace-nowrap">
-                                    <div class="text-sm font-normal text-gray-600">
+                                    <div class="text-sm font-normal text-gray-600 dark:text-gray-500">
                                         {% if data.5y_ago %}{{ data.5y_ago|floatformat:"2g" }}{% else %}-{% endif %}
                                     </div>
                                 </td>
                                 <td class="px-4 py-4 text-center whitespace-nowrap">
-                                    <div class="text-sm font-normal text-gray-600">
+                                    <div class="text-sm font-normal text-gray-600 dark:text-gray-500">
                                         {% if data.2y_ago %}{{ data.2y_ago|floatformat:"2g" }}{% else %}-{% endif %}
                                     </div>
                                 </td>
                                 <td class="px-4 py-4 text-center whitespace-nowrap">
-                                    <div class="text-sm font-normal text-gray-600">
+                                    <div class="text-sm font-normal text-gray-600 dark:text-gray-500">
                                         {% if data.1y_ago %}{{ data.1y_ago|floatformat:"2g" }}{% else %}-{% endif %}
                                     </div>
                                 </td>
                                 <td class="px-4 py-4 text-center whitespace-nowrap">
-                                    <div class="text-sm font-normal text-gray-600">
+                                    <div class="text-sm font-normal text-gray-600 dark:text-gray-500">
                                         {% if data.6m_ago %}{{ data.6m_ago|floatformat:"2g" }}{% else %}-{% endif %}
                                     </div>
                                 </td>
                                 <td class="px-4 py-4 text-center whitespace-nowrap">
-                                    <div class="text-sm font-medium text-gray-800">
+                                    <div class="text-sm font-medium text-gray-800 dark:text-gray-300">
                                         {% if data.today %}{{ data.today|floatformat:"2g" }}{% else %}-{% endif %}
                                     </div>
                                 </td>
                                 <td class="px-4 py-4 text-center whitespace-nowrap">
-                                    <div class="text-sm font-normal text-gray-600">
+                                    <div class="text-sm font-normal text-gray-600 dark:text-gray-500">
                                         {% if data.6m_ahead %}{{ data.6m_ahead|floatformat:"2g" }}{% else %}-{% endif %}
                                     </div>
                                 </td>
                                 <td class="px-4 py-4 text-center whitespace-nowrap">
-                                    <div class="text-sm font-normal text-gray-600">
+                                    <div class="text-sm font-normal text-gray-600 dark:text-gray-500">
                                         {% if data.1y_ahead %}{{ data.1y_ahead|floatformat:"2g" }}{% else %}-{% endif %}
                                     </div>
                                 </td>
                                 <td class="px-4 py-4 text-center whitespace-nowrap">
-                                    <div class="text-sm font-normal text-gray-600">
+                                    <div class="text-sm font-normal text-gray-600 dark:text-gray-500">
                                         {% if data.2y_ahead %}{{ data.2y_ahead|floatformat:"2g" }}{% else %}-{% endif %}
                                     </div>
                                 </td>
                                 <td class="px-4 py-4 text-center whitespace-nowrap">
-                                    <div class="text-sm font-normal text-gray-600">
+                                    <div class="text-sm font-normal text-gray-600 dark:text-gray-500">
                                         {% if data.5y_ahead %}{{ data.5y_ahead|floatformat:"2g" }}{% else %}-{% endif %}
                                     </div>
                                 </td>
                                 <td class="px-4 py-4 text-center whitespace-nowrap">
-                                    <div class="text-sm font-normal text-gray-600">
+                                    <div class="text-sm font-normal">
                                         {% if data.today > data.1y_ago %}
                                         <a><span class="text-green-500 font-black">↑</span></a>
                                         {% elif data.today < data.1y_ago%}
@@ -451,7 +451,7 @@
                                 <td class="px-4 py-4 whitespace-nowrap">
                                     <div class="flex items-center">
                                         <div class="ml-2">
-                                            <div class="text-sm font-medium text-gray-900">
+                                            <div class="text-sm font-medium text-gray-900 dark:text-gray-400">
                                                 {{ forecast }}
                                             </div>
                                             <div class="text-sm text-gray-500">
@@ -461,52 +461,52 @@
                                     </div>
                                 </td>
                                 <td class="px-4 py-4 text-center whitespace-nowrap">
-                                    <div class="text-sm font-normal text-gray-600">
+                                    <div class="text-sm font-normal text-gray-600 dark:text-gray-500">
                                         -
                                     </div>
                                 </td>
                                 <td class="px-4 py-4 text-center whitespace-nowrap">
-                                    <div class="text-sm font-normal text-gray-600">
+                                    <div class="text-sm font-normal text-gray-600 dark:text-gray-500">
                                         -
                                     </div>
                                 </td>
                                 <td class="px-4 py-4 text-center whitespace-nowrap">
-                                    <div class="text-sm font-normal text-gray-600">
+                                    <div class="text-sm font-normal text-gray-600 dark:text-gray-500">
                                        -
                                     </div>
                                 </td>
                                 <td class="px-4 py-4 text-center whitespace-nowrap">
-                                    <div class="text-sm font-normal text-gray-600">
+                                    <div class="text-sm font-normal text-gray-600 dark:text-gray-500">
                                         -
                                     </div>
                                 </td>
                                 <td class="px-4 py-4 text-center whitespace-nowrap">
-                                    <div class="text-sm font-medium text-gray-800">
+                                    <div class="text-sm font-medium text-gray-800 dark:text-gray-300">
                                         -
                                     </div>
                                 </td>
                                 <td class="px-4 py-4 text-center whitespace-nowrap">
-                                    <div class="text-sm font-normal text-gray-600">
+                                    <div class="text-sm font-normal text-gray-600 dark:text-gray-500">
                                         {% if data.6m_ahead.0 != 'nan' %}{{ data.6m_ahead.1|floatformat:"2g" }} - {{ data.6m_ahead.0|floatformat:"2g" }}{% else %}-{% endif %}
                                     </div>
                                 </td>
                                 <td class="px-4 py-4 text-center whitespace-nowrap">
-                                    <div class="text-sm font-normal text-gray-600">
+                                    <div class="text-sm font-normal text-gray-600 dark:text-gray-500">
                                         {% if data.1y_ahead.0 != 'nan' %}{{ data.1y_ahead.1|floatformat:"2g" }} - {{ data.1y_ahead.0|floatformat:"2g" }}{% else %}-{% endif %}
                                     </div>
                                 </td>
                                 <td class="px-4 py-4 text-center whitespace-nowrap">
-                                    <div class="text-sm font-normal text-gray-600">
+                                    <div class="text-sm font-normal text-gray-600 dark:text-gray-500">
                                         {% if data.2y_ahead.0 != 'nan' %}{{ data.2y_ahead.1|floatformat:"2g" }} - {{ data.2y_ahead.0|floatformat:"2g" }}{% else %}-{% endif %}
                                     </div>
                                 </td>
                                 <td class="px-4 py-4 text-center whitespace-nowrap">
-                                    <div class="text-sm font-normal text-gray-600">
+                                    <div class="text-sm font-normal text-gray-600 dark:text-gray-500">
                                         {% if data.5y_ahead.0 != 'nan' %}{{ data.5y_ahead.1|floatformat:"2g" }} - {{ data.5y_ahead.0|floatformat:"2g" }}{% else %}-{% endif %}
                                     </div>
                                 </td>
                                 <td class="px-4 py-4 text-center whitespace-nowrap">
-                                    <div class="text-sm font-normal text-gray-600">
+                                    <div class="text-sm font-normal">
                                     </div>
                                 </td>
                             </tr>
@@ -555,12 +555,12 @@
                             <thead class="bg-gray-50 dark:bg-gray-800">
                               <tr>  
                                   <th scope="col" class="px-4 py-3.5 text-sm font-normal whitespace-nowrap">
-                                    <div class="text-gray-600 inline px-3 py-1 text-sm font-normal  dark:bg-gray-800">
+                                    <div class="text-gray-600 inline px-3 py-1 text-sm font-normal  dark:bg-gray-800 dark:text-gray-300">
                                         Date
                                     </div>
                                 </th>
                                 <th scope="col" class="px-4 py-3.5 text-sm font-normal whitespace-nowrap">
-                                  <div class="text-gray-600 inline px-3 py-1 text-sm font-normal  dark:bg-gray-800">
+                                  <div class="text-gray-600 inline px-3 py-1 text-sm font-normal  dark:bg-gray-800 dark:text-gray-300">
                                       Price
                                   </div>
                               </th>
@@ -624,17 +624,17 @@
                               {% for date, price, direction  in futures_table_data %}
                               <tr>
                                   <td class="px-4 py-4 text-center whitespace-nowrap">
-                                      <div class="text-sm font-normal text-gray-600">
+                                      <div class="text-sm font-normal text-gray-600 dark:text-gray-300">
                                           {{date}}
                                       </div>
                                   </td>
                                   <td class="px-4 py-4 text-center whitespace-nowrap">
-                                      <div class="text-sm font-medium text-gray-800">
+                                      <div class="text-sm font-medium text-gray-800 dark:text-gray-400">
                                           {{price|floatformat:"2g"}}
                                       </div>
                                   </td>
                                   <td class="px-4 py-4 text-center whitespace-nowrap">
-                                      <div class="text-sm font-normal text-gray-600">
+                                      <div class="text-sm font-normal text-gray-600 dark:text-gray-300">
                                           {% if direction == "up" %}
                                           <a><span class="text-green-500 font-black">↑</span></a>
                                           {% elif direction == "down" %}
@@ -741,7 +741,7 @@
     <section class="relative">
         <!-- Arrow left -->
         <div x-init="$el.classList.remove('hidden')" class="hidden absolute left-0 inset-y-0 cursor-pointer z-10 arrow-left">
-            <div class="px-2 sm:px-6 h-full items-center flex bg-gradient-to-l from-white/60 to-white/80 relative">
+            <div class="px-2 sm:px-6 h-full items-center flex bg-gradient-to-l from-white/60 to-white/80 dark:from-gray-800/60 dark:to-gray-800/80 relative">
                 <!-- Background container with opacity -->
             </div>
             <div class="w-[32px] flex justify-center absolute top-1/2 transform -translate-y-1/2 left-2">
@@ -754,7 +754,7 @@
 
         <!-- Arrow right -->
         <div x-init="$el.classList.remove('hidden')" class="hidden absolute inset-y-0 right-0 cursor-pointer z-10 arrow-right">
-            <div class="px-2 sm:px-6 h-full items-center flex bg-gradient-to-r from-white/60 to-white/80 relative">
+            <div class="px-2 sm:px-6 h-full items-center flex bg-gradient-to-r from-white/60 to-white/80 dark:from-gray-800/60 dark:to-gray-800/80 relative">
                 <!-- Background container with opacity -->
             </div>
             <div class="w-[32px] flex justify-center absolute top-1/2 transform -translate-y-1/2 right-2">
@@ -790,7 +790,7 @@
     <section class="relative">
         <!-- Arrow left -->
         <div x-init="$el.classList.remove('hidden')" class="hidden absolute left-0 inset-y-0 cursor-pointer z-10 arrow-left">
-            <div class="px-2 sm:px-6 h-full items-center flex bg-gradient-to-l from-white/60 to-white/80 relative">
+            <div class="px-2 sm:px-6 h-full items-center flex bg-gradient-to-l from-white/60 to-white/80 dark:from-gray-800/60 dark:to-gray-800/80 relative">
                 <!-- Background container with opacity -->
             </div>
             <div class="w-[32px] flex justify-center absolute top-1/2 transform -translate-y-1/2 left-2">
@@ -803,7 +803,7 @@
 
         <!-- Arrow right -->
         <div x-init="$el.classList.remove('hidden')" class="hidden absolute inset-y-0 right-0 cursor-pointer z-10 arrow-right">
-            <div class="px-2 sm:px-6 h-full items-center flex bg-gradient-to-r from-white/60 to-white/80 relative">
+            <div class="px-2 sm:px-6 h-full items-center flex bg-gradient-to-r from-white/60 to-white/80 dark:from-gray-800/60 dark:to-gray-800/80 relative">
                 <!-- Background container with opacity -->
             </div>
             <div class="w-[32px] flex justify-center absolute top-1/2 transform -translate-y-1/2 right-2">

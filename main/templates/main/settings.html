@@ -4,8 +4,8 @@
 
 
 
-<div class="bg-[#e9e9e9] min-h-screen p-4 sm:p-8">
-  <div class="bg-white rounded-2xl p-6 mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+<div class="bg-[#e9e9e9] dark:bg-gray-900 min-h-screen p-4 sm:p-8">
+  <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
 
     <div class="flex flex-col">
 
@@ -232,7 +232,7 @@
         <div class="my-5 flex flex-col" x-data="{ sectionOpen: { membership1: false } }" >
         <!-- Expand/collapse section button -->
         <button @click="sectionOpen.membership1 = !sectionOpen.membership1" type="button"
-        class="flex w-full items-center justify-between bg-white text-gray-400 hover:text-gray-500 hover:underline" aria-controls="membership-section-0" :aria-expanded="sectionOpen.membership1.toString()">
+        class="flex w-full items-center justify-between bg-white dark:bg-gray-800 text-gray-400 hover:text-gray-500 hover:underline" aria-controls="membership-section-0" :aria-expanded="sectionOpen.membership1.toString()">
             <span class="text-lg font-medium text-gray-800 dark:text-white">Change plan</span>
             <span class="flex items-center">
                 <!-- Expand icon, show/hide based on section open state. -->
@@ -621,6 +621,7 @@
                             </td>
                             <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap">$19.00</td>
                             <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap">Jan 6, 2025</td>
+                            <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap"></td>
                           </tr>
                         </tbody>
                       </table>
@@ -640,7 +641,7 @@
           <div class="my-5 flex flex-col" x-data="{ sectionOpen: { membership2: false } }" >
           <!-- Expand/collapse section button -->
           <button @click="sectionOpen.membership2 = !sectionOpen.membership2" type="button"
-          class="flex w-full items-center justify-between bg-white text-gray-400 hover:text-gray-500 hover:underline" aria-controls="membership-section-0" :aria-expanded="sectionOpen.membership2.toString()">
+          class="flex w-full items-center justify-between bg-white dark:bg-gray-800 text-gray-400 hover:text-gray-500 hover:underline" aria-controls="membership-section-0" :aria-expanded="sectionOpen.membership2.toString()">
               <span class="text-lg font-medium text-gray-800 dark:text-white">Payment methods</span>
               <span class="flex items-center">
                   <!-- Expand icon, show/hide based on section open state. -->
@@ -817,7 +818,7 @@
           <div class="my-5 flex flex-col" x-data="{ sectionOpen: { membership3: false } }" >
           <!-- Expand/collapse section button -->
           <button @click="sectionOpen.membership3 = !sectionOpen.membership3" type="button"
-          class="flex w-full items-center justify-between bg-white text-gray-400 hover:text-gray-500 hover:underline" aria-controls="membership-section-0" :aria-expanded="sectionOpen.membership3.toString()">
+          class="flex w-full items-center justify-between bg-white dark:bg-gray-800 text-gray-400 hover:text-gray-500 hover:underline" aria-controls="membership-section-0" :aria-expanded="sectionOpen.membership3.toString()">
               <span class="text-lg font-medium text-gray-800 dark:text-white">Payment history</span>
               <span class="flex items-center">
                   <!-- Expand icon, show/hide based on section open state. -->
@@ -991,9 +992,9 @@
                 </div>
                 </label>
                 <div class="block ml-3">
-                <span class="text-sm font-normal text-gray-600 mb-1">Essential Cookies</span>
+                <span class="text-sm font-normal text-gray-600 dark:text-gray-400 mb-1">Essential Cookies</span>
                 <br>
-                <span class="text-xs max-md:hidden font-normal text-gray-400 ">Helps provide the basics. These cookies are necessary for website to function and provide you with services available through the site. For example, cookies that keep you logged in.</span>
+                <span class="text-xs max-md:hidden font-normal text-gray-400 dark:text-gray-500">Helps provide the basics. These cookies are necessary for website to function and provide you with services available through the site. For example, cookies that keep you logged in.</span>
               </div>
             </div>
             
@@ -1004,9 +1005,9 @@
                 <div class="w-9 h-5 bg-gray-200 hover:bg-gray-300 peer-focus:outline-0  rounded-full peer transition-all ease-in-out duration-500 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all  peer-checked:bg-indigo-600 hover:peer-checked:bg-indigo-700 "></div>
                 </label>
                 <div class="block ml-3">
-                <span class="text-sm font-normal text-gray-600 mb-1">Personalisation Cookies</span>
+                <span class="text-sm font-normal text-gray-600 dark:text-gray-400 mb-1">Personalisation Cookies</span>
                 <br>
-                <span class="text-xs max-md:hidden font-normal text-gray-400">Helps show more relevant content. These cookies help us customise product recommendations.</span>
+                <span class="text-xs max-md:hidden font-normal text-gray-400 dark:text-gray-500">Helps show more relevant content. These cookies help us customise product recommendations.</span>
               </div>
             </div>
 
@@ -1019,9 +1020,9 @@
               </div>
               </label>
               <div class="block ml-3">
-              <span class="text-sm font-normal text-gray-600 mb-1">Email Notifications</span>
+              <span class="text-sm font-normal text-gray-600 dark:text-gray-400 mb-1">Email Notifications</span>
               <br>
-              <span class="text-xs max-md:hidden font-normal text-gray-400">Turn on and off receiving email notifications on all your set alerts.</span>
+              <span class="text-xs max-md:hidden font-normal text-gray-400 dark:text-gray-500">Turn on and off receiving email notifications on all your set alerts.</span>
             </div>
           </div>
 
@@ -1047,8 +1048,8 @@
 
             <div class="flex items-center">
               <div class="flex flex-col">
-              <span class="text-sm font-normal text-gray-600 mb-1">No longer want to use our service?</span>
-              <span class="max-md:hidden text-xs font-normal text-gray-400">You can delete your account here. This action is not reversible. All information related to this account will be deleted permanently and membership no longer valid.</span>
+              <span class="text-sm font-normal text-gray-600 dark:text-gray-400 mb-1">No longer want to use our service?</span>
+              <span class="max-md:hidden text-xs font-normal text-gray-400 dark:text-gray-500">You can delete your account here. This action is not reversible. All information related to this account will be deleted permanently and membership no longer valid.</span>
               </div>
               <!-- Delete account and data modal -->
                       <section>

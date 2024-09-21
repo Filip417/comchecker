@@ -11,13 +11,13 @@
     </div>
     <div class="mt-4 flex justify-between">
       <div>
-        <h3 class="text-xs text-gray-700">
+        <h3 class="text-xs text-gray-700 dark:text-gray-300">
           <a href="/commodity/{{commodity.name}}" class="font-semibold whitespace-normal break-words">
             <span aria-hidden="true" class="absolute inset-0"></span>
             {{commodity.name}}
           </a>
         </h3>
-        <p class="mt-1 text-xs text-gray-400">
+        <p class="mt-1 text-xs text-gray-400 dark:text-gray-500">
           {{commodity.price_now|floatformat:2}}
           {% if commodity.unit != 'Index' %}
           {{commodity.currency.symbol}}
@@ -25,7 +25,7 @@
           {{commodity.unit}}
         </p>
       </div>
-      <p class="text-sm font-semibold text-gray-900">{% if commodity.increasefromlastyear %}
+      <p class="text-sm font-semibold text-gray-900 dark:text-gray-200">{% if commodity.increasefromlastyear %}
         {% if commodity.increasefromlastyear > 0 %}
           <a><span class="text-green-500 font-black">↑</span>{{ commodity.increasefromlastyear | floatformat:"1" }}%</a>
         {% elif commodity.increasefromlastyear < 0%}

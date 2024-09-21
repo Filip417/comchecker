@@ -7,13 +7,13 @@
         <form method="POST" action="{% url 'change_product_to_project' product.id %}">
             {% csrf_token %}
             <div class="absolute inset-0 flex justify-between items-start opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-gray-800 bg-opacity-75">
-                <select name="project_id" class="project-select absolute max-w-[100px] top-0 left-0 mt-2 ml-2 px-1 py-1 text-xs bg-white text-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 z-10">
+                <select name="project_id" class="project-select absolute max-w-[100px] top-0 left-0 mt-2 ml-2 px-1 py-1 text-xs bg-white text-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 z-10 dark:text-gray-300 dark:bg-black">
                     {% for project in owned_projects %}
                         <option value="{{ project.id }}">{{ project.name }}</option>
                     {% endfor %}
                     <option value="new">New project</option>
                 </select>                
-                <input maxlength="100" type="text" name="new_project_name" required placeholder="" class="new-project-name hidden absolute top-10 left-0 mt-2 ml-2 px-1 py-1 text-xs bg-white text-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 z-10" />
+                <input maxlength="100" type="text" name="new_project_name" required placeholder="" class="new-project-name hidden absolute top-10 left-0 mt-2 ml-2 px-1 py-1 text-xs bg-white text-gray-700 dark:text-gray-300 dark:bg-black rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 z-10" />
                 <button type="submit" 
                         class="product-button text-white bg-blue-700 hover:bg-blue-800 
                         absolute bottom-0 right-0 mb-2 mr-2 px-1 py-1 text-xs rounded-md focus:outline-none focus:ring-2 z-10"
@@ -25,16 +25,16 @@
     </div>
     <div class="mt-4 flex justify-between">
         <div>
-            <h3 class="text-sm text-gray-700">
+            <h3 class="text-sm text-gray-700 dark:text-gray-300">
                 <a href="/product/{{product.slug}}" class="font-semibold whitespace-normal break-words">
                     <span aria-hidden="true" class="absolute inset-0"></span>
                     {{ product.name|slice:":50"|word_break:14 }}
                 </a>
             </h3>
-            <p class="mt-1 text-xs text-gray-600">{{ product.category_1 }}</p>
-            <p class="mt-1 text-xs text-gray-400">{{ product.manufacturer_name }}</p>
+            <p class="mt-1 text-xs text-gray-600 dark:text-gray-400">{{ product.category_1 }}</p>
+            <p class="mt-1 text-xs text-gray-400 dark:text-gray-500">{{ product.manufacturer_name }}</p>
         </div>
-        <p class="text-sm font-semibold text-gray-900">
+        <p class="text-sm font-semibold text-gray-900 dark:text-gray-200">
             {% if product.increasefromlastyear %}
                 {% if product.increasefromlastyear > 0 %}
                     <a><span class="text-green-500 font-black">↑</span>{{ product.increasefromlastyear|floatformat:"1" }}%</a>

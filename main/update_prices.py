@@ -764,5 +764,6 @@ def check_notification_and_send_email(notification_id):
             print(f'Change to check: {change_to_check}')
             if (change_to_check >= 0 and calculated_change >= change_to_check) or (change_to_check < 0 and calculated_change < change_to_check):
                 updated = update_notification_db(notification.id, calculated_change)
-                sent = send_notification_email(notification_id=notification.id)
+                sent = True 
+                #sent = send_notification_email(notification_id=notification.id)
     return updated, sent

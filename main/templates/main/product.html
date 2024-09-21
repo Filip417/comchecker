@@ -4,8 +4,8 @@
 {% load custom_tags %}
 
 
-<div class="bg-[#e9e9e9] min-h-screen p-4 sm:p-8">
-  <div class="bg-white rounded-2xl p-6 sm:p-16 mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+<div class="bg-[#e9e9e9] dark:bg-gray-900 min-h-screen p-4 sm:p-8">
+  <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 sm:p-16 mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
 
 
     <!-- Title card -->
@@ -35,7 +35,7 @@
             <img src="{% get_manufacturer_image product.epd_id %}" alt="{{product.manufacturer_name}}_manufacturer_logo"
                 class="my-2 max-h-10 object-contain">
             {% endif %}
-            <h2 class="text-sm lg:text-base font-semibold text-gray-600 dark:text-grat-100">
+            <h2 class="text-sm lg:text-base font-semibold text-gray-600 dark:text-gray-100">
                 {% if product.user == request.user %}
                 Your product
                 {% else %}
@@ -43,10 +43,10 @@
                 {% endif %}
                 </h2>
         </div>
-        <h3 class="text-xs lg:text-sm font-semibold text-gray-400 dark:text-grat-200">
+        <h3 class="text-xs lg:text-sm font-semibold text-gray-400 dark:text-gray-300">
             {% if product.category_1 %}{{product.category_1}}{% endif %}</h3>
         <div class="flex flex-col product-container">
-            <h5 class="text-xs font-normal text-gray-400 dark:text-grat-200">
+            <h5 class="text-xs font-normal text-gray-400 dark:text-gray-400">
                 Project:</h5>
             <form method="POST" action="{% url 'change_product_to_project' product.id %}">
             
@@ -206,7 +206,7 @@
         </style>
         <div class="my-5 flex flex-col" x-data="{ sectionOpen: { description: false } }" >
         <!-- Expand/collapse section button -->
-        <button @click="sectionOpen.description = !sectionOpen.description" type="button" class="flex w-full items-center justify-between bg-white text-gray-400 hover:underline hover:text-gray-500" aria-controls="description-section-0" :aria-expanded="sectionOpen.description.toString()">
+        <button @click="sectionOpen.description = !sectionOpen.description" type="button" class="flex w-full items-center justify-between bg-white dark:bg-gray-800 text-gray-400 hover:underline hover:text-gray-500" aria-controls="description-section-0" :aria-expanded="sectionOpen.description.toString()">
             <span class="text-lg font-medium text-gray-800 dark:text-white">More about {{product.name|slice:":50"}}</span>
             <span class="flex items-center">
                 <!-- Expand icon, show/hide based on section open state. -->
@@ -228,16 +228,16 @@
             </p>
             <div class="mt-5 grid grid-cols-[max-content_1fr] lg:grid-cols-[max-content_1fr_max-content_1fr] gap-5">
                 {% if product.manufacturer_name %}
-                <p class="col-span-1 text-xs text-gray-500">EN15804</p>
-                <p class="col-span-1 text-sm text-gray-800 font-semibold">Compliant</p>
+                <p class="col-span-1 text-xs text-gray-500 dark:text-gray-400">EN15804</p>
+                <p class="col-span-1 text-sm text-gray-800 dark:text-gray-500 font-semibold">Compliant</p>
                 
-                <p class="col-span-1 text-xs text-gray-500">Manufacturer country</p>
-                <p class="col-span-1 text-sm text-gray-800 font-semibold">{{product.manufacturer_country}}</p>
+                <p class="col-span-1 text-xs text-gray-500 dark:text-gray-400">Manufacturer country</p>
+                <p class="col-span-1 text-sm text-gray-800 dark:text-gray-500 font-semibold">{{product.manufacturer_country}}</p>
                 {% endif %}
-                <p class="col-span-1 text-xs text-gray-500">Declaration date</p>
-                <p class="col-span-1 text-sm text-gray-800 font-semibold">{{product.reg_date}}</p>
-                <p class="col-span-1 text-xs text-gray-500">Highest value commodity</p>
-                <p class="col-span-1 text-sm text-gray-800 font-semibold">{{product.top_value_commodity.name}}</p>
+                <p class="col-span-1 text-xs text-gray-500 dark:text-gray-400">Declaration date</p>
+                <p class="col-span-1 text-sm text-gray-800 dark:text-gray-500 font-semibold">{{product.reg_date}}</p>
+                <p class="col-span-1 text-xs text-gray-500 dark:text-gray-400">Highest value commodity</p>
+                <p class="col-span-1 text-sm text-gray-800 dark:text-gray-500 font-semibold">{{product.top_value_commodity.name}}</p>
             </div>
            
         </div>
@@ -268,7 +268,7 @@
         </style>
         <div class="my-5 flex flex-col" x-data="{ sectionOpen: { description: false } }" >
         <!-- Expand/collapse section button -->
-        <button @click="sectionOpen.description = !sectionOpen.description" type="button" class="flex w-full items-center justify-between bg-white text-gray-400 hover:underline hover:text-gray-500" aria-controls="description-section-0" :aria-expanded="sectionOpen.description.toString()">
+        <button @click="sectionOpen.description = !sectionOpen.description" type="button" class="flex w-full items-center justify-between bg-white dark:bg-gray-800 text-gray-400 hover:underline hover:text-gray-500" aria-controls="description-section-0" :aria-expanded="sectionOpen.description.toString()">
             <span class="text-lg font-medium text-gray-800 dark:text-white">Content information</span>
             <span class="ml-6 flex items-center">
                 <!-- Expand icon, show/hide based on section open state. -->
@@ -314,21 +314,21 @@
                                     {% for proportion in material_proportions %}
                                     <tr>
                                         <td class="px-4 py-4 text-left whitespace-nowrap">
-                                            <div class="text-sm font-normal text-gray-600">
+                                            <div class="text-sm font-normal text-gray-600 dark:text-gray-400">
                                                 {{ proportion.material }}
                                             </div>
                                         </td>
                                         <td class="px-4 py-4 whitespace-wrap">
                                             <a href="/commodity/{{proportion.commodity.name}}">
                                                 <div class="flex items-center">
-                                                    <div class="text-sm font-medium text-gray-600 hover:underline">
+                                                    <div class="text-sm font-medium text-gray-500 dark:text-gray-300 hover:underline">
                                                         {{proportion.commodity.name}}
                                                     </div>
                                                 </div>
                                             </a>
                                         </td>
                                         <td class="px-4 py-4 text-left whitespace-nowrap">
-                                            <div class="text-sm font-normal text-gray-600">
+                                            <div class="text-sm font-normal text-gray-600 dark:text-gray-400">
                                                 {{ proportion.proportion }}
                                             </div>
                                         </td>
@@ -372,56 +372,56 @@
                                   </th>
 
                                   <th scope="col" class="px-4 py-3.5 text-sm font-normal whitespace-nowrap">
-                                    <div class="text-gray-600 inline px-3 py-1 text-sm font-normal  dark:bg-gray-800">
+                                    <div class="text-gray-600 dark:text-gray-500 inline px-3 py-1 text-sm font-normal  dark:bg-gray-800">
                                         -5y
                                     </div>
                                 </th>
 
                                   <th scope="col" class="px-4 py-3.5 text-sm font-normal whitespace-nowrap">
-                                    <div class="text-gray-600 inline px-3 py-1 text-sm font-normal  dark:bg-gray-800">
+                                    <div class="text-gray-600 dark:text-gray-500 inline px-3 py-1 text-sm font-normal  dark:bg-gray-800">
                                         -2y
                                     </div>
                                 </th>
   
 
                                   <th scope="col" class="px-4 py-3.5 text-sm font-normal whitespace-nowrap">
-                                    <div class="text-gray-600 inline px-3 py-1 text-sm font-normal  dark:bg-gray-800">
+                                    <div class="text-gray-600 dark:text-gray-500 inline px-3 py-1 text-sm font-normal  dark:bg-gray-800">
                                         -1y
                                     </div>
                                 </th>
   
                                 <th scope="col" class="px-4 py-3.5 text-sm font-normal whitespace-nowrap">
-                                    <div class="text-gray-600 inline px-3 py-1 text-sm font-normal  dark:bg-gray-800">
+                                    <div class="text-gray-600 dark:text-gray-500 inline px-3 py-1 text-sm font-normal  dark:bg-gray-800">
                                         -6m
                                     </div>
                                 </th>
   
                                 <th scope="col" class="px-4 py-3.5 text-sm font-normal whitespace-nowrap">
-                                    <div class="text-gray-800 inline px-3 py-1 text-sm font-medium  dark:bg-gray-800">
+                                    <div class="text-gray-800 dark:text-gray-300 inline px-3 py-1 text-sm font-medium dark:bg-gray-800">
                                         now
                                     </div>
                                 </th>
   
                                 <th scope="col" class="px-4 py-3.5 text-sm font-normal whitespace-nowrap">
-                                    <div class="text-gray-600 inline px-3 py-1 text-sm font-normal  dark:bg-gray-800">
+                                    <div class="text-gray-600 dark:text-gray-500 inline px-3 py-1 text-sm font-normal  dark:bg-gray-800">
                                         +6m
                                     </div>
                                 </th>
 
                                 <th scope="col" class="px-4 py-3.5 text-sm font-normal whitespace-nowrap">
-                                    <div class="text-gray-600 inline px-3 py-1 text-sm font-normal  dark:bg-gray-800">
+                                    <div class="text-gray-600 dark:text-gray-500 inline px-3 py-1 text-sm font-normal  dark:bg-gray-800">
                                         +1y
                                     </div>
                                 </th>
 
                                 <th scope="col" class="px-4 py-3.5 text-sm font-normal whitespace-nowrap">
-                                    <div class="text-gray-600 inline px-3 py-1 text-sm font-normal  dark:bg-gray-800">
+                                    <div class="text-gray-600 dark:text-gray-500 inline px-3 py-1 text-sm font-normal  dark:bg-gray-800">
                                         +2y
                                     </div>
                                 </th>
 
                                 <th scope="col" class="px-4 py-3.5 text-sm font-normal whitespace-nowrap">
-                                    <div class="text-gray-600 inline px-3 py-1 text-sm font-normal  dark:bg-gray-800">
+                                    <div class="text-gray-600 dark:text-gray-500 inline px-3 py-1 text-sm font-normal  dark:bg-gray-800">
                                         +5y
                                     </div>
                                 </th>
@@ -489,10 +489,10 @@
                                     <a href="/commodity/{{commodity}}" class="hover:underline">
                                     <div class="flex items-center">
                                         <div class="ml-2">
-                                            <div class="text-sm font-medium text-gray-900">
+                                            <div class="text-sm font-medium text-gray-900 dark:text-gray-300">
                                                     {{commodity}}
                                             </div>
-                                            <div class="text-sm font-normal text-gray-500">
+                                            <div class="text-sm font-normal text-gray-500 dark:text-gray-400">
                                                 {% for material in data.material %}
                                                     {{ material }}{% if not forloop.last %}, {% endif %}
                                                 {% endfor %}
@@ -502,52 +502,52 @@
                                 </a>
                                 </td>
                                 <td class="px-4 py-4 text-center whitespace-nowrap">
-                                    <div class="text-sm font-normal text-gray-600">
+                                    <div class="text-sm font-normal text-gray-600 dark:text-gray-500">
                                         {% if data.5y_ago %}{{ data.5y_ago }}{% else %}NA{% endif %}
                                     </div>
                                 </td>
                                 <td class="px-4 py-4 text-center whitespace-nowrap">
-                                    <div class="text-sm font-normal text-gray-600">
+                                    <div class="text-sm font-normal text-gray-600 dark:text-gray-500">
                                         {% if data.2y_ago %}{{ data.2y_ago }}{% else %}NA{% endif %}
                                     </div>
                                 </td>
                                 <td class="px-4 py-4 text-center whitespace-nowrap">
-                                    <div class="text-sm font-normal text-gray-600">
+                                    <div class="text-sm font-normal text-gray-600 dark:text-gray-500">
                                         {% if data.1y_ago %}{{ data.1y_ago }}{% else %}NA{% endif %}
                                     </div>
                                 </td>
                                 <td class="px-4 py-4 text-center whitespace-nowrap">
-                                    <div class="text-sm font-normal text-gray-600">
+                                    <div class="text-sm font-normal text-gray-600 dark:text-gray-500">
                                         {% if data.6m_ago %}{{ data.6m_ago }}{% else %}NA{% endif %}
                                     </div>
                                 </td>
                                 <td class="px-4 py-4 text-center whitespace-nowrap">
-                                    <div class="text-sm font-medium text-gray-800">
+                                    <div class="text-sm font-medium text-gray-800 dark:text-gray-300">
                                         {% if data.today %}{{ data.today }}{% else %}NA{% endif %}
                                     </div>
                                 </td>
                                 <td class="px-4 py-4 text-center whitespace-nowrap">
-                                    <div class="text-sm font-normal text-gray-600">
+                                    <div class="text-sm font-normal text-gray-600 dark:text-gray-500">
                                         {% if data.6m_ahead %}{{ data.6m_ahead }}{% else %}NA{% endif %}
                                     </div>
                                 </td>
                                 <td class="px-4 py-4 text-center whitespace-nowrap">
-                                    <div class="text-sm font-normal text-gray-600">
+                                    <div class="text-sm font-normal text-gray-600 dark:text-gray-500">
                                         {% if data.1y_ahead %}{{ data.1y_ahead }}{% else %}NA{% endif %}
                                     </div>
                                 </td>
                                 <td class="px-4 py-4 text-center whitespace-nowrap">
-                                    <div class="text-sm font-normal text-gray-600">
+                                    <div class="text-sm font-normal text-gray-600 dark:text-gray-500">
                                         {% if data.2y_ahead %}{{ data.2y_ahead }}{% else %}NA{% endif %}
                                     </div>
                                 </td>
                                 <td class="px-4 py-4 text-center whitespace-nowrap">
-                                    <div class="text-sm font-normal text-gray-600">
+                                    <div class="text-sm font-normal text-gray-600 dark:text-gray-500">
                                         {% if data.5y_ahead %}{{ data.5y_ahead }}{% else %}NA{% endif %}
                                     </div>
                                 </td>
                                 <td class="px-4 py-4 text-center whitespace-nowrap">
-                                    <div class="text-sm font-normal text-gray-600">
+                                    <div class="text-sm font-normal">
                                         {% if data.today > data.1y_ago %}
                                         <a><span class="text-green-500 font-black">↑</span></a>
                                         {% elif data.today < data.1y_ago%}
@@ -649,7 +649,7 @@
     <section class="relative">
         <!-- Arrow left -->
         <div x-init="$el.classList.remove('hidden')" class="hidden absolute left-0 inset-y-0 cursor-pointer z-10 arrow-left">
-            <div class="px-2 sm:px-6 h-full items-center flex bg-gradient-to-l from-white/60 to-white/80 relative">
+            <div class="px-2 sm:px-6 h-full items-center flex bg-gradient-to-l from-white/60 to-white/80 dark:from-gray-800/60 dark:to-gray-800/80 relative">
                 <!-- Background container with opacity -->
             </div>
             <div class="w-[32px] flex justify-center absolute top-1/2 transform -translate-y-1/2 left-2">
@@ -662,7 +662,7 @@
 
         <!-- Arrow right -->
         <div x-init="$el.classList.remove('hidden')" class="hidden absolute inset-y-0 right-0 cursor-pointer z-10 arrow-right">
-            <div class="px-2 sm:px-6 h-full items-center flex bg-gradient-to-r from-white/60 to-white/80 relative">
+            <div class="px-2 sm:px-6 h-full items-center flex bg-gradient-to-r from-white/60 to-white/80 dark:from-gray-800/60 dark:to-gray-800/80 relative">
                 <!-- Background container with opacity -->
             </div>
             <div class="w-[32px] flex justify-center absolute top-1/2 transform -translate-y-1/2 right-2">
@@ -707,7 +707,7 @@
     <section class="relative">
         <!-- Arrow left -->
         <div x-init="$el.classList.remove('hidden')" class="hidden absolute left-0 inset-y-0 cursor-pointer z-10 arrow-left">
-            <div class="px-2 sm:px-6 h-full items-center flex bg-gradient-to-l from-white/60 to-white/80 relative">
+            <div class="px-2 sm:px-6 h-full items-center flex bg-gradient-to-l from-white/60 to-white/80 dark:from-gray-800/60 dark:to-gray-800/80 relative">
                 <!-- Background container with opacity -->
             </div>
             <div class="w-[32px] flex justify-center absolute top-1/2 transform -translate-y-1/2 left-2">
@@ -720,7 +720,7 @@
 
         <!-- Arrow right -->
         <div x-init="$el.classList.remove('hidden')" class="hidden absolute inset-y-0 right-0 cursor-pointer z-10 arrow-right">
-            <div class="px-2 sm:px-6 h-full items-center flex bg-gradient-to-r from-white/60 to-white/80 relative">
+            <div class="px-2 sm:px-6 h-full items-center flex bg-gradient-to-r from-white/60 to-white/80 dark:from-gray-800/60 dark:to-gray-800/80 relative">
                 <!-- Background container with opacity -->
             </div>
             <div class="w-[32px] flex justify-center absolute top-1/2 transform -translate-y-1/2 right-2">
