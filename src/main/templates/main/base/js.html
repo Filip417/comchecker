@@ -1,0 +1,84 @@
+{% load static %}
+<script src="{%static 'main/js/js.js' %}"></script>
+<script src="{%static 'main/js/alpine.js.cdn.min.js' %}"></script>
+<script src="{%static 'main/js/tailwind.3.4.5.js' %}"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+    
+        let productsInProjects = false; // Default value
+    
+        try {
+            const jsonString = '{{ products_in_projects|escapejs }}';
+            // Attempt to parse JSON string
+            productsInProjects = jsonString ? JSON.parse(jsonString) : false;
+        } catch (error) {
+            // If there's an error, productsInProjects will already be false
+        }
+    
+        if (productsInProjects) {
+            // Attach event listener to the parent container
+            document.querySelectorAll('.product-container').forEach(container => {
+                const selectElement = container.querySelector('.project-select');
+                const inputElement = container.querySelector('.new-project-name');
+                const buttonElement = container.querySelector('.product-button');
+    
+                function updateButtonStates(selectedProjectId) {
+                    const productId = buttonElement.dataset.productId;
+    
+                    // Ensure types are consistent
+                    const productProjects = productsInProjects[productId] || [];
+                    const projectIds = productProjects.length > 0
+                        ? productProjects.map(id => id.toString())
+                        : [];
+                    const selectedIdStr = selectedProjectId.toString();
+    
+                    if (projectIds.includes(selectedIdStr)) {
+                        buttonElement.classList.remove('text-white', 'bg-blue-700', 'hover:bg-blue-800');
+                        buttonElement.classList.add('text-black', 'bg-white', 'hover:bg-gray-200');
+                        buttonElement.textContent = 'Remove';
+                    } else {
+                        buttonElement.classList.remove('text-black', 'bg-white', 'hover:bg-gray-200');
+                        buttonElement.classList.add('text-white', 'bg-blue-700', 'hover:bg-blue-800');
+                        buttonElement.textContent = 'Save';
+                    }
+                    if (selectElement.value === 'new') {
+                        inputElement.classList.remove('hidden');
+                        inputElement.focus();
+                        inputElement.required = true;
+                    } else {
+                        if (inputElement.value.trim() === '') {
+                            inputElement.classList.add('hidden');
+                            inputElement.required = false;
+                        }
+                    }
+                }
+    
+                // Run once immediately on load
+                if (selectElement && inputElement) {
+                    updateButtonStates(selectElement.value); // Call the function immediately
+                    
+                    // Attach the event listener for changes
+                    selectElement.addEventListener('change', () => {
+                        updateButtonStates(selectElement.value);
+                    });
+    
+                    // Hide input if it loses focus and has no value
+                    inputElement.addEventListener('blur', () => {
+                        setTimeout(() => {
+                            if (inputElement.value.trim() === '' && selectElement.value !== 'new') {
+                                inputElement.classList.add('hidden');
+                                inputElement.required = false;
+                            }
+                        }, 100);
+                    });
+                }
+    
+                // Attach mouseover event for future updates
+                container.addEventListener('mouseover', (event) => {
+                    updateButtonStates(selectElement.value); // Ensure it updates on mouseover as well
+                });
+            });
+        }
+    });    
+</script>

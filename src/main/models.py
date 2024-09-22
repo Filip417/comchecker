@@ -10,7 +10,64 @@ from django.utils import timezone
 from datetime import datetime
 import random
 import string
+from django.contrib.auth.models import Group, Permission
 
+ALLOW_CUSTOM_GROUPS = True
+SUBSCRIPTION_PERMISSIONS = [
+            ("lite", "Lite Perm"), # subscriptions.lite
+            ("standard","Standard Perm"), # subscriptions.standard
+            ("unlimited","Unlimited Perm"), # subscriptions.unlimited
+        ]
+
+class Subscription(models.Model):
+    name = models.CharField(max_length=120)
+    active = models.BooleanField(default=True)
+    groups = models.ManyToManyField(Group) # can be one to one depending on usage TODO
+    permissions = models.ManyToManyField(Permission,
+        limit_choices_to={
+            "content_type__app_label":"main",
+            "codename__in":[x[0] for x in SUBSCRIPTION_PERMISSIONS]
+            }
+        )
+    
+    def __str__(self):
+        return f"{self.name}"
+
+    class Meta:
+        permissions = SUBSCRIPTION_PERMISSIONS
+
+
+class UserSubscription(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    subscription = models.ForeignKey(Subscription, on_delete=models.SET_NULL, null=True, blank=True)
+    active = models.BooleanField(default=True)
+
+
+def user_sub_post_save(sender, instance, *args, **kwargs):
+    user_sub_instance = instance
+    user = user_sub_instance.user
+    subscription_obj = user_sub_instance.subscription
+    groups_ids = []
+    if subscription_obj is not None:
+        groups = subscription_obj.groups.all()
+        groups_ids = groups.values_list('id', flat=True)
+    groups = subscription_obj.groups.all()
+    if not ALLOW_CUSTOM_GROUPS:
+        user.groups.set(groups_ids)
+    else:
+        subs_qs = Subscription.objects.filter(active=True).exclude(id=subscription_obj.id)
+        if subscription_obj is not None:
+            subs_qs = subs_qs.exclude(id=subscription_obj.id)
+        subs_groups = subs_qs.values_list("groups__id", flat=True)
+        subs_groups_set = set(subs_groups)
+        current_groups = user.groups.all().values_list('id', flat=True)
+        groups_ids_set = set(groups_ids)
+        current_groups_set = set(current_groups) - subs_groups_set
+        final_group_ids = list(groups_ids_set | current_groups_set)
+        user.groups.set(final_group_ids)
+
+
+post_save.connect(user_sub_post_save, sender=UserSubscription)
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -166,7 +223,7 @@ class Project(models.Model):
     category = models.CharField(max_length=255, null=True, blank=True)
     description = models.TextField(null=True, blank=True)
     slug = models.SlugField(unique=True)
-    created_at = models.DateTimeField(default=timezone.now)  # Change to DateTimeField
+    created_at = models.DateTimeField(auto_now_add=True)  # Change to DateTimeField
 
     # Many-to-many relationships
     products = models.ManyToManyField(Product, related_name='projects', blank=True)
@@ -276,7 +333,7 @@ class View(models.Model):
     commodity = models.ForeignKey(Commodity, on_delete=models.CASCADE, null=True, blank=True)
     project = models.ForeignKey(Project, on_delete=models.CASCADE, null=True, blank=True)
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)  # Track the user who viewed
-    viewed_at = models.DateTimeField(default=timezone.now)
+    viewed_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         if self.product:
@@ -298,7 +355,7 @@ class Notification(models.Model):
     change_by = models.DateField()
     email_notification = models.BooleanField()
 
-    created_at = models.DateTimeField(default=timezone.now)
+    created_at = models.DateTimeField(auto_now_add=True)
     activated = models.BooleanField(default=False)
     activated_at = models.DateTimeField(null=True, blank=True)
     activated_value = models.FloatField(null=True, blank=True)

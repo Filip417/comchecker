@@ -1,4 +1,5 @@
-{% extends "main/layout.html" %}
+{% extends "main/base.html" %}
+{% block head_title %} Dashboard - {{block.super}} {% endblock head_title %}
 {% block content %}
 {% load static %}
 {% load custom_tags %}

@@ -22,6 +22,8 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'pricerdoc@gmail.com'
 EMAIL_HOST_PASSWORD = 'ncpv ucpn djup rkhm'
 
+LOGIN_URL = "/login/" # custom setting to fit the urls.py
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -50,8 +52,8 @@ if DEBUG:
         "localhost",
     ]
     CSRF_TRUSTED_ORIGINS += [
-        "127.0.0.1",
-        "localhost",
+        "https://127.0.0.1",
+        "https://localhost",
     ]
 
 
@@ -65,7 +67,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'main'
+    'main',
+    'customers',
 ]
 
 MIDDLEWARE = [
@@ -102,13 +105,20 @@ WSGI_APPLICATION = 'comchecker.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
 
+CONN_MAX_AGE = config("CONN_MAX_AG", cast=int, default=30)
+DATABASE_URL = config("DATABASE_URL", cast=str)
+
+if DATABASE_URL is not None:
+    import dj_database_url
+    DATABASES = {
+        'default': dj_database_url.config(
+                default=DATABASE_URL,
+                conn_max_age=CONN_MAX_AGE,
+                conn_health_checks=True
+            )
+        
+    }
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
@@ -146,9 +156,11 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-
+# source for python manage.py collectstatic
 STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]
+
+# output for python manage.py collectstatic
+STATIC_ROOT = os.path.join(BASE_DIR, 'local-cdn')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
