@@ -40,10 +40,18 @@ DEBUG = True
 ALLOWED_HOSTS = [
     ".railway.app" # https://saas.prod.railway.app
 ]
+CSRF_TRUSTED_ORIGINS = [
+    ".railway.app" # https://saas.prod.railway.app
+]
+
 if DEBUG:
     ALLOWED_HOSTS += [
         "127.0.0.1",
-        "localhost"
+        "localhost",
+    ]
+    CSRF_TRUSTED_ORIGINS += [
+        "127.0.0.1",
+        "localhost",
     ]
 
 
