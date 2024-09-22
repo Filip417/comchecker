@@ -32,16 +32,16 @@ CURRENCIES_API_KEY = config('CURRENCIES_API_KEY')
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-8ht8l39auytd&-cae38(vofugzhxjc1l(x!53ub@&4zhp)j=n4'
+SECRET_KEY = config('DJANGO_SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = config('DJANGO_DEBUG', cast=bool)
 
 ALLOWED_HOSTS = [
-    ".railway.app" # https://saas.prod.railway.app
+    ".railway.app" # for any ending with .railway.app
 ]
 CSRF_TRUSTED_ORIGINS = [
-    ".railway.app" # https://saas.prod.railway.app
+    "https://comchecker-production.up.railway.app/" # must be full domain url
 ]
 
 if DEBUG:

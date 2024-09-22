@@ -15,7 +15,6 @@ RUN pip install --upgrade pip
 # Set Python-related environment variables
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
-ENV CURRENCIES_API_KEY 'fca_live_HKyQMt07Aa18hKfhzE2hj3YJFrmHpXhsGel3UKUb'
 
 # Install os dependencies for our mini vm
 RUN apt-get update && apt-get install -y \

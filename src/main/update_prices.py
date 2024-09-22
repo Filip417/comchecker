@@ -25,14 +25,14 @@ from datetime import datetime, date
 
 # Set the Django settings module environment variable
 # Add the Django project root directory to the Python path
-project_root = r'C:\\Users\\sawin\\Documents\\Commodity Project\\django_project\\comchecker'
-sys.path.append(project_root)
+# project_root = r'C:\\Users\\sawin\\Documents\\Commodity Project\\django_project\\comchecker'
+# sys.path.append(project_root)
 
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "comchecker.settings")
+# os.environ.setdefault("DJANGO_SETTINGS_MODULE", "comchecker.settings")
 
-# Initialize Django
-import django
-django.setup()
+# # Initialize Django
+# import django
+# django.setup()
 
 
 from main.models import (
