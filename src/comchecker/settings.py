@@ -41,7 +41,7 @@ ALLOWED_HOSTS = [
     ".railway.app" # for any ending with .railway.app
 ]
 CSRF_TRUSTED_ORIGINS = [
-    "https://comchecker-production.up.railway.app/" # must be full domain url
+    "https://comchecker-production.up.railway.app" # must be full domain url
 ]
 
 if DEBUG:
