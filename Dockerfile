@@ -15,6 +15,7 @@ RUN pip install --upgrade pip
 # Set Python-related environment variables
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
+ENV CURRENCIES_API_KEY 'fca_live_HKyQMt07Aa18hKfhzE2hj3YJFrmHpXhsGel3UKUb'
 
 # Install os dependencies for our mini vm
 RUN apt-get update && apt-get install -y \
@@ -49,7 +50,7 @@ RUN pip install -r /tmp/requirements.txt
 # RUN python manage.py collectstatic --noinput
 
 # set the Django default project name
-ARG PROJ_NAME="materialwise"
+ARG PROJ_NAME="comchecker"
 
 # create a bash script to run the Django project
 # this script will execute at runtime when

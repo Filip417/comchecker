@@ -26,7 +26,6 @@ EMAIL_HOST_PASSWORD = 'ncpv ucpn djup rkhm'
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
-
 CURRENCIES_API_KEY = config('CURRENCIES_API_KEY')
 
 # Quick-start development settings - unsuitable for production
