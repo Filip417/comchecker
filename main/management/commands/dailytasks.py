@@ -29,7 +29,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **kwargs):
         try:
-            # Currencies
+            # # Currencies
             # API_KEY = settings.CURRENCIES_API_KEY
             # update_currencies(API_KEY)
 
@@ -53,10 +53,10 @@ class Command(BaseCommand):
             # update_total_production(commodities)
 
             # Forecast prices
-            # update_forecast_prices()
+            update_forecast_prices()
 
             # Check notifications
-            check_all_notifications_and_send_emails()
+            # check_all_notifications_and_send_emails()
 
             self.stdout.write(self.style.SUCCESS('Successfully executed dailytasks'))
             logger.info('dailytasks executed successfully')

@@ -247,7 +247,6 @@ def get_forecast_df(commodity_df, years_history=None, cap_value_multiple=1, floo
 
     rolling_average(forecast, window=30)
 
-
     # Ensure yhat, yhat_upper, and yhat_lower are within cap_value and floor_value
     last_price = df_pro.iloc[-1]['y']
     floor_value = df_pro[df_pro['ds'] > (today - timedelta(days=5*365))]['y'].min() / 5
@@ -266,12 +265,10 @@ def get_forecast_df(commodity_df, years_history=None, cap_value_multiple=1, floo
 
 
     forecast = linear_smoothing(df_pro, forecast, months_to_smooth=36)
-    fig1 = m.plot(forecast)
-    a = add_changepoints_to_plot(fig1.gca(), m, forecast)
-    fig2 = m.plot_components(forecast)
-    plt.show()
-
-    print(f'Non-futures forecast data: {forecast}')
+    # fig1 = m.plot(forecast)
+    # a = add_changepoints_to_plot(fig1.gca(), m, forecast)
+    # fig2 = m.plot_components(forecast)
+    # plt.show()
 
     return forecast
 
@@ -324,12 +321,10 @@ def get_forecast_df_for_futures(commodity_df, years_history=1, cap_value_multipl
 
 
     forecast = linear_smoothing(df_pro, forecast, months_to_smooth=36)
-    fig1 = m.plot(forecast)
-    a = add_changepoints_to_plot(fig1.gca(), m, forecast)
-    fig2 = m.plot_components(forecast)
-    plt.show()
-
-    print(f'Futures forecast data: {forecast}')
+    # fig1 = m.plot(forecast)
+    # a = add_changepoints_to_plot(fig1.gca(), m, forecast)
+    # fig2 = m.plot_components(forecast)
+    # plt.show()
 
     return forecast
 
@@ -440,7 +435,7 @@ def upload_to_db(commodity_df, futures_df):
             if not created and obj.futures_price is not None:
                 CommodityPrice.objects.filter(pk=obj.pk).update(futures_price=F('futures_price'))
 
-list_to_update = [48]
+list_to_update = range(1,55)
 
 def update_forecast_prices():
     for _ in list_to_update:

@@ -415,6 +415,16 @@
                         buttonElement.classList.add('text-white', 'bg-blue-700', 'hover:bg-blue-800');
                         buttonElement.textContent = 'Save';
                     }
+                    if (selectElement.value === 'new') {
+                        inputElement.classList.remove('hidden');
+                        inputElement.focus();
+                        inputElement.required = true;
+                    } else {
+                        if (inputElement.value.trim() === '') {
+                            inputElement.classList.add('hidden');
+                            inputElement.required = false;
+                        }
+                    }
                 }
     
                 // Run once immediately on load
@@ -424,14 +434,6 @@
                     // Attach the event listener for changes
                     selectElement.addEventListener('change', () => {
                         updateButtonStates(selectElement.value);
-                        if (selectElement.value === 'new') {
-                            inputElement.classList.remove('hidden');
-                            inputElement.focus();
-                        } else {
-                            if (inputElement.value.trim() === '') {
-                                inputElement.classList.add('hidden');
-                            }
-                        }
                     });
     
                     // Hide input if it loses focus and has no value
@@ -439,6 +441,7 @@
                         setTimeout(() => {
                             if (inputElement.value.trim() === '' && selectElement.value !== 'new') {
                                 inputElement.classList.add('hidden');
+                                inputElement.required = false;
                             }
                         }, 100);
                     });
