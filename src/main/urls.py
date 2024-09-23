@@ -1,7 +1,6 @@
 from django.contrib import admin
-from django.urls import path
 from . import views
-from django.urls import path
+from django.urls import path, include
 
 
 urlpatterns = [
@@ -15,11 +14,6 @@ urlpatterns = [
     path("commodity/<str:name>",views.commodity,name="commodity"),
     path("settings/",views.user_settings, name="settings"),
     path("project/<str:project_slug>",views.project,name="project"),
-    path("login/", views.user_login, name="login"), # user_login not login to avoid clash with django function
-    path("register/", views.register, name="register"),
-    path("logout/", views.user_logout, name="logout"), # user_logout not login to avoid clash with django function
-    path("password_reset/", views.password_reset, name="password_reset"),
-    path('reset/<uidb64>/<token>/', views.reset_link, name='password_reset_confirm'),
     path('edit-product/<str:slug>', views.edit_product, name="edit_product"),
     path('delete-product/<str:slug>', views.delete_product, name="delete_product"),
     path('change-product-to-project/<int:product_id>/', views.change_product_to_project, name='change_product_to_project'),
@@ -29,9 +23,8 @@ urlpatterns = [
     path('set-notification/', views.set_notification, name="set_notification"),
     path('delete-notification/', views.delete_notification, name="delete_notification"),
     path('update-settings/', views.update_settings, name='update_settings'),
-    path('change-email/',views.change_email, name="change_email"),
-    path('change-password/',views.change_password, name="change_password"),
     path('help/', views.help, name="help"),
     path('logged-contact-form/', views.logged_contact_form, name="logged_contact_form"),
-    path('delete-account/', views.delete_account, name="delete_account"),
+    # Account management
+    path('accounts/', include('allauth.urls')),
 ]

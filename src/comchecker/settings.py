@@ -22,7 +22,7 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'pricerdoc@gmail.com'
 EMAIL_HOST_PASSWORD = 'ncpv ucpn djup rkhm'
 
-LOGIN_URL = "/login/" # custom setting to fit the urls.py
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -67,8 +67,16 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    # my apps
     'main',
     'customers',
+    # allauth ui
+    "allauth_ui",
+    "widget_tweaks",
+    "slippers",
+    # The following apps are required for allauth:
+    'allauth',
+    'allauth.account',
 ]
 
 MIDDLEWARE = [
@@ -79,7 +87,19 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+
+    # Add the account middleware for allauth:
+    "allauth.account.middleware.AccountMiddleware",
 ]
+
+LOGIN_URL = "/accounts/login/" # custom setting to fit the urls.py
+
+# Django Allauth Config
+LOGIN_REDIRECT_URL = "/dashboard/"
+ACCOUNT_AUTHENTICATION_METHOD = "email"
+ACCOUNT_EMAIL_REQUIRED=True
+ACCOUNT_EMAIL_VERIFICATION="mandatory"
+ACCOUNT_EMAIL_SUBJECT_PREFIX="[Material Wise] "
 
 ROOT_URLCONF = 'comchecker.urls'
 
@@ -109,7 +129,7 @@ WSGI_APPLICATION = 'comchecker.wsgi.application'
 CONN_MAX_AGE = config("CONN_MAX_AG", cast=int, default=30)
 DATABASE_URL = config("DATABASE_URL", cast=str)
 
-if DATABASE_URL is not None:
+if DATABASE_URL is not None and not DEBUG:
     import dj_database_url
     DATABASES = {
         'default': dj_database_url.config(
@@ -119,6 +139,13 @@ if DATABASE_URL is not None:
             )
         
     }
+else:
+    DATABASES = {
+    "default": {
+        "ENGINE": "django.db.backends.sqlite3",
+        "NAME": "db.sqlite3",
+    }
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
@@ -138,6 +165,13 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+AUTHENTICATION_BACKENDS = [
+    # Needed to login by username in Django admin, regardless of `allauth`
+    'django.contrib.auth.backends.ModelBackend',
+
+    # `allauth` specific authentication methods, such as login by email
+    'allauth.account.auth_backends.AuthenticationBackend',
+]
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.0/topics/i18n/

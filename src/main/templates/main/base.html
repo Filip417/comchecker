@@ -7,6 +7,11 @@
     <link rel="icon" href="{% static 'main/images/logo.svg' %}">
     <title>{% block head_title %} Material Wise {% endblock head_title %}</title>
     {% include 'main/base/css.html' %}
+
+    {% block extra_head %}
+        <link rel="stylesheet" href="{% static 'allauth_ui/output.css' %}">
+    {% endblock extra_head %}
+    {% include 'main/base/js.html' %}
 </head>
 <body>
     {% include 'main/base/navbar.html' %}
@@ -16,6 +21,5 @@
     </div>
     {% include 'main/base/messages.html' %}
     {% include 'main/base/footer.html' %}
-    {% include 'main/base/js.html' %}
 </body>
 </html>

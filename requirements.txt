@@ -13,3 +13,7 @@ gunicorn
 psycopg[binary]
 dj-database-url
 stripe
+django-allauth
+django-allauth-ui
+django-widget-tweaks
+slippers
