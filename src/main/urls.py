@@ -1,7 +1,7 @@
 from django.contrib import admin
 from . import views
 from django.urls import path, include
-
+from checkouts import views as checkout_views
 
 urlpatterns = [
     path("",views.index,name="index"),
@@ -27,4 +27,11 @@ urlpatterns = [
     path('logged-contact-form/', views.logged_contact_form, name="logged_contact_form"),
     # Account management
     path('accounts/', include('allauth.urls')),
+    # Checkouts
+    path("checkout/sub-price/<int:price_id>/",checkout_views.product_price_redirect_view, name="sub-price-checkout"),
+    path("checkout/start/", checkout_views.checkout_redirect_view, name="stripe-checkout-start"),
+    path("checkout/success/", checkout_views.checkout_finalize_view, name="stripe-checkout-end"),
+    # pricing table temporary example TODO update correctly 
+    path("pricing/", views.pricing, name="pricing-view"),
+    path("cancel-pricing/", views.user_subscription_cancel_view, name="pricing-view-cancel"),
 ]

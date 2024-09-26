@@ -1067,3 +1067,33 @@ def get_product_project_variables(request):
             else:
                 products_in_projects[product.id].append(project.id)
     return owned_projects, shared_projects, your_projects, products_in_projects
+
+
+
+def refresh_active_users_subscriptions(user_ids=None, active_only=True):
+    qs = UserSubscription.objects.all()
+    if active_only:
+        active_qs_lookup = (
+            Q(status = SubscriptionStatus.ACTIVE) |
+            Q(status = SubscriptionStatus.TRIALING)
+        )
+        qs = qs.filter(active_qs_lookup)
+
+    if isinstance(user_ids, list):
+        qs = qs.filter(user_id__in=user_ids)
+    elif isinstance(user_ids, int):
+        qs = qs.filter(user_id__in=[user_ids])
+    elif isinstance(user_ids, str):
+        qs = qs.filter(user_id__in=[user_ids])
+
+    complete_count = 0
+    qs_count = qs.count()
+    for obj in qs:
+        if obj.stripe_id:
+            sub_data = helpers.billing.get_subscription(obj.stripe_id, raw=False)
+            for k, v in sub_data.items():
+                setattr(obj, k, v)
+            obj.save()
+            complete_count += 1
+    return complete_count == qs_count
+    

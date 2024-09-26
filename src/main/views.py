@@ -26,6 +26,61 @@ from .decorators import show_new_notifications, logged_in_cant_access
 from django.utils import timezone
 from .views_functions import *
 from .update_prices import check_notification_and_send_email
+import helpers.billing
+
+
+@login_required
+def pricing(request):
+    # TODO put that in settings or other later
+    pricing_qs = SubscriptionPrice.objects.filter(featured=True)
+    month_qs = pricing_qs.filter(interval=SubscriptionPrice.IntervalChoices.MONTHLY)
+    year_qs = pricing_qs.filter(interval=SubscriptionPrice.IntervalChoices.YEARLY)
+
+    user_sub_obj, created = UserSubscription.objects.get_or_create(user=request.user)
+
+    sub_data = user_sub_obj.serialize()
+    if request.method == 'POST':
+        finished = refresh_active_users_subscriptions(user_ids=[request.user.id],
+                                                      active_only=False)
+        if finished:
+            messages.success(request, "Membership data refreshed.")
+        else:
+            messages.error(request, "Membership data not refreshed. Please try again.")
+        return redirect(user_sub_obj.get_absolute_url())
+
+    context = {
+        "month_qs":list(month_qs),
+        "year_qs":list(year_qs),
+        "subscription": user_sub_obj
+    }
+
+    return render(request, "main/pricing.html", context=context)
+
+@login_required
+def user_subscription_cancel_view(request):
+    user_sub_obj, created = UserSubscription.objects.get_or_create(user=request.user)
+
+    sub_data = user_sub_obj.serialize()
+    if request.method == 'POST':
+        if user_sub_obj.stripe_id and user_sub_obj.is_active_status:
+            sub_data = helpers.billing.cancel_subscription(
+                user_sub_obj.stripe_id,
+                cancel_at_period_end=True,
+                reason="User wanted to end",
+                feedback="other",
+                raw=False)
+            for k, v in sub_data.items():
+                setattr(user_sub_obj, k, v)
+            user_sub_obj.save()
+            messages.success(request, "Your plan has been cancelled")
+        return redirect(user_sub_obj.get_absolute_url())
+
+    context = {
+        "subscription": user_sub_obj
+    }
+
+    return render(request, "main/pricing_cancel_tobeedited.html", context=context)
+
 
 
 # Views

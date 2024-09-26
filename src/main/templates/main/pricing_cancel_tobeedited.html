@@ -1,0 +1,42 @@
+{% extends "main/base.html" %}
+{% block head_title %} Pricing - {{block.super}} {% endblock head_title %}
+{% block content %}
+{% load static %}
+<div class="bg-white dark:bg-gray-900 min-h-[calc(100vh-82px)] p-4 sm:p-8 flex items-center">
+
+
+    <!-- test cancel subscription data-->
+     
+    <section>
+        {% if subscription.is_active_status %}
+        <h1 class="text-lg font-medium"> Are you sure you want to cancel?
+            {{ subscription.plan_name}} </h1>
+
+        <form action="" method="POST">
+            {% csrf_token %}
+            <button type="submit">
+                Cancel
+            </button>
+        </form>
+
+        <p> Plan name: {{ subscription.plan_name }}</p>
+
+        <p> Status: {{ subscription.status|title }}</p>
+
+        <p> Membership age: {{ subscription.original_period_start|timesince }}</p>
+
+        <p> Start: {{ subscription.current_period_start }}</p>
+
+        <p> End: {{ subscription.current_period_end|timeuntil}}</p>
+        {% else %}
+        <h1 class="text-lg font-medium"> Your Membership is no longer active </h1>
+        {% endif %}
+
+    </section>
+    
+
+    
+
+
+</div>
+{% endblock %}

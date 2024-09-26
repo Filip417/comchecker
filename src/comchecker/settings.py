@@ -22,7 +22,7 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'pricerdoc@gmail.com'
 EMAIL_HOST_PASSWORD = 'ncpv ucpn djup rkhm'
 
-
+BASE_URL = config("BASE_URL", default=None)
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent

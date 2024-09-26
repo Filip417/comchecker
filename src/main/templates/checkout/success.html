@@ -1,0 +1,14 @@
+{% extends "main/base.html" %}
+{% block head_title %} Success - {{block.super}} {% endblock head_title %}
+{% block content %}
+{% load static %}
+<h1 class="text-lg font-medium"> Success welcome!</h1>
+<div class="mb-10">
+    {{subscription}}
+</div>
+
+<div>
+    {{checkout}}
+</div>
+
+{% endblock %}
