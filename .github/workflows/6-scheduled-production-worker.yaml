@@ -18,6 +18,7 @@ jobs:
       NEON_API_KEY: ${{ secrets.NEON_API_KEY }}
       NEON_PROJECT_ID: ${{ secrets.NEON_PROJECT_ID }}
       NEON_PROD_BRANCH: "main"
+      CURRENCIES_API_KEY: ${{ secrets.CURRENCIES_API_KEY }}
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
