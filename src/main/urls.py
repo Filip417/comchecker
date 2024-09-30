@@ -33,5 +33,6 @@ urlpatterns = [
     path("checkout/success/", checkout_views.checkout_finalize_view, name="stripe-checkout-end"),
     # pricing table temporary example TODO update correctly 
     path("pricing/", views.pricing, name="pricing-view"),
-    path("cancel-pricing/", views.user_subscription_cancel_view, name="pricing-view-cancel"),
+    path("cancel_membership/", views.user_subscription_cancel_view, name="cancel-membership"),
+    path("no_membership/", views.index_logged_no_valid_membership, name="index_logged_no_valid_membership")
 ]

@@ -22,16 +22,22 @@ from django.contrib.auth.hashers import check_password
 from django.db.models import Count
 from itertools import chain
 from django.db.models import Sum, Count
-from .decorators import show_new_notifications, logged_in_cant_access
+from .decorators import *
 from django.utils import timezone
 from .views_functions import *
 from .update_prices import check_notification_and_send_email
 import helpers.billing
+from .subs_utils import refresh_active_users_subscriptions
+import stripe
+from django.http import JsonResponse
+from customers.models import Customer
 
 
-@login_required
+
+
+
+@logged_in_cant_access
 def pricing(request):
-    # TODO put that in settings or other later
     pricing_qs = SubscriptionPrice.objects.filter(featured=True)
     month_qs = pricing_qs.filter(interval=SubscriptionPrice.IntervalChoices.MONTHLY)
     year_qs = pricing_qs.filter(interval=SubscriptionPrice.IntervalChoices.YEARLY)
@@ -51,10 +57,10 @@ def pricing(request):
     context = {
         "month_qs":list(month_qs),
         "year_qs":list(year_qs),
-        "subscription": user_sub_obj
+        "subscription": sub_data
     }
 
-    return render(request, "main/pricing.html", context=context)
+    return render(request, "main/pricing_tobeedited.html", context=context)
 
 @login_required
 def user_subscription_cancel_view(request):
@@ -73,13 +79,10 @@ def user_subscription_cancel_view(request):
                 setattr(user_sub_obj, k, v)
             user_sub_obj.save()
             messages.success(request, "Your plan has been cancelled")
-        return redirect(user_sub_obj.get_absolute_url())
-
-    context = {
-        "subscription": user_sub_obj
-    }
-
-    return render(request, "main/pricing_cancel_tobeedited.html", context=context)
+        referer = request.META.get('HTTP_REFERER', '/')
+        return redirect(referer)
+    messages.error(request, "Your plan could not been cancelled. Contact support.")
+    return redirect(reverse('logged'))
 
 
 
@@ -100,8 +103,23 @@ def index(request):
 
     return render(request, "main/index.html", context=context)
 
-@show_new_notifications
 @login_required
+def index_logged_no_valid_membership(request):
+    # TODO change whole template and view
+
+    pricing_qs = SubscriptionPrice.objects.filter(featured=True)
+    month_qs = pricing_qs.filter(interval=SubscriptionPrice.IntervalChoices.MONTHLY)
+    year_qs = pricing_qs.filter(interval=SubscriptionPrice.IntervalChoices.YEARLY)
+
+    context = {
+        "month_qs":list(month_qs),
+        "year_qs":list(year_qs),
+    }
+
+    return render(request, "main/index.html", context=context)
+
+@show_new_notifications
+@valid_lite_membership_required
 def index_logged(request):
     # Adjust this view for a logged-in user's dashboard or main page
     # Step 1: Get all products sorted by 'increasefromlastyear' and filter by at least 3 unique commodities
@@ -151,8 +169,8 @@ def index_logged(request):
     }
     return render(request, 'main/index_logged.html', context=context)
 
+
 @show_new_notifications
-@login_required
 def delete_notification(request):
     if request.method == 'POST':
         notification_id = request.POST.get('notification_id', None)
@@ -167,7 +185,7 @@ def delete_notification(request):
     return redirect(referer)
 
 @show_new_notifications
-@login_required
+@valid_standard_membership_required
 def set_notification(request):
     if request.method == 'POST':
         commodity_id = request.POST.get('commodity_id', None)
@@ -232,7 +250,7 @@ def edit_project_name(request):
             messages.error(request, 'Cannot change project name to empty field')
     return redirect('project', project_slug=project.slug)
 
-@login_required
+@can_create_project
 def new_project(request):
     if request.method == 'POST':
         new_project_name = request.POST.get('new_project_name', None)
@@ -246,7 +264,7 @@ def new_project(request):
             messages.error(request, 'Cannot be empty name to create new project')
     return redirect('project', project_slug=project.slug)
 
-@login_required
+@can_create_project
 def change_product_to_project(request, product_id):
     # Get the product object
     product = get_object_or_404(Product, id=product_id)
@@ -289,7 +307,7 @@ def change_product_to_project(request, product_id):
     referer = request.META.get('HTTP_REFERER', '/')
     return redirect(referer)
 
-@login_required
+@can_create_product
 def edit_product(request, slug):
     # Retrieve the product object, handle the case where it might not exist
     product = get_object_or_404(Product, slug=slug)
@@ -336,7 +354,7 @@ def delete_product(request, slug):
     
 
 @show_new_notifications
-@login_required
+@can_create_product
 def create(request):
     commodities = Commodity.objects.all().distinct().order_by('name')
 
@@ -396,7 +414,7 @@ def profile(request):
     return render(request, "main/profile.html", context)
 
 @show_new_notifications
-@login_required
+@can_access_product
 def product(request, slug):
     # Retrieve the product object, handle the case where it might not exist
     product = get_object_or_404(Product, slug=slug)
@@ -451,7 +469,7 @@ def product(request, slug):
     return render(request, "main/product.html", context)
 
 @show_new_notifications
-@login_required
+@can_access_commodity
 def commodity(request, name):
     commodity = get_object_or_404(Commodity, name=name)
     cumulative_line_chart_data, table_data = get_cumulative_line_chart_and_table_data_commodity(commodity.id)
@@ -752,7 +770,7 @@ def search(request):
     return render(request, 'main/search.html', context)
 
 @show_new_notifications
-@login_required
+@valid_standard_membership_required
 def notifications(request):
     active_notifications = Notification.objects.filter(user=request.user, activated=False).order_by('-created_at')
     activated_notifications = Notification.objects.filter(user=request.user, activated=True).order_by('-activated_at')
@@ -773,9 +791,30 @@ def notifications(request):
     return render(request, "main/notifications.html",context)
 
 
+@login_required
 def user_settings(request):
+    pricing_qs = SubscriptionPrice.objects.filter(featured=True)
+    month_qs = pricing_qs.filter(interval=SubscriptionPrice.IntervalChoices.MONTHLY)
+    year_qs = pricing_qs.filter(interval=SubscriptionPrice.IntervalChoices.YEARLY)
+
+    user_sub_obj, created = UserSubscription.objects.get_or_create(user=request.user)
+    sub_data = user_sub_obj.serialize()
+
+    if request.method == 'POST':
+        # refresh data request
+        finished = refresh_active_users_subscriptions(user_ids=[request.user.id],
+                                                      active_only=False)
+        if finished:
+            messages.success(request, "Membership data refreshed.")
+        else:
+            messages.error(request, "Membership data not refreshed. Please try again.")
+        referer = request.META.get('HTTP_REFERER', '/')
+        return redirect(referer)
+
     context = {
-        "name":"name"
+        "month_qs":list(month_qs),
+        "year_qs":list(year_qs),
+        "subscription": sub_data,
     }
     return render(request, "main/settings.html", context)
 

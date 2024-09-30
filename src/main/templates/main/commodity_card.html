@@ -12,7 +12,7 @@
     <div class="mt-4 flex justify-between">
       <div>
         <h3 class="text-xs text-gray-700 dark:text-gray-300">
-          <a href="/commodity/{{commodity.name}}" class="font-semibold whitespace-normal break-words">
+          <a href="{% url 'commodity' commodity.name %}" class="font-semibold whitespace-normal break-words">
             <span aria-hidden="true" class="absolute inset-0"></span>
             {{commodity.name}}
           </a>

@@ -1,6 +1,5 @@
 {% load static %}
 <script src="{%static 'main/js/js.js' %}"></script>
-<script src="{%static 'main/js/alpine.js.cdn.min.js' %}"></script>
 <script src="{%static 'main/js/tailwind.3.4.5.js' %}"></script>
 
 <script>
@@ -23,7 +22,7 @@
                 const inputElement = container.querySelector('.new-project-name');
                 const buttonElement = container.querySelector('.product-button');
     
-                function updateButtonStates(selectedProjectId) {
+                function updateButtonStates(selectedProjectId, inputElementFocus) {
                     const productId = buttonElement.dataset.productId;
     
                     // Ensure types are consistent
@@ -44,7 +43,9 @@
                     }
                     if (selectElement.value === 'new') {
                         inputElement.classList.remove('hidden');
-                        inputElement.focus();
+                        if (inputElementFocus){
+                            inputElement.focus();
+                        }
                         inputElement.required = true;
                     } else {
                         if (inputElement.value.trim() === '') {
@@ -56,11 +57,11 @@
     
                 // Run once immediately on load
                 if (selectElement && inputElement) {
-                    updateButtonStates(selectElement.value); // Call the function immediately
+                    updateButtonStates(selectElement.value, inputElementFocus = false); // Call the function immediately
                     
                     // Attach the event listener for changes
                     selectElement.addEventListener('change', () => {
-                        updateButtonStates(selectElement.value);
+                        updateButtonStates(selectElement.value, inputElementFocus = true);
                     });
     
                     // Hide input if it loses focus and has no value

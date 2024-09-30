@@ -3,6 +3,8 @@
 import stripe
 from decouple import config
 from . import date_utils
+from customers.models import Customer
+from datetime import datetime
 
 
 DJANGO_DEBUG=config("DJANGO_DEBUG", default=False, cast=bool)
@@ -20,11 +22,19 @@ def serialise_subscription_data(subscription_response):
     current_period_start = date_utils.timestamp_as_datetime(subscription_response.current_period_start)
     current_period_end = date_utils.timestamp_as_datetime(subscription_response.current_period_end)
     cancel_at_period_end = subscription_response.cancel_at_period_end
+    currency = subscription_response.currency
+    price = subscription_response['items']['data'][0]['price']['unit_amount']
+    interval = subscription_response['items']['data'][0]['price']['recurring']['interval']
+    
     return {
         "current_period_start":current_period_start,
         "current_period_end":current_period_end,
         "status":status,
         "cancel_at_period_end":cancel_at_period_end,
+        "currency":currency,
+        "cancel_at_period_end":cancel_at_period_end,
+        "interval":interval,
+        "price":price,
         }
 
 
@@ -159,3 +169,59 @@ def get_checkout_customer_plan(session_id):
         **subscription_data
     }
     return data
+
+def get_payment_history(
+        user_id=None,
+        limit=100):
+    if user_id:
+        try:
+            customer = Customer.objects.get(user_id=user_id)
+            customer_stripe_id = customer.stripe_id
+            stripe_response = stripe.PaymentIntent.list(customer=customer_stripe_id, limit=limit)
+        except:
+            # customer does not exist
+            return None
+        payment_history_data = []
+        for payment in stripe_response['data']:
+            formatted_date = datetime.fromtimestamp(payment['created']).strftime("%d/%m/%Y")
+            single_dict = {
+                "invoice_id":payment['invoice'],
+                "amount": payment['amount'],
+                "currency":payment['currency'],
+                "receipt_email":payment['receipt_email'],
+                "status":payment['status'],
+                "created":formatted_date
+                }
+            payment_history_data.append(single_dict)
+        return payment_history_data
+    return None
+
+def get_active_cards(user_id=None, limit=10):
+    if user_id:
+        customer = Customer.objects.get(user_id=user_id)
+        customer_stripe_id = customer.stripe_id
+        customer_stripe_response = stripe.Customer.retrieve(id=customer_stripe_id)
+        default_card_id = customer_stripe_response['default_source']
+        stripe_response = stripe.Customer.list_payment_methods(customer=customer_stripe_id, limit=limit)
+        cards_data = []
+        present_card = stripe_response['data']['card_present']
+
+        single_dict = {
+                "last4": present_card["last4"],
+                "brand": present_card["brand"],
+                "display_brand":present_card['display_brand'],
+                "default": True,
+            }
+        cards_data.append(single_dict)
+        for payment_method in stripe_response['data']:
+            card = payment_method['card']
+            single_dict = {
+                "last4": card["last4"],
+                "brand": card["brand"],
+                "display_brand":card['display_brand'],
+                "default": False,
+            }
+            cards_data.append(single_dict)
+        print(F"CARDS DATA: {cards_data}")
+        return cards_data
+    return None

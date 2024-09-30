@@ -2,7 +2,7 @@
 {% block head_title %} Settings - {{block.super}} {% endblock head_title %}
 {% block content %}
 {% load static %}
-
+{% load custom_tags %}
 
 
 <div class="bg-[#e9e9e9] dark:bg-gray-900 min-h-screen p-4 sm:p-8">
@@ -100,757 +100,106 @@
             <div class="w-full h-64 bg-gray-300 bg-center bg-cover rounded-lg shadow-md" style="background-image: url('{% static 'main/images/office.jpg' %}')"></div>
         
             <div class="w-56 -mt-10 overflow-hidden bg-white rounded-lg shadow-lg md:w-64 dark:bg-gray-800">
-                <h3 class="py-2 font-bold tracking-wide text-center text-gray-800 uppercase dark:text-white">Intro</h3>
+                <h3 class="py-2 font-bold tracking-wide text-center text-gray-800 dark:text-white">
+                  {{ subscription.plan_name }}</h3>
+                  
         
                 <div class="flex items-center justify-between px-3 py-2 bg-gray-200 dark:bg-gray-700">
-                    <span class="font-bold text-gray-800 dark:text-gray-200">$19/month</span>
-                    <button class="cursor-default px-2 py-1 text-xs font-semibold text-white uppercase transition-colors duration-300 transform bg-blue-800 rounded ">Active</button>
-                </div>
-              </div>
-          </div>
-
-          <!-- Show + - -->
-      <section class="container mx-auto">
-        <style>
-            [x-cloak] { display: none; }
-        </style>
-        <div class="my-5 flex flex-col" x-data="{ sectionOpen: { membership1: false } }" >
-        <!-- Expand/collapse section button -->
-        <button @click="sectionOpen.membership1 = !sectionOpen.membership1" type="button"
-        class="flex w-full items-center justify-between bg-white dark:bg-gray-800 text-gray-400 hover:text-gray-500 hover:underline" aria-controls="membership-section-0" :aria-expanded="sectionOpen.membership1.toString()">
-            <span class="text-lg font-medium text-gray-800 dark:text-white">Change plan</span>
-            <span class="flex items-center">
-                <!-- Expand icon, show/hide based on section open state. -->
-                <svg x-show="!sectionOpen.membership1 " class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" x-cloak>
-                <path d="M10.75 4.75a.75.75 0 00-1.5 0v4.5h-4.5a.75.75 0 000 1.5h4.5v4.5a.75.75 0 001.5 0v-4.5h4.5a.75.75 0 000-1.5h-4.5v-4.5z" />
-                </svg>
-                <!-- Collapse icon, show/hide based on section open state. -->
-                <svg x-show="sectionOpen.membership1 " class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" x-cloak>
-                <path fill-rule="evenodd" d="M4 10a.75.75 0 01.75-.75h10.5a.75.75 0 010 1.5H4.75A.75.75 0 014 10z" clip-rule="evenodd" />
-                </svg>
-            </span>
-            </button>
-        
-        <div x-show="sectionOpen.membership1 " id="membership-section-0" x-cloak>
-            
-          <!-- Pricing Section -->
-          <section>
-              <div class="container md:px-6 py-8 mx-auto">
-                <div class="sm:flex sm:items-center sm:justify-between">
-                    <div>
-                        <h2 class="text-2xl font-bold text-gray-800 lg:text-3xl dark:text-gray-100">Simple, transparent pricing</h2>
-                        <p class="mt-4 text-gray-500 dark:text-gray-400">No Contracts. No surprise fees.</p>
-                    </div>
-        
-                    <div class="overflow-hidden p-0.5 mt-6 border rounded-lg dark:border-gray-700">
-                        <div class="sm:-mx-0.5 flex">
-                            <button id="monthly-btn" class="focus:outline-none px-3 w-1/2 sm:w-auto py-1 sm:mx-0.5 text-white bg-blue-500 rounded-lg">Monthly</button>
-                            <button id="yearly-btn" class="focus:outline-none px-3 w-1/2 sm:w-auto py-1 sm:mx-0.5 text-gray-800 dark:text-gray-200 dark:hover:bg-gray-800 bg-transparent rounded-lg hover:bg-gray-200">Yearly</button>
-                        </div>
-                    </div>
-                </div>
-        
-                <div class="grid gap-6 mt-12 -mx-6 sm:gap-8 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4">
-                    <!-- Plan 1 Monthly -->
-                    <div class="monthly-plan px-6 py-4 transition-colors duration-300 transform rounded-lg hover:bg-gray-200 dark:hover:bg-gray-800">
-                        <p class="text-lg font-medium text-gray-800 dark:text-gray-100">Intro</p>
-                        <h4 id="intro-price" class="mt-2 text-3xl font-semibold text-gray-800 dark:text-gray-100">$19 <span class="text-base font-normal text-gray-600 dark:text-gray-400">/ Month</span></h4>
-                        <p class="mt-4 text-gray-500 dark:text-gray-300">For most businesses that want to optimize web queries.</p>
-                        <div class="mt-8 space-y-8">
-                            <div class="flex items-center">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-blue-500" viewBox="0 0 20 20" fill="currentColor">
-                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
-                                </svg>
-        
-                                <span class="mx-4 text-gray-700 dark:text-gray-300">All limited links</span>
-                            </div>
-                            <!-- More features -->
-                        </div>
-        
-                        <button class="choose-plan w-full px-4 py-2 mt-10 font-medium tracking-wide text-white capitalize transition-colors duration-300 transform bg-blue-800 rounded-md hover:bg-blue-800 focus:outline-none focus:bg-blue-600" data-plan="Intro Monthly">
-                            Active plan
+                      <form action="" method="POST">
+                        {% csrf_token %}
+                        <button type="submit" class="font-bold text-gray-800 dark:text-gray-200">
+                          <svg class="w-4 h-4 hover:rotate-180 duration-500 ease-in" fill="currentColor" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" fill="#000000" height="800px" width="800px" version="1.1" id="Capa_1" viewBox="0 0 489.645 489.645" xml:space="preserve">
+                            <g>
+                              <path d="M460.656,132.911c-58.7-122.1-212.2-166.5-331.8-104.1c-9.4,5.2-13.5,16.6-8.3,27c5.2,9.4,16.6,13.5,27,8.3   c99.9-52,227.4-14.9,276.7,86.3c65.4,134.3-19,236.7-87.4,274.6c-93.1,51.7-211.2,17.4-267.6-70.7l69.3,14.5   c10.4,2.1,21.8-4.2,23.9-15.6c2.1-10.4-4.2-21.8-15.6-23.9l-122.8-25c-20.6-2-25,16.6-23.9,22.9l15.6,123.8   c1,10.4,9.4,17.7,19.8,17.7c12.8,0,20.8-12.5,19.8-23.9l-6-50.5c57.4,70.8,170.3,131.2,307.4,68.2   C414.856,432.511,548.256,314.811,460.656,132.911z"/>
+                            </g>
+                            </svg>
                         </button>
-                    </div>
-                    <!-- Plan 1 Yearly -->
-                    <div class="yearly-plan px-6 py-4 transition-colors duration-300 transform rounded-lg hover:bg-gray-200 dark:hover:bg-gray-800">
-                      <p class="text-lg font-medium text-gray-800 dark:text-gray-100">Intro</p>
-                      <h4 id="intro-price" class="mt-2 text-3xl font-semibold text-gray-800 dark:text-gray-100">$190 <span class="text-base font-normal text-gray-600 dark:text-gray-400">/ Year</span></h4>
-                      <p class="mt-4 text-gray-500 dark:text-gray-300">For most businesses that want to optimize web queries.</p>
-                      <div class="mt-8 space-y-8">
-                          <div class="flex items-center">
-                              <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-blue-500" viewBox="0 0 20 20" fill="currentColor">
-                                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
-                              </svg>
-        
-                              <span class="mx-4 text-gray-700 dark:text-gray-300">All limited links</span>
-                          </div>
-                          <!-- More features -->
-                      </div>
-        
-                      <button class="choose-plan w-full px-4 py-2 mt-10 font-medium tracking-wide text-white capitalize transition-colors duration-300 transform bg-blue-500 rounded-md hover:bg-blue-600 focus:outline-none focus:bg-blue-600" data-plan="Intro Yearly">
-                          Change plan
-                      </button>
-                    </div>
-                    <!-- Plan 2 Monthly -->
-                    <div class="monthly-plan px-6 py-4 transition-colors duration-300 transform rounded-lg hover:bg-gray-200 dark:hover:bg-gray-800">
-                        <p class="text-lg font-medium text-gray-800 dark:text-gray-100">Base</p>
-                        
-                        <h4 class="mt-2 text-3xl font-semibold text-gray-800 dark:text-gray-100">$39 <span class="text-base font-normal text-gray-600 dark:text-gray-400">/ Month</span></h4>
-                        
-                        <p class="mt-4 text-gray-500 dark:text-gray-300">For most businesses that want to optimaize web queries.</p>
-        
-                        <div class="mt-8 space-y-8">
-                            <div class="flex items-center">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-blue-500" viewBox="0 0 20 20" fill="currentColor">
-                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
-                                </svg>
-        
-                                <span class="mx-4 text-gray-700 dark:text-gray-300">All limited links</span>
-                            </div>
-                            <!-- More features -->
-                        </div>
-        
-                        <button class="choose-plan w-full px-4 py-2 mt-10 font-medium tracking-wide text-white capitalize transition-colors duration-300 transform bg-blue-500 rounded-md hover:bg-blue-600 focus:outline-none focus:bg-blue-600" data-plan="Base Monthly">
-                            Change plan
-                        </button>
-                    </div>
-        
-                    <!-- Plan 2 Yearly -->
-                    <div class="yearly-plan px-6 py-4 transition-colors duration-300 transform rounded-lg hover:bg-gray-200 dark:hover:bg-gray-800">
-                      <p class="text-lg font-medium text-gray-800 dark:text-gray-100">Base</p>
-                      
-                      <h4 class="mt-2 text-3xl font-semibold text-gray-800 dark:text-gray-100">$390 <span class="text-base font-normal text-gray-600 dark:text-gray-400">/ Year</span></h4>
-                      
-                      <p class="mt-4 text-gray-500 dark:text-gray-300">For most businesses that want to optimaize web queries.</p>
-        
-                      <div class="mt-8 space-y-8">
-                          <div class="flex items-center">
-                              <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-blue-500" viewBox="0 0 20 20" fill="currentColor">
-                                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
-                              </svg>
-        
-                              <span class="mx-4 text-gray-700 dark:text-gray-300">All limited links</span>
-                          </div>
-                          <!-- More features -->
-                      </div>
-        
-                      <button class="choose-plan w-full px-4 py-2 mt-10 font-medium tracking-wide text-white capitalize transition-colors duration-300 transform bg-blue-500 rounded-md hover:bg-blue-600 focus:outline-none focus:bg-blue-600" data-plan="Base Yearly">
-                          Change plan
-                      </button>
-                  </div>
-                  <!-- Plan 3 Monthly -->
-                    <div class="monthly-plan px-6 py-4 transition-colors duration-300 transform bg-gray-700 rounded-lg dark:bg-gray-800">
-                        <p class="text-lg font-medium text-gray-100">Popular</p>
-                        
-                        <h4 class="mt-2 text-3xl font-semibold text-gray-100">$99 <span class="text-base font-normal text-gray-400">/ Month</span></h4>
-                        
-                        <p class="mt-4 text-gray-300">For most businesses that want to optimaize web queries.</p>
-        
-                        <div class="mt-8 space-y-8">
-                            <div class="flex items-center">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-blue-500" viewBox="0 0 20 20" fill="currentColor">
-                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
-                                </svg>
-        
-                                <span class="mx-4 text-gray-300">All limited links</span>
-                            </div>
-                            <!-- More features -->
-                        </div>
-        
-                        <button class="choose-plan w-full px-4 py-2 mt-10 font-medium tracking-wide text-white capitalize transition-colors duration-300 transform bg-blue-500 rounded-md hover:bg-blue-600 focus:outline-none focus:bg-blue-600" data-plan="Popular Monthly">
-                            Change plan
-                        </button>
-                    </div>
-        
-                    <!-- Plan 3 Yearly -->
-                    <div class="yearly-plan px-6 py-4 transition-colors duration-300 transform bg-gray-700 rounded-lg dark:bg-gray-800">
-                      <p class="text-lg font-medium text-gray-100">Popular</p>
-                      
-                      <h4 class="mt-2 text-3xl font-semibold text-gray-100">$990 <span class="text-base font-normal text-gray-400">/ Year</span></h4>
-                      
-                      <p class="mt-4 text-gray-300">For most businesses that want to optimaize web queries.</p>
-        
-                      <div class="mt-8 space-y-8">
-                          <div class="flex items-center">
-                              <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-blue-500" viewBox="0 0 20 20" fill="currentColor">
-                                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
-                              </svg>
-        
-                              <span class="mx-4 text-gray-300">All limited links</span>
-                          </div>
-                          <!-- More features -->
-                      </div>
-        
-                      <button class="choose-plan w-full px-4 py-2 mt-10 font-medium tracking-wide text-white capitalize transition-colors duration-300 transform bg-blue-500 rounded-md hover:bg-blue-600 focus:outline-none focus:bg-blue-600" data-plan="Popular Yearly">
-                          Change plan
-                      </button>
-                  </div>
-        
-                  <!-- Plan 4 Monthly -->
-                    <div class="monthly-plan px-6 py-4 transition-colors duration-300 transform rounded-lg hover:bg-gray-200 dark:hover:bg-gray-800">
-                        <p class="text-lg font-medium text-gray-800 dark:text-gray-100">Exterprise</p>
-                        
-                        <h4 class="mt-2 text-3xl font-semibold text-gray-800 dark:text-gray-100">$199 <span class="text-base font-normal text-gray-600 dark:text-gray-400">/ Month</span></h4>
-                        
-                        <p class="mt-4 text-gray-500 dark:text-gray-300">For most businesses that want to optimaize web queries.</p>
-        
-                        <div class="mt-8 space-y-8">
-                            <div class="flex items-center">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-blue-500" viewBox="0 0 20 20" fill="currentColor">
-                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
-                                </svg>
-        
-                                <span class="mx-4 text-gray-700 dark:text-gray-300">All limited links</span>
-                            </div>
-                            <!-- More features -->
-                        </div>
-        
-                        <button class="choose-plan w-full px-4 py-2 mt-10 font-medium tracking-wide text-white capitalize transition-colors duration-300 transform bg-blue-500 rounded-md hover:bg-blue-600 focus:outline-none focus:bg-blue-600" data-plan="Enterprise Monthly">
-                            Change plan
-                        </button>
-                    </div>
-                    <!-- Plan 4 Yearly -->
-                    <div class="yearly-plan px-6 py-4 transition-colors duration-300 transform rounded-lg hover:bg-gray-200 dark:hover:bg-gray-800">
-                      <p class="text-lg font-medium text-gray-800 dark:text-gray-100">Exterprise</p>
-                      
-                      <h4 class="mt-2 text-3xl font-semibold text-gray-800 dark:text-gray-100">$1990 <span class="text-base font-normal text-gray-600 dark:text-gray-400">/ Year</span></h4>
-                      
-                      <p class="mt-4 text-gray-500 dark:text-gray-300">For most businesses that want to optimaize web queries.</p>
-        
-                      <div class="mt-8 space-y-8">
-                          <div class="flex items-center">
-                              <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-blue-500" viewBox="0 0 20 20" fill="currentColor">
-                                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
-                              </svg>
-        
-                              <span class="mx-4 text-gray-700 dark:text-gray-300">All limited links</span>
-                          </div>
-                          <!-- More features -->
-                      </div>
-        
-                      <button class="choose-plan w-full px-4 py-2 mt-10 font-medium tracking-wide text-white capitalize transition-colors duration-300 transform bg-blue-500 rounded-md hover:bg-blue-600 focus:outline-none focus:bg-blue-600" data-plan="Enterprise Yearly">
-                          Change plan
-                      </button>
-                  </div>
-        
-        
-                </div>
-            </div>
-          </section>
-
-          <!-- Cancel membership -->
-        <section>
-          <div x-data="{ isOpen: false }" class="relative flex px-4 " id="changing-plan-modal">
-            <button @click="isOpen = true" class="px-6 py-2 font-medium tracking-wide text-gray-800 capitalize transition-colors duration-300 transform bg-gray-200 rounded-lg hover:bg-gray-300 focus:outline-none focus:ring focus:ring-gray-400 focus:ring-opacity-80">
-              Cancel Membership
-            </button>
-            
-            <div x-show="isOpen" x-init="$el.classList.remove('hidden')" class="hidden z-20 fixed inset-0 bg-black bg-opacity-25 transition-opacity ease-linear duration-300" @click="open = false"></div>
-
-            <div x-show="isOpen"
-                x-init="$el.classList.remove('hidden')" 
-                x-transition:enter="transition duration-300 ease-out"
-                x-transition:enter-start="translate-y-4 opacity-0 sm:translate-y-0 sm:scale-95"
-                x-transition:enter-end="translate-y-0 opacity-100 sm:scale-100"
-                x-transition:leave="transition duration-150 ease-in"
-                x-transition:leave-start="translate-y-0 opacity-100 sm:scale-100"
-                x-transition:leave-end="translate-y-4 opacity-0 sm:translate-y-0 sm:scale-95"
-                class="hidden fixed inset-0 z-30 overflow-y-auto" 
-                aria-labelledby="modal-title" role="dialog" aria-modal="true"
-            >
-                <div class="flex items-end justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
-                    <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
-        
-                    <div @click.away="isOpen = false" class="relative inline-block px-4 pt-5 pb-4 overflow-hidden text-left align-bottom transition-all transform bg-white rounded-lg shadow-xl rtl:text-right dark:bg-gray-900 sm:my-8 sm:align-middle sm:max-w-sm sm:w-full sm:p-6">
-                        <div>
-                            <div class="flex items-center justify-center">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 text-gray-700 dark:text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
-                                </svg>
-                            </div>
-        
-                            <div class="mt-2 text-center">
-                                <h3 class="text-lg font-medium leading-6 text-gray-800 capitalize dark:text-white" id="modal-title">Are you sure?</h3>
-                                <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">
-                                    Your current Intro plan will stop working at 03/02/2024.
-                                  </p>
-                                  <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">
-                                    Please contact us how we could improve the service.
-                                  </p>
-                            </div>
-                        </div>
-        
-                        <div class="mt-5 sm:flex sm:items-center justify-center">
-                          <button @click="isOpen = false" class="w-full px-4 py-2 mt-2 text-sm font-medium tracking-wide text-gray-700 capitalize transition-colors duration-300 transform border border-gray-200 rounded-md sm:mt-0 sm:w-auto sm:mx-2 dark:text-gray-200 dark:border-gray-700 dark:hover:bg-gray-800 hover:bg-gray-100 focus:outline-none focus:ring focus:ring-gray-300 focus:ring-opacity-40">
-                           Hide
-                        </button>
-        
-                            <div class="sm:flex sm:items-center ">
-        
-                                <button class="w-full px-4 py-2 mt-2 text-sm font-medium tracking-wide text-white capitalize transition-colors duration-300 transform bg-red-600 rounded-md sm:w-auto sm:mt-0 hover:bg-red-700 focus:outline-none focus:ring focus:ring-red-800 focus:ring-opacity-40">
-                                    Cancel membership
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-          </div>
-      </section>
-
-              <!-- Modal before changing plan -->
-              <section>
-                  <div x-data="{ isOpen: false }" class="relative flex justify-center" id="changing-plan-modal">
-                    <button @click="isOpen = true" class="px-6 py-2 mx-auto tracking-wide text-white capitalize transition-colors duration-300 transform bg-blue-600 rounded-md hover:bg-blue-500 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-80">
-                        Open change plan modal
+                    </form>
+                    <button class="cursor-default px-2 py-1 text-xs font-semibold text-white uppercase transition-colors duration-300 transform bg-blue-800 rounded ">
+                      {{ subscription.status }}
                     </button>
-                
-                    <div x-show="isOpen" x-init="$el.classList.remove('hidden')" class="hidden z-20 fixed inset-0 bg-black bg-opacity-25 transition-opacity ease-linear duration-300" @click="open = false"></div>
-
-                    <div x-show="isOpen"
-                        x-init="$el.classList.remove('hidden')" 
-                        x-transition:enter="transition duration-300 ease-out"
-                        x-transition:enter-start="translate-y-4 opacity-0 sm:translate-y-0 sm:scale-95"
-                        x-transition:enter-end="translate-y-0 opacity-100 sm:scale-100"
-                        x-transition:leave="transition duration-150 ease-in"
-                        x-transition:leave-start="translate-y-0 opacity-100 sm:scale-100"
-                        x-transition:leave-end="translate-y-4 opacity-0 sm:translate-y-0 sm:scale-95"
-                        class="hidden fixed inset-0 z-30 overflow-y-auto" 
-                        aria-labelledby="modal-title" role="dialog" aria-modal="true"
-                    >
-                        <div class="flex items-end justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
-                            <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
-                
-                            <div @click.away="isOpen = false" class="relative inline-block px-4 pt-5 pb-4 overflow-hidden text-left align-bottom transition-all transform bg-white rounded-lg shadow-xl rtl:text-right dark:bg-gray-900 sm:my-8 sm:align-middle sm:max-w-sm sm:w-full sm:p-6">
-                                <div>
-                                    <div class="flex items-center justify-center">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 text-gray-700 dark:text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
-                                        </svg>
-                                    </div>
-                
-                                    <div class="mt-2 text-center">
-                                        <h3 class="text-lg font-medium leading-6 text-gray-800 capitalize dark:text-white" id="modal-title">Are you sure?</h3>
-                                        <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">
-                                            Change of plan will start immediately/at 03/02/2024 ending of your current plan.
-                                          </p>
-                                          <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">
-                                            Your new price will be $990 a year.
-                                          </p>
-                                    </div>
-                                </div>
-                
-                                <div class="mt-5 sm:flex sm:items-center justify-center">
-                                  <button @click="isOpen = false" class="w-full px-4 py-2 mt-2 text-sm font-medium tracking-wide text-gray-700 capitalize transition-colors duration-300 transform border border-gray-200 rounded-md sm:mt-0 sm:w-auto sm:mx-2 dark:text-gray-200 dark:border-gray-700 dark:hover:bg-gray-800 hover:bg-gray-100 focus:outline-none focus:ring focus:ring-gray-300 focus:ring-opacity-40">
-                                    Cancel
-                                </button>
-                
-                                    <div class="sm:flex sm:items-center ">
-                
-                                        <button class="w-full px-4 py-2 mt-2 text-sm font-medium tracking-wide text-white capitalize transition-colors duration-300 transform bg-blue-600 rounded-md sm:w-auto sm:mt-0 hover:bg-blue-500 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40">
-                                            Change plan
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
                 </div>
-              </section>
-            </div>
+              </div>
           </div>
-        </section>
 
-        
-
-        <!-- Upcoming payment -->
-        <section class="mx-auto container">
-          <a class="pointer-events-none flex items-center text-sm text-gray-800 capitalize transition-colors duration-300 transform dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-white">
-            <span class="text-lg font-medium">Upcoming payment</span>
-            </a>
-            <p class="mt-1 text-sm text-gray-500 dark:text-gray-300"></p>
-
-            <section class="mt-5 container px-4 mx-auto">
-              <div class="flex flex-col">
-                <div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
-                  <div class="inline-block min-w-full py-2 align-middle md:px-6 lg:px-8">
-                    <div class="overflow-hidden border border-gray-200 dark:border-gray-700 rounded-lg">
-                      <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                        <thead class="bg-gray-50 dark:bg-gray-800">
-                          <tr>
-                            <th scope="col" class="px-4 py-3.5 text-sm font-normal text-left rtl:text-right text-gray-500 dark:text-gray-400">
-                              Plan
-                            </th>
-                            <th scope="col" class="px-4 py-3.5 text-sm font-normal text-left rtl:text-right text-gray-500 dark:text-gray-400">
-                              Status
-                            </th>
-                            <th scope="col" class="px-4 py-3.5 text-sm font-normal text-left rtl:text-right text-gray-500 dark:text-gray-400">
-                              Amount
-                            </th>
-                            <th scope="col" class="px-4 py-3.5 text-sm font-normal text-left rtl:text-right text-gray-500 dark:text-gray-400">
-                              When
-                            </th>
-                            <th scope="col" class="px-4 py-3.5 text-sm font-normal text-left rtl:text-right text-gray-500 dark:text-gray-400">
-                            </th>
-                          </tr>
-                        </thead>
-                        <tbody class="bg-white divide-y divide-gray-200 dark:divide-gray-700 dark:bg-gray-900">
-                          <tr>
-                            <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap">Intro Monthly</td>
-                            <td class="px-4 py-4 text-sm font-medium text-gray-700 whitespace-nowrap">
-                              <div class="inline-flex items-center px-3 py-1 rounded-full gap-x-2 bg-emerald-100/60 dark:bg-gray-800">
-                                  <span class="h-1.5 w-1.5 rounded-full bg-emerald-500"></span>
+              <!-- Upcoming payment -->
+               
+              <section class="mx-auto container">
+                <a class="pointer-events-none flex items-center text-sm text-gray-800 capitalize transition-colors duration-300 transform dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-white">
+                  <span class="text-lg font-medium">
+                    {% if subscription.cancel_at_period_end %}
+                    Cancelled membership
+                    {% else %}
+                    Upcoming payment
+                    {% endif %}
+                  </span>
+                  </a>
+                  <p class="mt-1 text-sm text-gray-500 dark:text-gray-300"></p>
       
-                                  <h2 class="text-sm font-normal text-emerald-500">Active</h2>
-                              </div>
-                            </td>
-                            <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap">$19.00</td>
-                            <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap">Jan 6, 2025</td>
-                            <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap"></td>
-                          </tr>
-                        </tbody>
-                      </table>
+                  <section class="mt-5 container px-4 mx-auto">
+                    <div class="flex flex-col">
+                      <div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+                        <div class="inline-block min-w-full py-2 align-middle md:px-6 lg:px-8">
+                          <div class="overflow-hidden border border-gray-200 dark:border-gray-700 rounded-lg">
+                            <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                              <thead class="bg-gray-50 dark:bg-gray-800">
+                                <tr>
+                                  <th scope="col" class="px-4 py-3.5 text-sm font-normal text-left rtl:text-right text-gray-500 dark:text-gray-400">
+                                    Plan
+                                  </th>
+                                  <th scope="col" class="px-4 py-3.5 text-sm font-normal text-left rtl:text-right text-gray-500 dark:text-gray-400">
+                                    Status
+                                  </th>
+                                  <th scope="col" class="px-4 py-3.5 text-sm font-normal text-left rtl:text-right text-gray-500 dark:text-gray-400">
+                                    Amount
+                                  </th>
+                                  <th scope="col" class="px-4 py-3.5 text-sm font-normal text-left rtl:text-right text-gray-500 dark:text-gray-400">
+                                    Date
+                                  </th>
+                                  <th scope="col" class="px-4 py-3.5 text-sm font-normal text-left rtl:text-right text-gray-500 dark:text-gray-400">
+                                  </th>
+                                </tr>
+                              </thead>
+                              <tbody class="bg-white divide-y divide-gray-200 dark:divide-gray-700 dark:bg-gray-900">
+                                <tr>
+                                  <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap">
+                                    {{ subscription.plan_name }} {{ subscription.interval }}ly
+                                  </td>
+                                  <td class="px-4 py-4 text-sm font-medium text-gray-700 whitespace-nowrap">
+                                    <div class="inline-flex items-center px-3 py-1 rounded-full gap-x-2 bg-emerald-100/60 dark:bg-gray-800">
+                                        <span class="h-1.5 w-1.5 rounded-full bg-emerald-500"></span>
+            
+                                        <h2 class="text-sm font-normal text-emerald-500">
+                                          {{subscription.status|title}}
+                                        </h2>
+                                    </div>
+                                  </td>
+                                  <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap">
+                                    
+                                    {{subscription.currency|upper}} {{ subscription.price|divide_by_100|floatformat:2 }}
+                                  </td>
+                                  <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap">
+                                    {{subscription.current_period_end}}
+                                  </td>
+                                  <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap"></td>
+                                </tr>
+                              </tbody>
+                            </table>
+                          </div>
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                </div>
-              </div>
-            </section>
+                  </section>
+                </section>
 
-          </section>
 
-        <!-- Manage payment method -->
-        <section class="container mx-auto">
-          <style>
-              [x-cloak] { display: none; }
-          </style>
-          <div class="my-5 flex flex-col" x-data="{ sectionOpen: { membership2: false } }" >
-          <!-- Expand/collapse section button -->
-          <button @click="sectionOpen.membership2 = !sectionOpen.membership2" type="button"
-          class="flex w-full items-center justify-between bg-white dark:bg-gray-800 text-gray-400 hover:text-gray-500 hover:underline" aria-controls="membership-section-0" :aria-expanded="sectionOpen.membership2.toString()">
-              <span class="text-lg font-medium text-gray-800 dark:text-white">Payment methods</span>
-              <span class="flex items-center">
-                  <!-- Expand icon, show/hide based on section open state. -->
-                  <svg x-show="!sectionOpen.membership2 " class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" x-cloak>
-                  <path d="M10.75 4.75a.75.75 0 00-1.5 0v4.5h-4.5a.75.75 0 000 1.5h4.5v4.5a.75.75 0 001.5 0v-4.5h4.5a.75.75 0 000-1.5h-4.5v-4.5z" />
-                  </svg>
-                  <!-- Collapse icon, show/hide based on section open state. -->
-                  <svg x-show="sectionOpen.membership2 " class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" x-cloak>
-                  <path fill-rule="evenodd" d="M4 10a.75.75 0 01.75-.75h10.5a.75.75 0 010 1.5H4.75A.75.75 0 014 10z" clip-rule="evenodd" />
-                  </svg>
-              </span>
-              </button>
-          
-          <div x-show="sectionOpen.membership2 " id="membership-section-0" x-cloak>  
-
-                <!-- Current payment method -->
-                <section class="mt-5 container px-4 mx-auto">
-                  <div class="flex flex-col">
-                    <div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
-                      <div class="inline-block min-w-full py-2 align-middle md:px-6 lg:px-8">
-                        <div class="overflow-hidden border border-gray-200 dark:border-gray-700 rounded-lg">
-                <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                  <tbody class="bg-white divide-y divide-gray-200 dark:divide-gray-700 dark:bg-gray-900">
-                    <tr>
-                      <td class="px-4 py-4 text-sm font-medium text-gray-700 whitespace-nowrap">
-                          <div class="inline-flex items-center gap-x-3">
-                              <div class="flex items-center gap-x-2">
-                                  <img class="object-cover w-10 h-10 rounded-full" src="{% static 'main/images/tube1.jpg' %}" alt="">
-                                  <div>
-                                      <h2 class="font-medium text-gray-800 dark:text-white ">**** 8932</h2>
-                                      <p class="text-sm font-normal text-gray-600 dark:text-gray-400">credit card - visa </p>
-                                  </div>
-                              </div>
-                          </div>
-                      </td>
-                      <td class="px-4 py-4 text-sm font-medium text-gray-700 whitespace-nowrap">
-                        <div class="inline-flex items-center px-3 py-1 rounded-full gap-x-2 bg-emerald-100/60 dark:bg-gray-800">
-                            <span class="h-1.5 w-1.5 rounded-full bg-emerald-500"></span>
-
-                            <h2 class="text-sm font-normal text-emerald-500">Default</h2>
-                        </div>
-                      </td>
-                      <td class="px-4 py-4 text-sm whitespace-nowrap">
-                        <div class="flex items-center gap-x-6">
-                            <button class="text-gray-500 transition-colors duration-200 dark:hover:text-red-500 dark:text-gray-300 hover:text-red-500 focus:outline-none">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
-                                </svg>
-                            </button>
-
-                            <button class="text-gray-500 transition-colors duration-200 dark:hover:text-yellow-500 dark:text-gray-300 hover:text-yellow-500 focus:outline-none">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
-                                </svg>
-                            </button>
-                        </div>
-                    </td>
-                    </tr>
-
-                    <tr>
-                      <td class="px-4 py-4 text-sm font-medium text-gray-700 whitespace-nowrap">
-                          <div class="inline-flex items-center gap-x-3">
-                              <div class="flex items-center gap-x-2">
-                                  <img class="object-cover w-10 h-10 rounded-full" src="{% static 'main/images/tube1.jpg' %}" alt="">
-                                  <div>
-                                      <h2 class="font-medium text-gray-800 dark:text-white ">**** 8932</h2>
-                                      <p class="text-sm font-normal text-gray-600 dark:text-gray-400">credit card - visa </p>
-                                  </div>
-                              </div>
-                          </div>
-                      </td>
-                      <td class="px-4 py-4 text-sm whitespace-nowrap">
-                        <div class="flex items-center gap-x-6">
-                            <button class="text-gray-500 transition-colors duration-200 dark:hover:text-indigo-500 dark:text-gray-300 hover:text-indigo-500 focus:outline-none">
-                                Set as default
-                            </button>
-                        </div>
-                      </td>
-                      <td class="px-4 py-4 text-sm whitespace-nowrap">
-                        <div class="flex items-center gap-x-6">
-                            <button class="text-gray-500 transition-colors duration-200 dark:hover:text-red-500 dark:text-gray-300 hover:text-red-500 focus:outline-none">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
-                                </svg>
-                            </button>
-
-                            <button class="text-gray-500 transition-colors duration-200 dark:hover:text-yellow-500 dark:text-gray-300 hover:text-yellow-500 focus:outline-none">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
-                                </svg>
-                            </button>
-                        </div>
-                    </td>
-                    </tr>
-
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-        </div>
+      <!-- Manage Subscription -->
+      <section class="my-5 container mx-auto">
+        <!-- TODO to be managed in prod via stripe customer portal-->
+        <a href="https://billing.stripe.com/p/login/test_14k4kj9ty4P70rm4gg" class="px-6 py-2 font-medium tracking-wide text-gray-800 capitalize transition-colors duration-300 transform bg-gray-200 rounded-lg hover:bg-gray-300 focus:outline-none focus:ring focus:ring-gray-400 focus:ring-opacity-80">
+          Manage Subscription
+        </a>
       </section>
-
-
-                <!-- Modal for managing payment method -->
-                <section>
-                    <div x-data="{ isOpen: false }" class="ml-4 relative flex" id="changing-plan-modal">
-                      <button @click="isOpen = true" class="mt-6 px-6 py-2 font-medium tracking-wide text-gray-800 capitalize transition-colors duration-300 transform bg-gray-200 rounded-lg hover:bg-gray-300 focus:outline-none focus:ring focus:ring-gray-400 focus:ring-opacity-80">
-                          Add payment method
-                      </button>
-                  
-                      <div x-show="isOpen" x-init="$el.classList.remove('hidden')" class="hidden z-20 fixed inset-0 bg-black bg-opacity-25 transition-opacity ease-linear duration-300" @click="open = false"></div>
-
-                      <div x-show="isOpen"
-                          x-init="$el.classList.remove('hidden')" 
-                          x-transition:enter="transition duration-300 ease-out"
-                          x-transition:enter-start="translate-y-4 opacity-0 sm:translate-y-0 sm:scale-95"
-                          x-transition:enter-end="translate-y-0 opacity-100 sm:scale-100"
-                          x-transition:leave="transition duration-150 ease-in"
-                          x-transition:leave-start="translate-y-0 opacity-100 sm:scale-100"
-                          x-transition:leave-end="translate-y-4 opacity-0 sm:translate-y-0 sm:scale-95"
-                          class="hidden fixed inset-0 z-30 overflow-y-auto" 
-                          aria-labelledby="modal-title" role="dialog" aria-modal="true"
-                      >
-                          <div class="flex items-end justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
-                              <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
-                  
-                              <div @click.away="isOpen = false" class="relative inline-block px-4 pt-5 pb-4 overflow-hidden text-left align-bottom transition-all transform bg-white rounded-lg shadow-xl rtl:text-right dark:bg-gray-900 sm:my-8 sm:align-middle sm:max-w-sm sm:w-full sm:p-6">
-                                  <div>
-                                      <div class="flex items-center justify-center">
-                                          <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 text-gray-700 dark:text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                              <path stroke-linecap="round" stroke-linejoin="round" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
-                                          </svg>
-                                      </div>
-                  
-                                      <div class="mt-2 text-center">
-                                          <h3 class="text-lg font-medium leading-6 text-gray-800 capitalize dark:text-white" id="modal-title">Add payment method</h3>
-                                          <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">
-                                              Adding payment method select and input fields tbc.
-                                            </p>
-                                            <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">
-                                              abc abc
-                                            </p>
-                                      </div>
-                                  </div>
-                  
-                                  <div class="mt-5 sm:flex sm:items-center justify-center">
-                                    <button @click="isOpen = false" class="w-full px-4 py-2 mt-2 text-sm font-medium tracking-wide text-gray-700 capitalize transition-colors duration-300 transform border border-gray-200 rounded-md sm:mt-0 sm:w-auto sm:mx-2 dark:text-gray-200 dark:border-gray-700 dark:hover:bg-gray-800 hover:bg-gray-100 focus:outline-none focus:ring focus:ring-gray-300 focus:ring-opacity-40">
-                                      Cancel
-                                  </button>
-                  
-                                      <div class="sm:flex sm:items-center ">
-                  
-                                          <button class="w-full px-4 py-2 mt-2 text-sm font-medium tracking-wide text-white capitalize transition-colors duration-300 transform bg-blue-600 rounded-md sm:w-auto sm:mt-0 hover:bg-blue-500 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40">
-                                              Add payment method
-                                          </button>
-                                      </div>
-                                  </div>
-                              </div>
-                          </div>
-                      </div>
-                  </div>
-                </section>
-              </div>
-            </div>
-          </section>
-
-        <!-- Payment History -->
-
-        <section class="container mx-auto">
-          <style>
-              [x-cloak] { display: none; }
-          </style>
-          <div class="my-5 flex flex-col" x-data="{ sectionOpen: { membership3: false } }" >
-          <!-- Expand/collapse section button -->
-          <button @click="sectionOpen.membership3 = !sectionOpen.membership3" type="button"
-          class="flex w-full items-center justify-between bg-white dark:bg-gray-800 text-gray-400 hover:text-gray-500 hover:underline" aria-controls="membership-section-0" :aria-expanded="sectionOpen.membership3.toString()">
-              <span class="text-lg font-medium text-gray-800 dark:text-white">Payment history</span>
-              <span class="flex items-center">
-                  <!-- Expand icon, show/hide based on section open state. -->
-                  <svg x-show="!sectionOpen.membership3 " class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" x-cloak>
-                  <path d="M10.75 4.75a.75.75 0 00-1.5 0v4.5h-4.5a.75.75 0 000 1.5h4.5v4.5a.75.75 0 001.5 0v-4.5h4.5a.75.75 0 000-1.5h-4.5v-4.5z" />
-                  </svg>
-                  <!-- Collapse icon, show/hide based on section open state. -->
-                  <svg x-show="sectionOpen.membership3 " class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" x-cloak>
-                  <path fill-rule="evenodd" d="M4 10a.75.75 0 01.75-.75h10.5a.75.75 0 010 1.5H4.75A.75.75 0 014 10z" clip-rule="evenodd" />
-                  </svg>
-              </span>
-              </button>
-          
-          <div x-show="sectionOpen.membership3 " id="membership-section-0" x-cloak>  
-
-            <p class="my-2 text-sm text-gray-500 dark:text-gray-300">Showing invoices within the past 12 months. </p>
-
-                <!-- Payment history table -->
-                <section class="container px-4 mx-auto">
-                  <div class="flex flex-col">
-                    <div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
-                      <div class="inline-block min-w-full py-2 align-middle md:px-6 lg:px-8">
-                        <div class="overflow-hidden border border-gray-200 dark:border-gray-700 rounded-lg">
-                          <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                            <thead class="bg-gray-50 dark:bg-gray-800">
-                              <tr>
-                                <th scope="col" class="px-4 py-3.5 text-sm font-normal text-left rtl:text-right text-gray-500 dark:text-gray-400">
-                                  Invoice
-                                </th>
-                                <th scope="col" class="px-4 py-3.5 text-sm font-normal text-left rtl:text-right text-gray-500 dark:text-gray-400">
-                                  Status
-                                </th>
-                                <th scope="col" class="px-4 py-3.5 text-sm font-normal text-left rtl:text-right text-gray-500 dark:text-gray-400">
-                                  Amount
-                                </th>
-                                <th scope="col" class="px-4 py-3.5 text-sm font-normal text-left rtl:text-right text-gray-500 dark:text-gray-400">
-                                  Created
-                                </th>
-                                <th scope="col" class="px-4 py-3.5 text-sm font-normal text-left rtl:text-right text-gray-500 dark:text-gray-400">
-                                </th>
-                              </tr>
-                            </thead>
-                            <tbody class="bg-white divide-y divide-gray-200 dark:divide-gray-700 dark:bg-gray-900">
-                              <tr>
-                                <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap">5B3547E1-0001</td>
-                                <td class="px-4 py-4 text-sm font-medium text-gray-700 whitespace-nowrap">
-                                  <div class="inline-flex items-center px-3 py-1 rounded-full gap-x-2 text-emerald-500 bg-emerald-100/60 dark:bg-gray-800">
-                                      <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                          <path d="M10 3L4.5 8.5L2 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                                      </svg>
-
-                                      <h2 class="text-sm font-normal">Paid</h2>
-                                  </div>
-                              </td>
-                                <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap">$12.00</td>
-                                <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap">Jan 6, 2022</td>
-                                <td class="px-4 py-4 text-sm whitespace-nowrap">
-                                  <div class="flex items-center gap-x-6">
-                                      <button class="text-gray-500 transition-colors duration-200 dark:hover:text-indigo-500 dark:text-gray-300 hover:text-indigo-500 focus:outline-none">
-                                          View
-                                      </button>
-                                  </div>
-                                </td>
-                              </tr>
-
-                              <tr>
-                                <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap">5B3547E1-0001</td>
-                                <td class="px-4 py-4 text-sm font-medium text-gray-700 whitespace-nowrap">
-                                  <div class="inline-flex items-center px-3 py-1 rounded-full gap-x-2 text-emerald-500 bg-emerald-100/60 dark:bg-gray-800">
-                                      <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                          <path d="M10 3L4.5 8.5L2 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                                      </svg>
-
-                                      <h2 class="text-sm font-normal">Paid</h2>
-                                  </div>
-                              </td>
-                                <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap">$12.00</td>
-                                <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap">Jan 6, 2022</td>
-                                <td class="px-4 py-4 text-sm whitespace-nowrap">
-                                  <div class="flex items-center gap-x-6">
-                                      <button class="text-gray-500 transition-colors duration-200 dark:hover:text-indigo-500 dark:text-gray-300 hover:text-indigo-500 focus:outline-none">
-                                          View
-                                      </button>
-                                  </div>
-                                </td>
-                              </tr>
-
-                              <tr>
-                                <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap">5B3547E1-0001</td>
-                                <td class="px-4 py-4 text-sm font-medium text-gray-700 whitespace-nowrap">
-                                  <div class="inline-flex items-center px-3 py-1 text-gray-500 rounded-full gap-x-2 bg-gray-100/60 dark:bg-gray-800">
-                                      <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                          <path d="M4.5 7L2 4.5M2 4.5L4.5 2M2 4.5H8C8.53043 4.5 9.03914 4.71071 9.41421 5.08579C9.78929 5.46086 10 5.96957 10 6.5V10" stroke="#667085" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                                      </svg>
-
-                                      <h2 class="text-sm font-normal">Refunded</h2>
-                                  </div>
-                              </td>
-                                <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap">$12.00</td>
-                                <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap">Jan 6, 2022</td>
-                                <td class="px-4 py-4 text-sm whitespace-nowrap">
-                                  <div class="flex items-center gap-x-6">
-                                      <button class="text-gray-500 transition-colors duration-200 dark:hover:text-indigo-500 dark:text-gray-300 hover:text-indigo-500 focus:outline-none">
-                                          View
-                                      </button>
-                                  </div>
-                                </td>
-                              </tr>
-
-                              <tr>
-                                <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap">5B3547E1-0001</td>
-                                <td class="px-4 py-4 text-sm font-medium text-gray-700 whitespace-nowrap">
-                                  <div class="inline-flex items-center px-3 py-1 text-red-500 rounded-full gap-x-2 bg-red-100/60 dark:bg-gray-800">
-                                      <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                          <path d="M9 3L3 9M3 3L9 9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                                      </svg>
-
-                                      <h2 class="text-sm font-normal">Cancelled</h2>
-                                  </div>
-                              </td>
-                                <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap">$12.00</td>
-                                <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap">Jan 6, 2022</td>
-                                <td class="px-4 py-4 text-sm whitespace-nowrap">
-                                  <div class="flex items-center gap-x-6">
-                                      <button class="text-gray-500 transition-colors duration-200 dark:hover:text-indigo-500 dark:text-gray-300 hover:text-indigo-500 focus:outline-none">
-                                          View
-                                      </button>
-                                  </div>
-                                </td>
-                              </tr>
-
-                            </tbody>
-                          </table>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </section>
-
-
-              </div>
-            </div>
-          </section>
-
-
-      </div>
-    </section>
 
     <hr class="mt-5 border-gray-200 dark:border-gray-700 ">
 

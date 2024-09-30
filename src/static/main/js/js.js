@@ -27,19 +27,21 @@ document.addEventListener('DOMContentLoaded', function() {
       const scrollContainers = document.querySelectorAll('.scroll-container');
       const leftArrows = document.querySelectorAll('.arrow-left');
       const rightArrows = document.querySelectorAll('.arrow-right');
+      const defaultSize = '28'
+      const enterSize = '32'
 
       // Bigger arrows on hover
         leftArrows.forEach((arrowDiv, index) => {
           const arrowIcon = arrowDiv.querySelector('.arrow-icon');
 
           arrowDiv.addEventListener('mouseenter', () => {
-            arrowIcon.setAttribute('width', '32');
-            arrowIcon.setAttribute('height', '32');
+            arrowIcon.setAttribute('width', enterSize);
+            arrowIcon.setAttribute('height', enterSize);
           });
 
           arrowDiv.addEventListener('mouseleave', () => {
-            arrowIcon.setAttribute('width', '28');
-            arrowIcon.setAttribute('height', '28');
+            arrowIcon.setAttribute('width', defaultSize);
+            arrowIcon.setAttribute('height', defaultSize);
           });
       });
 
@@ -47,13 +49,13 @@ document.addEventListener('DOMContentLoaded', function() {
         const arrowIcon = arrowDiv.querySelector('.arrow-icon');
 
         arrowDiv.addEventListener('mouseenter', () => {
-          arrowIcon.setAttribute('width', '32');
-          arrowIcon.setAttribute('height', '32');
+          arrowIcon.setAttribute('width', enterSize);
+          arrowIcon.setAttribute('height', enterSize);
         });
 
         arrowDiv.addEventListener('mouseleave', () => {
-          arrowIcon.setAttribute('width', '28');
-          arrowIcon.setAttribute('height', '28');
+          arrowIcon.setAttribute('width', defaultSize);
+          arrowIcon.setAttribute('height', defaultSize);
         });
     });
   
@@ -138,7 +140,7 @@ document.addEventListener('DOMContentLoaded', function() {
       ];
 
 
-      let currentSlide = 0;
+  let currentSlide = 0;
   const totalSlides = slides.length;
   const slideInterval = 5000;
   const carouselDots = document.querySelectorAll('.carousel-dot');

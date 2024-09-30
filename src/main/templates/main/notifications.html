@@ -94,11 +94,11 @@
                     <td class="px-4 py-4 text-sm font-medium text-gray-700 whitespace-nowrap">
                         <a
                         {% if notification.product %}
-                        href="/product/{{notification.product.slug}}"
+                        href="{% url 'product' notification.product.slug %}"
                         {% elif notification.commodity %}
-                        href="/commodity/{{notification.commodity.name}}"
+                        href="{% url 'commodity' notification.commodity.name %}"
                         {% elif notification.project %}
-                        href="/project/{{notification.project.slug}}"
+                        href="{% url 'project' notification.project.slug %}"
                         {% endif %}
                         >
                         <div class="inline-flex items-center gap-x-3">
@@ -287,11 +287,11 @@
                                 <td class="px-4 py-4 text-sm font-medium text-gray-700 whitespace-nowrap">
                                     <a
                                     {% if notification.product %}
-                                    href="/product/{{notification.product.slug}}"
-                                    {% elif notification.commodity %}
-                                    href="/commodity/{{notification.commodity.name}}"
-                                    {% elif notification.project %}
-                                    href="/project/{{notification.project.slug}}"
+                                        href="{% url 'product' notification.product.slug %}"
+                                        {% elif notification.commodity %}
+                                        href="{% url 'commodity' notification.commodity.name %}"
+                                        {% elif notification.project %}
+                                        href="{% url 'project' notification.project.slug %}"
                                     {% endif %}
                                     >
                                     <div class="inline-flex items-center gap-x-3">

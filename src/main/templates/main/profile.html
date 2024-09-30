@@ -13,7 +13,7 @@
     <h2 class="text-xl font-semibold dark:text-gray-300">{{request.user.username}}</h2>
     <h2 class="text-gray-400 text-xs dark:text-gray-500">{{request.user.email}}</h2>
     <div class="mt-5">
-        <a href="/settings" class="bg-gray-200 font-semibold hover:bg-gray-300 p-2 px-3 rounded-full text-xs">Settings</a>
+        <a href="{% url 'settings' %}" class="bg-gray-200 text-gray-800 font-semibold hover:bg-gray-300 p-2 px-3 rounded-full text-xs">Settings</a>
     </div>
     <div class="mt-5">
         <div class="flex space-x-5 flex-row items-center justify-center">
@@ -92,7 +92,7 @@
                 <div class="mt-4 flex justify-between">
                   <div>
                     <h3 class="text-sm text-gray-700 dark:text-gray-300">
-                      <a href="/search?up=True" class="font-semibold">
+                      <a href="{% url 'search' %}?up=True" class="font-semibold">
                         <span aria-hidden="true" class="absolute inset-0"></span>
                         Your products
                       </a>
@@ -165,7 +165,7 @@
                   <div class="mt-4 flex justify-between">
                     <div>
                       <h3 class="text-sm text-gray-700 dark:text-gray-300">
-                        <a href="/project/{{project.slug}}" class="font-semibold">
+                        <a href="{% url 'project' project.slug %}" class="font-semibold">
                           <span aria-hidden="true" class="absolute inset-0"></span>
                           {{project.name|slice:":50"|wordwrap:10}}
                         </a>

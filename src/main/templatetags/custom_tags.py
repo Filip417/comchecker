@@ -109,3 +109,10 @@ def word_break(value, length):
     words = value.split()
     broken_words = [w if len(w) <= length else ' '.join([w[i:i+length] for i in range(0, len(w), length)]) for w in words]
     return ' '.join(broken_words)
+
+@register.filter
+def divide_by_100(value):
+    try:
+        return round(float(value) / 100, 2)
+    except (ValueError, TypeError):
+        return 0  # Return 0 or handle the error as needed
