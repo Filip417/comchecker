@@ -2,6 +2,10 @@ from django.contrib import admin
 from . import views
 from django.urls import path, include
 from checkouts import views as checkout_views
+from django.conf.urls import handler404, handler400
+
+handler404 = 'main.views.custom_404_view'
+handler400 = 'main.views.custom_400_view'
 
 urlpatterns = [
     path("",views.index,name="index"),

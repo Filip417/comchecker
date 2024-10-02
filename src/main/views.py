@@ -865,3 +865,10 @@ def logged_contact_form(request):
             messages.success(request, 'Email has been sent, thank you for contacting us.')
             return redirect('help')
     return redirect('help')
+
+# TODO fix renders of error template with error 404 and 400
+def custom_404_view(request, exception):
+    return render(request, 'main/404.html', status=404)
+
+def custom_400_view(request, exception):
+    return render(request, 'main/404.html', status=400)
