@@ -1010,7 +1010,7 @@ def save_new_product(request):
     return redirect('product', slug=new_product.slug)
 
 
-def get_popular_items(model_name, time_period, return_items):
+def get_popular_items(model_name, time_period, return_items, user_id=None):
     today = now().date()
     
     if time_period == 'week':
@@ -1025,11 +1025,9 @@ def get_popular_items(model_name, time_period, return_items):
     if model_name == 'product':
         model_class = Product
         related_field = 'product'
-        related_model = Product
     elif model_name == 'commodity':
         model_class = Commodity
         related_field = 'commodity'
-        related_model = Commodity
     else:
         raise ValueError("Invalid model_name. Choose from 'product', 'commodity'.")
 
@@ -1040,13 +1038,27 @@ def get_popular_items(model_name, time_period, return_items):
     ).values(f'{related_field}__id').annotate(total_views=Count('id')).order_by('-total_views')
 
     # Query to get the top 10 products or commodities by view count
-    popular_items = (
-        model_class.objects.filter(
-            id__in=Subquery(view_counts.values(f'{related_field}__id'))
+    if model_name == 'product':
+        popular_items = (
+            model_class.objects.filter(
+                Q(user_id__isnull=True) | Q(user_id=user_id),  # Check if user is null or matches user_id
+                id__in=Subquery(view_counts.values(f'{related_field}__id'))
+            )
+            .annotate(
+                total_views=Subquery(
+                    view_counts.filter(**{f'{related_field}__id': OuterRef('pk')}).values('total_views')
+                )
+            )
+            .order_by('-total_views')[:return_items]
         )
-        .annotate(total_views=Subquery(view_counts.filter(**{f'{related_field}__id': OuterRef('pk')}).values('total_views')))
-        .order_by('-total_views')[:return_items]
-    )
+    else:
+        popular_items = (
+            model_class.objects.filter(
+                id__in=Subquery(view_counts.values(f'{related_field}__id'))
+            )
+            .annotate(total_views=Subquery(view_counts.filter(**{f'{related_field}__id': OuterRef('pk')}).values('total_views')))
+            .order_by('-total_views')[:return_items]
+        )
 
     return popular_items
 

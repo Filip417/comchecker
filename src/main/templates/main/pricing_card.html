@@ -14,7 +14,7 @@
       {% endfor %}
       <!-- More features -->
   </div>
-    {% if object.display_sub_name == subscription.plan_name and object.interval == subscription.interval%}
+    {% if object.display_sub_name == subscription.plan_name and object.interval == subscription.interval and subscription.is_active_status %}
     <button class="cursor-default w-full px-4 py-2 mt-10 font-medium tracking-wide text-white capitalize transition-colors duration-300 transform bg-blue-800 rounded-md focus:outline-none">
         Active plan
     </button>

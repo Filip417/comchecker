@@ -40,4 +40,5 @@ urlpatterns = [
     path("cancel_membership/", views.user_subscription_cancel_view, name="cancel-membership"),
     path("no_membership/", views.index_logged_no_valid_membership, name="index_logged_no_valid_membership"),
     path("get_invoice_pdf/", views.get_invoice_pdf, name="get_invoice_pdf"),
+    path("after-billing-changes/", views.after_billing_changes, name="after-billing-changes")
 ]

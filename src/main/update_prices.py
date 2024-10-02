@@ -602,22 +602,28 @@ def check_notification_and_send_email(notification_id):
                 return exact_price.projected_price
 
         # Define a range for the search
-        date_range_start = target_date - timedelta(days=365)
-        date_range_end = target_date + timedelta(days=365)
+        date_range_start = target_date - timedelta(days=365*2)
+        date_range_end = target_date + timedelta(days=365*2)
 
         # Retrieve all prices within the date range
-        possible_prices = CommodityPrice.objects.filter(
+        possible_past_prices = CommodityPrice.objects.filter(
             commodity_id=commodity_id,
+            price__isnull=False,
+            date__range=(date_range_start, target_date),
+        ).order_by('date')
+
+        possible_future_prices = CommodityPrice.objects.filter(
+            commodity_id=commodity_id,
+            projected_price__isnull=False,
             date__range=(date_range_start, date_range_end),
         ).order_by('date')
 
-        if not possible_prices.exists():
+        if not possible_past_prices.exists() and not possible_future_prices.exists():
             return None  # No prices found in the date range
 
         # Find the closest date in the possible prices
-        closest_price = min(possible_prices, key=lambda x: abs(x.date - target_date))
-        closest_past = possible_prices.filter(date__lte=target_date).order_by('-date').first()
-        closest_future = possible_prices.filter(date__gte=target_date).order_by('date').first()
+        closest_past = possible_past_prices.filter(date__lte=target_date).order_by('-date').first()
+        closest_future = possible_future_prices.filter(date__gte=target_date).order_by('date').first()
 
         if closest_past:
             days_to_closest_past = (target_date - closest_past.date).days

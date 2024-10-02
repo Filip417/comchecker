@@ -3,7 +3,7 @@
 {% block content %}
 {% load static %}
 {% load custom_tags %}
-<div class="bg-white dark:bg-gray-800 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+<div class="bg-white dark:bg-gray-800 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 min-h-[calc(100vh-82px)]">
 
     {% if activated_notifications.count > 0 %}
     <!-- Section 1 Notifications -->
@@ -405,7 +405,7 @@
     <hr class="border-gray-200 dark:border-gray-700">
     {% endif %} 
 
-    <section class="my-5">
+    <section class="py-10">
         <div class="flex flex-col">
             <div class="self-center w-full text-md text-gray-600 dark:text-gray-300 text-center tracking-wide">
                 Set new notifications directly from product, commodity or project page.

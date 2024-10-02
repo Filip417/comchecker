@@ -146,8 +146,8 @@ def index_logged(request):
     all_products = Product.objects.all()
 
     # Choices: 'week', 'month', 'year'
-    popular_products = get_popular_items('product', 'week', 20)
-    popular_commodities= get_popular_items('commodity', 'month', 20)
+    popular_products = get_popular_items('product', 'week', 20, user_id=request.user.id)
+    popular_commodities= get_popular_items('commodity', 'month', 20, user_id=request.user.id)
 
     # User-specific products and projects
     owned_projects, shared_projects, your_projects, products_in_projects = get_product_project_variables(request)
@@ -370,7 +370,7 @@ def create(request):
     return render(request, "main/create.html", context=context)
 
 @show_new_notifications
-@login_required
+@valid_lite_membership_required
 def profile(request):
     owned_projects = request.user.owned_projects.all().order_by('-name')
     shared_projects = request.user.shared_projects.all().order_by('-name')
@@ -555,7 +555,7 @@ def project(request, project_slug):
     top_value_commodity_ids = project.products.values_list('top_value_commodity', flat=True).distinct()[:20]
     top_value_commodities = Commodity.objects.filter(id__in=top_value_commodity_ids)
     your_products = Product.objects.filter(user=request.user)
-    popular_products = get_popular_items('product', 'week', 20)
+    popular_products = get_popular_items('product', 'week', 20, user_id=request.user.id)
 
     project.add_view(user=request.user)
 
@@ -830,6 +830,16 @@ def user_settings(request):
     }
     return render(request, "main/settings.html", context)
 
+
+@login_required
+def after_billing_changes(request):
+    finished = refresh_active_users_subscriptions(user_ids=[request.user.id],
+                                                      active_only=False)
+    if finished:
+        messages.success(request, "Membership data updated.")
+    else:
+        messages.error(request, "Membership data not updated. Please try refreshing in settings.")
+    return redirect(reverse('logged'))
 
 @login_required
 def update_settings(request):
