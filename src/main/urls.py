@@ -34,5 +34,6 @@ urlpatterns = [
     # pricing table temporary example TODO update correctly 
     path("pricing/", views.pricing, name="pricing-view"),
     path("cancel_membership/", views.user_subscription_cancel_view, name="cancel-membership"),
-    path("no_membership/", views.index_logged_no_valid_membership, name="index_logged_no_valid_membership")
+    path("no_membership/", views.index_logged_no_valid_membership, name="index_logged_no_valid_membership"),
+    path("get_invoice_pdf/", views.get_invoice_pdf, name="get_invoice_pdf"),
 ]

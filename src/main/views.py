@@ -27,7 +27,7 @@ from django.utils import timezone
 from .views_functions import *
 from .update_prices import check_notification_and_send_email
 import helpers.billing
-from .subs_utils import refresh_active_users_subscriptions
+from .subs_utils import refresh_active_users_subscriptions, get_payment_intents
 import stripe
 from django.http import JsonResponse
 from customers.models import Customer
@@ -36,7 +36,6 @@ from customers.models import Customer
 
 
 
-@logged_in_cant_access
 def pricing(request):
     pricing_qs = SubscriptionPrice.objects.filter(featured=True)
     month_qs = pricing_qs.filter(interval=SubscriptionPrice.IntervalChoices.MONTHLY)
@@ -524,7 +523,7 @@ def commodity(request, name):
     return render(request, "main/commodity.html", context)
 
 @show_new_notifications
-@login_required
+@valid_lite_membership_required
 def project(request, project_slug):
     project = get_object_or_404(Project, slug=project_slug)
 
@@ -580,7 +579,7 @@ def project(request, project_slug):
     return render(request, "main/project.html",context)
 
 @show_new_notifications
-@login_required
+@valid_lite_membership_required
 def search(request):
     products = Product.objects.filter(Q(user=None) | Q(user=request.user)).order_by('-view_count')
     commodities = Commodity.objects.all().order_by('name')
@@ -790,6 +789,16 @@ def notifications(request):
     }
     return render(request, "main/notifications.html",context)
 
+@login_required
+def get_invoice_pdf(request):
+    if request.method == 'POST':
+        invoice_id = request.POST.get("invoice_id")
+        if invoice_id:
+            inv_obj = stripe.Invoice.retrieve(invoice_id)
+            inv_url = inv_obj['invoice_pdf']
+            if inv_url:
+                return redirect(inv_url)
+    return redirect('settings')
 
 @login_required
 def user_settings(request):
@@ -799,6 +808,8 @@ def user_settings(request):
 
     user_sub_obj, created = UserSubscription.objects.get_or_create(user=request.user)
     sub_data = user_sub_obj.serialize()
+    
+    payment_intents = get_payment_intents(request.user.id, limit=24)
 
     if request.method == 'POST':
         # refresh data request
@@ -815,6 +826,7 @@ def user_settings(request):
         "month_qs":list(month_qs),
         "year_qs":list(year_qs),
         "subscription": sub_data,
+        "payment_intents":payment_intents,
     }
     return render(request, "main/settings.html", context)
 

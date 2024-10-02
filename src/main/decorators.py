@@ -25,7 +25,17 @@ def show_new_notifications(view_func):
     return wrapper
 
 
-
+def check_if_user_sub_active(user_id):
+    try:
+        user_sub = UserSubscription.objects.get(user_id=user_id)
+        # Check if the subscription has an active status
+        if user_sub.subscription and user_sub.is_active_status:
+            return True
+    except UserSubscription.DoesNotExist:
+        # If the UserSubscription does not exist, it's considered inactive
+        return False
+    
+    return False
 
 def valid_unlimited_membership_required(view_func):
     @wraps(view_func)
@@ -53,7 +63,7 @@ def valid_lite_membership_required(view_func):
     @wraps(view_func)
     @login_required  # Ensure the user is authenticated before checking permissions
     def wrapper(request, *args, **kwargs):
-        if request.user.has_perm('main.lite'):
+        if request.user.has_perm('main.lite') and check_if_user_sub_active(request.user.id):
             return view_func(request, *args, **kwargs)
         else:
             messages.error(request, "You have no valid membership")

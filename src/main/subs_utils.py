@@ -1,9 +1,9 @@
 import helpers.billing
-
 from django.db.models import Q
 from customers.models import Customer
 from .models import Subscription, UserSubscription, SubscriptionStatus
-
+import stripe
+import datetime
 
 def refresh_active_users_subscriptions(
         user_ids=None, 
@@ -57,3 +57,24 @@ def sync_subs_group_permissions():
         sub_perms = obj.permissions.all()
         for group in obj.groups.all():
             group.permissions.set(sub_perms)
+
+
+def get_payment_intents(user_id, limit=10):
+    try:
+        cust = Customer.objects.get(user_id=user_id)
+    except Customer.DoesNotExist:
+        return None
+    payment_intents = stripe.PaymentIntent.list(limit=limit)
+
+    data_to_show = []
+    for intent in payment_intents['data']:
+        single_row = {}
+        single_row['invoice_id'] = intent['invoice']
+        single_row['status'] = intent['status']
+        single_row['amount'] = intent['amount']
+        single_row['currency'] = intent['currency']
+        # Convert the timestamp to a datetime object
+        single_row['created'] = datetime.datetime.fromtimestamp(intent['created']).strftime(
+            '%d/%m/%Y %H:%M:%S')
+        data_to_show.append(single_row)
+    return data_to_show

@@ -126,10 +126,10 @@
                
               <section class="mx-auto container">
                 <a class="pointer-events-none flex items-center text-sm text-gray-800 capitalize transition-colors duration-300 transform dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-white">
-                  <span class="text-lg font-medium">
+                  <span class="mt-5 text-md font-medium">
                     {% if subscription.cancel_at_period_end %}
-                    Cancelled membership
-                    {% else %}
+                    Membership will cancel at the period end
+                    {% elif subscription.is_active_status and not subscription.cancel_at_period_end %}
                     Upcoming payment
                     {% endif %}
                   </span>
@@ -154,7 +154,11 @@
                                     Amount
                                   </th>
                                   <th scope="col" class="px-4 py-3.5 text-sm font-normal text-left rtl:text-right text-gray-500 dark:text-gray-400">
-                                    Date
+                                    {% if subscription.is_active_status and subscription.cancel_at_period_end %}
+                                    Active until
+                                    {% elif subscription.is_active_status and not subscription.cancel_at_period_end %}
+                                    Next payment in
+                                    {% endif %}
                                   </th>
                                   <th scope="col" class="px-4 py-3.5 text-sm font-normal text-left rtl:text-right text-gray-500 dark:text-gray-400">
                                   </th>
@@ -179,7 +183,7 @@
                                     {{subscription.currency|upper}} {{ subscription.price|divide_by_100|floatformat:2 }}
                                   </td>
                                   <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap">
-                                    {{subscription.current_period_end}}
+                                    {{subscription.current_period_end|timeuntil}}
                                   </td>
                                   <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap"></td>
                                 </tr>
@@ -195,13 +199,252 @@
 
       <!-- Manage Subscription -->
       <section class="my-5 container mx-auto">
-        <!-- TODO to be managed in prod via stripe customer portal-->
-        <a href="https://billing.stripe.com/p/login/test_14k4kj9ty4P70rm4gg" class="px-6 py-2 font-medium tracking-wide text-gray-800 capitalize transition-colors duration-300 transform bg-gray-200 rounded-lg hover:bg-gray-300 focus:outline-none focus:ring focus:ring-gray-400 focus:ring-opacity-80">
-          Manage Subscription
-        </a>
-      </section>
+
+    <!-- Show + - -->
+    <section class="container mx-auto">
+      <style>
+          [x-cloak] { display: none; }
+      </style>
+      <div class="my-5 flex flex-col" x-data="{ sectionOpen: { membership1: false } }" >
+      <!-- Expand/collapse section button -->
+      <button @click="sectionOpen.membership1 = !sectionOpen.membership1" type="button"
+      class="flex w-full items-center justify-between bg-white dark:bg-gray-800 text-gray-400 hover:text-gray-500 hover:underline" aria-controls="membership-section-0" :aria-expanded="sectionOpen.membership1.toString()">
+          <span class="text-lg font-medium text-gray-800 dark:text-white">Change plan</span>
+          <span class="flex items-center">
+              <!-- Expand icon, show/hide based on section open state. -->
+              <svg x-show="!sectionOpen.membership1 " class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" x-cloak>
+              <path d="M10.75 4.75a.75.75 0 00-1.5 0v4.5h-4.5a.75.75 0 000 1.5h4.5v4.5a.75.75 0 001.5 0v-4.5h4.5a.75.75 0 000-1.5h-4.5v-4.5z" />
+              </svg>
+              <!-- Collapse icon, show/hide based on section open state. -->
+              <svg x-show="sectionOpen.membership1 " class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" x-cloak>
+              <path fill-rule="evenodd" d="M4 10a.75.75 0 01.75-.75h10.5a.75.75 0 010 1.5H4.75A.75.75 0 014 10z" clip-rule="evenodd" />
+              </svg>
+          </span>
+          </button>
+      
+      <div x-show="sectionOpen.membership1 " id="membership-section-0" x-cloak>
+          
+        <!-- Pricing Section -->
+        <section>
+            <div class="container md:px-6 py-8 mx-auto">
+              <div class="sm:flex sm:items-center sm:justify-between">
+                  <div>
+                      <h2 class="text-2xl font-bold text-gray-800 lg:text-3xl dark:text-gray-100">Simple, transparent pricing</h2>
+                      <p class="mt-4 text-gray-500 dark:text-gray-400">No Contracts. No surprise fees.</p>
+                  </div>
+      
+                  <div class="overflow-hidden p-0.5 mt-6 border rounded-lg dark:border-gray-700">
+                      <div class="sm:-mx-0.5 flex">
+                          <button id="monthly-btn" class="focus:outline-none px-3 w-1/2 sm:w-auto py-1 sm:mx-0.5 text-white bg-blue-500 rounded-lg">Monthly</button>
+                          <button id="yearly-btn" class="focus:outline-none px-3 w-1/2 sm:w-auto py-1 sm:mx-0.5 text-gray-800 dark:text-gray-200 dark:hover:bg-gray-800 bg-transparent rounded-lg hover:bg-gray-200">Yearly</button>
+                      </div>
+                  </div>
+              </div>
+              
+              <div class="grid gap-6 mt-16 -mx-6 sm:gap-8 sm:grid-cols-1 lg:grid-cols-3 xl:grid-cols-3">
+                <!-- Plans Monthly -->
+                {% for price_obj in month_qs %}
+                    {% include 'main/pricing_card.html' with object=price_obj subscription=subscription %}
+                {% endfor %}
+                <!-- Plans Yearly -->
+                {% for price_obj in year_qs %}
+                    {% include 'main/pricing_card.html' with object=price_obj subscription=subscription %}
+                {% endfor %}
+            </div>
+      
+            
+
+            {% if subscription.is_active_status and not subscription.cancel_at_period_end %}
+            <!-- Cancel membership -->
+            <section>
+              <div x-data="{ isOpen: false }" class="relative flex px-4 " id="changing-plan-modal">
+                <button @click="isOpen = true" class="px-6 py-2 font-medium tracking-wide text-gray-800 capitalize transition-colors duration-300 transform bg-gray-200 rounded-lg hover:bg-gray-300 focus:outline-none focus:ring focus:ring-gray-400 focus:ring-opacity-80">
+                  Cancel Membership
+                </button>
+                
+                <div x-show="isOpen" x-init="$el.classList.remove('hidden')" class="hidden z-20 fixed inset-0 bg-black bg-opacity-25 transition-opacity ease-linear duration-300" @click="open = false"></div>
+                <div x-show="isOpen"
+                    x-init="$el.classList.remove('hidden')" 
+                    x-transition:enter="transition duration-300 ease-out"
+                    x-transition:enter-start="translate-y-4 opacity-0 sm:translate-y-0 sm:scale-95"
+                    x-transition:enter-end="translate-y-0 opacity-100 sm:scale-100"
+                    x-transition:leave="transition duration-150 ease-in"
+                    x-transition:leave-start="translate-y-0 opacity-100 sm:scale-100"
+                    x-transition:leave-end="translate-y-4 opacity-0 sm:translate-y-0 sm:scale-95"
+                    class="hidden fixed inset-0 z-30 overflow-y-auto" 
+                    aria-labelledby="modal-title" role="dialog" aria-modal="true"
+                >
+                    <div class="flex items-end justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+                        <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+            
+                        <div @click.away="isOpen = false" class="relative inline-block px-4 pt-5 pb-4 overflow-hidden text-left align-bottom transition-all transform bg-white rounded-lg shadow-xl rtl:text-right dark:bg-gray-900 sm:my-8 sm:align-middle sm:max-w-sm sm:w-full sm:p-6">
+                            <div>
+                                <div class="flex items-center justify-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 text-gray-700 dark:text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
+                                    </svg>
+                                </div>
+            
+                                <div class="mt-2 text-center">
+                                    <h3 class="text-lg font-medium leading-6 text-gray-800 capitalize dark:text-white" id="modal-title">Are you sure?</h3>
+                                    <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">
+                                        Your current Intro plan will stop working at {{subscription.current_period_end}}
+                                      </p>
+                                      <a href="{% url 'help' %}" class="hover:underline mt-2 text-sm text-gray-500 dark:text-gray-400">
+                                        Please contact us how we could improve the service.
+                                      </a>
+                                </div>
+                            </div>
+            
+                            <div class="mt-5 sm:flex sm:items-center justify-center">
+                              <button @click="isOpen = false" class="w-full px-4 py-2 mt-2 text-sm font-medium tracking-wide text-gray-700 capitalize transition-colors duration-300 transform border border-gray-200 rounded-md sm:mt-0 sm:w-auto sm:mx-2 dark:text-gray-200 dark:border-gray-700 dark:hover:bg-gray-800 hover:bg-gray-100 focus:outline-none focus:ring focus:ring-gray-300 focus:ring-opacity-40">
+                              Hide
+                            </button>
+            
+                                <div class="sm:flex sm:items-center ">
+                                  <form action="{% url 'cancel-membership' %}" method="POST">
+                                    {% csrf_token %}
+                                    <button class="w-full px-4 py-2 mt-2 text-sm font-medium tracking-wide text-white capitalize transition-colors duration-300 transform bg-red-600 rounded-md sm:w-auto sm:mt-0 hover:bg-red-700 focus:outline-none focus:ring focus:ring-red-800 focus:ring-opacity-40">
+                                        Cancel membership
+                                    </button>
+                                  </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+              </div>
+          </section>
+          {% endif %}
+
+
+              
+            </div>
+          </div>
+        </section>
+
+
+        <!-- Payment History -->
+<section class="container mx-auto">
+  <style>
+      [x-cloak] { display: none; }
+  </style>
+  <div class="my-5 flex flex-col" x-data="{ sectionOpen: { membership3: false } }" >
+  <!-- Expand/collapse section button -->
+  <button @click="sectionOpen.membership3 = !sectionOpen.membership3" type="button"
+  class="flex w-full items-center justify-between bg-white dark:bg-gray-800 text-gray-400 hover:text-gray-500 hover:underline" aria-controls="membership-section-0" :aria-expanded="sectionOpen.membership3.toString()">
+      <span class="text-lg font-medium text-gray-800 dark:text-white">Payment history</span>
+      <span class="flex items-center">
+          <!-- Expand icon, show/hide based on section open state. -->
+          <svg x-show="!sectionOpen.membership3 " class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" x-cloak>
+          <path d="M10.75 4.75a.75.75 0 00-1.5 0v4.5h-4.5a.75.75 0 000 1.5h4.5v4.5a.75.75 0 001.5 0v-4.5h4.5a.75.75 0 000-1.5h-4.5v-4.5z" />
+          </svg>
+          <!-- Collapse icon, show/hide based on section open state. -->
+          <svg x-show="sectionOpen.membership3 " class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" x-cloak>
+          <path fill-rule="evenodd" d="M4 10a.75.75 0 01.75-.75h10.5a.75.75 0 010 1.5H4.75A.75.75 0 014 10z" clip-rule="evenodd" />
+          </svg>
+      </span>
+      </button>
+  
+  <div x-show="sectionOpen.membership3 " id="membership-section-0" x-cloak>  
+    <p class="my-2 text-sm text-gray-500 dark:text-gray-300">Showing invoices within the past </p>
+        <!-- Payment history table -->
+        <section class="container px-4 mx-auto">
+          <div class="flex flex-col">
+            <div class="-mx-4 my-2 max-h-96 overflow-auto sm:-mx-6 lg:-mx-8">
+              <div class="inline-block min-w-full py-2 align-middle md:px-6 lg:px-8">
+                <div class="border border-gray-200 dark:border-gray-700 rounded-lg">
+                  <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                    <thead class="bg-gray-50 dark:bg-gray-800">
+                      <tr>
+                        <th scope="col" class="px-4 py-3.5 text-sm font-normal text-left rtl:text-right text-gray-500 dark:text-gray-400">
+                          Status
+                        </th>
+                        <th scope="col" class="px-4 py-3.5 text-sm font-normal text-left rtl:text-right text-gray-500 dark:text-gray-400">
+                          Amount
+                        </th>
+                        <th scope="col" class="px-4 py-3.5 text-sm font-normal text-left rtl:text-right text-gray-500 dark:text-gray-400">
+                          Created
+                        </th>
+                        <th scope="col" class="px-4 py-3.5 text-sm font-normal text-left rtl:text-right text-gray-500 dark:text-gray-400">
+                          Invoice
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200 dark:divide-gray-700 dark:bg-gray-900">
+                      {% for intent in payment_intents %}
+                      <tr>
+                        {% if intent.status == 'succeeded' %}
+                        <td class="px-4 py-4 text-sm font-medium text-gray-700 whitespace-nowrap">
+                          <div class="inline-flex items-center px-3 py-1 rounded-full gap-x-2 text-emerald-500 bg-emerald-100/60 dark:bg-gray-800">
+                              <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                  <path d="M10 3L4.5 8.5L2 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                              </svg>
+                              
+                              <h2 class="text-sm font-normal">Succeeded</h2>
+                          </div>
+                        </td>
+                        {% elif intent.status == 'canceled' %}
+                        <td class="px-4 py-4 text-sm font-medium text-gray-700 whitespace-nowrap">
+                          <div class="inline-flex items-center px-3 py-1 text-red-500 rounded-full gap-x-2 bg-red-100/60 dark:bg-gray-800">
+                              <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                  <path d="M9 3L3 9M3 3L9 9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                              </svg>
+                              <h2 class="text-sm font-normal">Cancelled</h2>
+                          </div>
+                        </td>
+                        {% else %}
+                        <td class="px-4 py-4 text-sm font-medium text-gray-700 whitespace-nowrap">
+                          <div class="inline-flex items-center px-3 py-1 text-gray-500 rounded-full gap-x-2 bg-gray-100/60 dark:bg-gray-800">
+                              <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                  <path d="M4.5 7L2 4.5M2 4.5L4.5 2M2 4.5H8C8.53043 4.5 9.03914 4.71071 9.41421 5.08579C9.78929 5.46086 10 5.96957 10 6.5V10" stroke="#667085" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                              </svg>
+                              <h2 class="text-sm font-normal">Refunded</h2>
+                          </div>
+                        </td>
+                        {% endif %}
+                        <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap">
+                          {{intent.currency|upper}} {{intent.amount|divide_by_100|floatformat:2}}
+                        </td>
+                        <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap">
+                          {{intent.created}}
+                        </td>
+                        <td class="px-4 py-4 text-sm whitespace-nowrap">
+                          <div class="flex items-center gap-x-6">
+                              <form action="{% url 'get_invoice_pdf' %}" method="POST">
+                              {% csrf_token%}
+                              <input type="hidden" name="invoice_id" value="{{intent.invoice_id}}">
+                              <button class="text-gray-500 transition-colors duration-200 dark:hover:text-indigo-500 dark:text-gray-300 hover:text-indigo-500 focus:outline-none">
+                                  View
+                              </button>
+                            </form>
+                          </div>
+                        </td>
+                      </tr>
+                      {% endfor %}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+          </section>
+        </div>
+      </div>
+    </section>
+
+
+
+      </div>
+      </div>
+    </section>
+
+
+
+      
 
     <hr class="mt-5 border-gray-200 dark:border-gray-700 ">
+
 
     <!-- Privacy and data settings -->
     <section class="my-5 container">

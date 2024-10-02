@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect, reverse
+from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from main.models import SubscriptionPrice, Subscription, UserSubscription
 # Create your views here.
@@ -6,7 +6,8 @@ import helpers.billing
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.http import HttpResponseBadRequest
-
+from django.contrib import messages
+from django.urls import reverse
 
 BASE_URL = settings.BASE_URL
 User = get_user_model()
@@ -27,8 +28,8 @@ def checkout_redirect_view(request):
     customer_stripe_id = request.user.customer.stripe_id
     print(customer_stripe_id)
     success_url_base = BASE_URL
-    success_url_path = reverse("stripe-checkout-end")
-    pricing_url_path = reverse("pricing-view")
+    success_url_path = reverse("stripe-checkout-end") # TODO update
+    pricing_url_path = reverse("pricing-view") # TODO update
     success_url = f"{success_url_base}{success_url_path}"
     cancel_url = f"{success_url_base}{pricing_url_path}"
     price_stripe_id = obj.stripe_id
@@ -63,7 +64,7 @@ def checkout_finalize_view(request):
         user_obj = None
 
     _user_sub_exists = False
-    _sub_options = {
+    _sub_options = { 
         "subscription":sub_obj,
         "stripe_id":sub_stripe_id,
         "user_cancelled":False,
@@ -99,4 +100,5 @@ def checkout_finalize_view(request):
 
     
     context = {}
-    return render(request, "checkout/success.html", context)
+    messages.success(request, "Welcome! Membership started")
+    return redirect(reverse('logged'))

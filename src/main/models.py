@@ -7,7 +7,7 @@ from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
 from django.db import models
 from django.utils import timezone
-from datetime import datetime
+import datetime
 import random
 import string
 import helpers.billing
@@ -272,6 +272,7 @@ class UserSubscription(models.Model):
             "cancel_at_period_end":self.cancel_at_period_end,
             "interval":self.interval,
             "price":self.price,
+            "is_active_status":self.is_active_status,
         }
 
     @property
