@@ -21,6 +21,13 @@ import time
 import pandas as pd
 import os
 from datetime import datetime, date
+from django.utils.http import urlsafe_base64_encode
+from django.utils.encoding import force_bytes
+from .tokens import email_notification_token
+from django.template.loader import render_to_string
+from django.core.mail import EmailMultiAlternatives
+
+
 # from commodities_data import commodities_data
 
 # Set the Django settings module environment variable
@@ -735,14 +742,29 @@ def check_notification_and_send_email(notification_id):
                 user = notification.user
                 if not user.userprofile.email_notification:
                     return False
-                user_email = user.email
-                send_mail(
-                f'Notification {notification} activated',
-                f'{notification}\n\n email sent to {user_email}',
-                settings.EMAIL_HOST_USER,  # Sender's email
-                [user_email],  # Recipient's email
-                fail_silently=False,
-                )
+                uidb64 = urlsafe_base64_encode(force_bytes(user.pk))
+                token = email_notification_token.make_token(user)
+                BASE_URL = settings.BASE_URL
+                subject = f'Notification {notification} activated'
+                from_email = settings.EMAIL_HOST_USER
+                recipient_list = [user.email]
+                text_content = f'{notification}\n\n email sent to {user.email}'
+                html_content = render_to_string('main/notification_email.html',
+                    {
+                        'notification': notification,
+                        'user': user,
+                        'token':token,
+                        'uidb64':uidb64,
+                        'BASE_URL':BASE_URL,
+                        })
+                # Create the email
+                email = EmailMultiAlternatives(subject, text_content, from_email, recipient_list)
+                email.attach_alternative(html_content, "text/html")  # Attach the HTML version
+                
+                # Send the email
+                email.send(fail_silently=False)
+
+                # Save notification status in db
                 notification.email_sent = True
                 notification.email_sent_at = timezone.now()
                 notification.save()
@@ -770,6 +792,5 @@ def check_notification_and_send_email(notification_id):
             print(f'Change to check: {change_to_check}')
             if (change_to_check >= 0 and calculated_change >= change_to_check) or (change_to_check < 0 and calculated_change < change_to_check):
                 updated = update_notification_db(notification.id, calculated_change)
-                sent = True 
-                #sent = send_notification_email(notification_id=notification.id)
+                sent = send_notification_email(notification_id=notification.id)
     return updated, sent

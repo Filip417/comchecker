@@ -2,10 +2,6 @@ from django.contrib import admin
 from . import views
 from django.urls import path, include
 from checkouts import views as checkout_views
-from django.conf.urls import handler404, handler400
-
-handler404 = 'main.views.custom_404_view'
-handler400 = 'main.views.custom_400_view'
 
 urlpatterns = [
     path("",views.index,name="index"),
@@ -17,6 +13,7 @@ urlpatterns = [
     path("notifications/",views.notifications, name="notifications"),
     path("commodity/<str:name>",views.commodity,name="commodity"),
     path("settings/",views.user_settings, name="settings"),
+    path("turn-off-email-notifications/<uidb64>/<token>/", views.turn_off_email_notifications, name="turn_off_email_notifications"),
     path("project/<str:project_slug>",views.project,name="project"),
     path('edit-product/<str:slug>', views.edit_product, name="edit_product"),
     path('delete-product/<str:slug>', views.delete_product, name="delete_product"),

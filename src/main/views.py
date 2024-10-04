@@ -31,7 +31,11 @@ from .subs_utils import refresh_active_users_subscriptions, get_payment_intents
 import stripe
 from django.http import JsonResponse
 from customers.models import Customer
-
+from django.views.decorators.http import require_POST
+from django.http import HttpResponseForbidden
+from django.utils.http import urlsafe_base64_decode
+from django.utils.encoding import force_str
+from .tokens import email_notification_token
 
 
 
@@ -853,6 +857,25 @@ def update_settings(request):
         return redirect('settings')
 
 
+def turn_off_email_notifications(request, uidb64, token):
+    try:
+        # TODO base64 encoding for future use
+        # uid = force_str(urlsafe_base64_decode(uidb64))
+        uid = uidb64
+        user = get_object_or_404(User, id=uid)
+    except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+        user = None
+
+    # Verify the token and ensure it matches the user
+    if user and email_notification_token.check_token(user, token):
+        profile = user.userprofile
+        profile.email_notification = False
+        profile.save()
+        messages.success(request, "Email notifications have been turned off.")
+        return redirect('index')
+    else:
+        return HttpResponseForbidden("Invalid token.")
+
 
 @login_required
 def help(request):
@@ -866,17 +889,17 @@ def logged_contact_form(request):
         if text_content and text_content.strip() != '':
             user_email = request.user.email
             send_mail(
-                f'New Contact Form Submission from {user_email}',
-                f'{text_content}\n\nfrom {user_email}',
-                settings.EMAIL_HOST_USER,  # Sender's email
-                [settings.EMAIL_HOST_USER],  # Recipient's email
+                subject=f'New Contact Form Submission from {user_email}',
+                message=f'{text_content}\n\nfrom {user_email}',
+                from_email=settings.EMAIL_HOST_USER,  # Sender's email
+                recipient_list=[settings.EMAIL_HOST_USER],  # Recipient's email
                 fail_silently=False,
             )
             messages.success(request, 'Email has been sent, thank you for contacting us.')
             return redirect('help')
     return redirect('help')
 
-# TODO fix renders of error template with error 404 and 400
+# Template with error 404 and 400 TODO if add 403 or 500
 def custom_404_view(request, exception):
     return render(request, 'main/404.html', status=404)
 

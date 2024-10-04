@@ -265,13 +265,9 @@ def populate_commodity_prices():
 
 
 def main():
-    # populate_currencies()
-    # populate_commodities()
-    # populate_products()
-    # populate_material_proportions()
-    # populate_commodity_production()
-    # populate_commodity_prices()
-    pass
-
-if __name__ == '__main__':
-    main()
+    populate_currencies()
+    populate_commodities()
+    populate_products()
+    populate_material_proportions()
+    populate_commodity_production()
+    populate_commodity_prices()
