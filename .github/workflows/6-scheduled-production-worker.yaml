@@ -34,16 +34,20 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y wget unzip
+          
           # Install Google Chrome
           wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
           sudo dpkg -i google-chrome-stable_current_amd64.deb || sudo apt-get -f install -y
           
           # Get Chrome version
-          CHROME_VERSION=$(google-chrome --version | grep -oP '\d+\.\d+\.\d+')
+          CHROME_VERSION=$(google-chrome --version | grep -oP '\d+\.\d+\.\d+' | head -1)
           echo "Installing ChromeDriver for Chrome version: $CHROME_VERSION"
 
+          # Get the major version number
+          MAJOR_VERSION=${CHROME_VERSION%%.*}
+          
           # Get the corresponding ChromeDriver version
-          CHROMEDRIVER_VERSION=$(curl -sS "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_${CHROME_VERSION%.*}")
+          CHROMEDRIVER_VERSION=$(curl -sS "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_${MAJOR_VERSION}")
 
           if [ -z "$CHROMEDRIVER_VERSION" ]; then
             echo "ChromeDriver version not found for Chrome version $CHROME_VERSION"
