@@ -41,8 +41,8 @@ class Command(BaseCommand):
             update_live_commodity_prices(new_dict)
 
             # # Futures prices
-            futures_commodities_data = get_live_prices(futures_commodities_data_input)
-            update_futures_prices_in_db(futures_commodities_data)
+            # futures_commodities_data = get_live_prices(futures_commodities_data_input)
+            # update_futures_prices_in_db(futures_commodities_data)
 
             # # Update values
             products = Product.objects.all()
