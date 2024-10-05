@@ -35,10 +35,10 @@ class Command(BaseCommand):
             update_currencies(API_KEY)
 
             # # Live prices
-            new_dict = get_live_prices_commodities(commodities_data)
+            # new_dict = get_live_prices_commodities(commodities_data)
             #directory_to_save = r'C:\Users\sawin\Documents\Commodity Project\django_project\comchecker\main'
             #save_to_excel(new_dict, directory_to_save)
-            update_live_commodity_prices(new_dict)
+            # update_live_commodity_prices(new_dict)
 
             # # Futures prices
             # futures_commodities_data = get_live_prices(futures_commodities_data_input)
