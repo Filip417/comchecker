@@ -32,7 +32,7 @@ class Command(BaseCommand):
         try:
             # # Currencies
             API_KEY = settings.CURRENCIES_API_KEY
-            update_currencies(API_KEY)
+            # update_currencies(API_KEY)
 
             # # Live prices
             new_dict = get_live_prices_commodities(commodities_data)
