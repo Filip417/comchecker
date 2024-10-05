@@ -69,8 +69,8 @@ if GITHUB_ACTIONS:
     chrome_options.add_argument("--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36")
     chrome_options.add_argument("--window-size=1920,1080")
     # Optional to add perhaps to reduce load time for selenium
-    # chrome_options.add_argument("--disable-extensions")
-    # chrome_options.add_argument("--disable-infobars")
+    chrome_options.add_argument("--disable-extensions")
+    chrome_options.add_argument("--disable-infobars")
 
 
 
@@ -659,22 +659,22 @@ def get_futures_prices(url_code):
 
     # Initialize WebDriver (assuming you're using Chrome)
     driver = webdriver.Chrome(options=chrome_options)
-    try:
-        # Open the specified URL
-        driver.get(url)
 
+    # Open the specified URL
+    driver.get(url)
+    try:
         # Wait for the bc-data-grid element to load
-        wait = WebDriverWait(driver, 60)  # Increase the wait to 60 seconds
+        wait = WebDriverWait(driver, 5)  # Increase the wait to 60 seconds
         bc_data_grid = wait.until(
             EC.presence_of_element_located((By.CSS_SELECTOR, "bc-data-grid"))
         )
 
-        time.sleep(5)
+        time.sleep(2)
 
         # Execute the JavaScript to scroll down to get all rows visible
         driver.execute_script("scroll(0, 2000);")
 
-        time.sleep(5)
+        time.sleep(2)
 
         # Use JavaScript to access nested shadow DOM elements in one step
         rows_script = """
@@ -718,6 +718,7 @@ def get_futures_prices(url_code):
 
 def get_live_prices(futures_commodities_data):
     for com, data in futures_commodities_data.items():
+        print(f'Commodity info gatherinf started for {com}')
         data['futures'] = get_futures_prices(data['url_code'])
         print(f'Commodity info gathered {com}')
     return futures_commodities_data
