@@ -54,21 +54,21 @@ RUN pip install -r /tmp/requirements.txt
 ARG PROJ_NAME="comchecker"
 
 # Create a bash script to run the Django project
-# This script will execute at runtime when the container starts
+# Create a bash script to run the Django project
 RUN printf "#!/bin/bash\n" > ./paracord_runner.sh && \
     printf "RUN_PORT=\"\${PORT:-8000}\"\n\n" >> ./paracord_runner.sh && \
     printf "python manage.py migrate --no-input\n" >> ./paracord_runner.sh && \
-    printf "cron && gunicorn ${PROJ_NAME}.wsgi:application --bind \"0.0.0.0:\$RUN_PORT\"\n" >> ./paracord_runner.sh
-
-# Update to run cron in the background
-RUN printf "cron &\n" >> ./paracord_runner.sh
+    printf "service cron start\n" >> ./paracord_runner.sh && \
+    printf "gunicorn ${PROJ_NAME}.wsgi:application --bind \"0.0.0.0:\$RUN_PORT\"\n" >> ./paracord_runner.sh
 
 # make the bash script executable
 RUN chmod +x paracord_runner.sh
 
 # Add the cron job to the crontab
-RUN echo "* * * * * cd /code && python manage.py scheduled_test >> /var/log/cron.log 2>&1" >> /etc/crontab
-
+# Add the cron job to a new file in cron.d
+RUN echo "* * * * * root cd /code && /opt/venv/bin/python manage.py scheduled_test >> /var/log/cron.log 2>&1" > /etc/cron.d/scheduled_test && \
+    touch /var/log/cron.log && chmod 666 /var/log/cron.log
+    
 # Clean up apt cache to reduce image size
 RUN apt-get remove --purge -y \
     && apt-get autoremove -y \
