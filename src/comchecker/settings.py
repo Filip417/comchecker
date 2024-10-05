@@ -78,6 +78,8 @@ INSTALLED_APPS = [
     # The following apps are required for allauth:
     'allauth',
     'allauth.account',
+    # Scheduler
+    'django_crontab',
 ]
 
 MIDDLEWARE = [
@@ -201,3 +203,9 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'local-cdn')
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+
+CRONJOBS = [
+    ('* * * * *', 'main.cron.my_scheduled_job')
+]
