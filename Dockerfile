@@ -53,12 +53,13 @@ RUN python manage.py runcrons
 # set the Django default project name
 ARG PROJ_NAME="comchecker"
 
-# create a bash script to run the Django project
-# this script will execute at runtime when
-# the container starts and the database is available
+# Create a bash script to run the Django project
+# This script will execute at runtime when the container starts
 RUN printf "#!/bin/bash\n" > ./paracord_runner.sh && \
     printf "RUN_PORT=\"\${PORT:-8000}\"\n\n" >> ./paracord_runner.sh && \
     printf "python manage.py migrate --no-input\n" >> ./paracord_runner.sh && \
+    printf "python manage.py migrate django_cron --no-input\n" >> ./paracord_runner.sh && \
+    printf "python manage.py runcrons\n" >> ./paracord_runner.sh && \
     printf "gunicorn ${PROJ_NAME}.wsgi:application --bind \"0.0.0.0:\$RUN_PORT\"\n" >> ./paracord_runner.sh
 
 # make the bash script executable
