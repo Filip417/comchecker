@@ -718,7 +718,7 @@ def get_futures_prices(url_code):
 
 def get_live_prices(futures_commodities_data):
     for com, data in futures_commodities_data.items():
-        print(f'Commodity info gatherinf started for {com}')
+        print(f'Commodity info gathering started for {com}')
         data['futures'] = get_futures_prices(data['url_code'])
         print(f'Commodity info gathered {com}')
     return futures_commodities_data
