@@ -13,6 +13,7 @@ __pycache__/
 # static
 /src/static/
 /src/local-cdn
+*.png
 
 # Django specific
 /media/
