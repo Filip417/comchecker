@@ -58,12 +58,11 @@ from main.models import (
 )
 
 chrome_options = Options()
-# chrome_options.add_argument("--headless")  # Run headless
-# chrome_options.add_argument("--window-position=-2400,-2400")
-# chrome_options.add_argument("--headless=old")
 
 GITHUB_ACTIONS = config('GH_ACTIONS', cast=bool)
 if GITHUB_ACTIONS:
+    chrome_options.add_argument("--window-position=-2400,-2400")
+    chrome_options.add_argument("--headless=old")
     chrome_options.add_argument("--no-sandbox")
     chrome_options.add_argument("--disable-dev-shm-usage")  # Overcome limited resource problems
     chrome_options.add_argument("--disable-gpu")  # Applicable for some older environments
