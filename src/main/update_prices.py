@@ -403,10 +403,12 @@ def get_trading_economics(url, element_id, commodities_data, com):
 
     # Open the specified URL
     driver.get(url)
-
+    
     try:
         # Wait for the price element to be present and visible on the page
         wait = WebDriverWait(driver, 10)  # Wait up to 10 seconds
+        driver.save_screenshot(f'screenshot_{com}.png')
+        print(driver.page_source)
         price_element = wait.until(EC.visibility_of_element_located((By.ID, element_id)))
         
         if price_element:
@@ -469,14 +471,16 @@ def get_live_prices_commodities(commodities_data):
         print(com)
         if com not in commodities_to_exclude:        
             if commodities_data[com]['source'] == 'FRED':
+                continue
                 get_fred_price(commodities_data[com]['url'], commodities_data, com)
             elif commodities_data[com]['source'] == 'Investing.com':
+                continue
                 get_investing_com_price(commodities_data[com]['url'], commodities_data, com)
             elif commodities_data[com]['source'] == 'Trading Economics':
-                pass
                 get_trading_economics(commodities_data[com]['url'],
                                             commodities_data[com]['element_id'], commodities_data, com)
             elif commodities_data[com]['source'] == 'Investing.com v2':
+                continue
                 get_investing_com_v2_price(commodities_data[com]['url'], commodities_data, com)
             elif commodities_data[com]['source'] == 'ONS':
                 print('Needs manual update 15/20th each month!')
