@@ -78,6 +78,13 @@ INSTALLED_APPS = [
     # The following apps are required for allauth:
     'allauth',
     'allauth.account',
+    # Scheduler
+    "django_cron",
+]
+
+CRON_CLASSES = [
+    "main.cron.MyCronJob",
+    # ...
 ]
 
 MIDDLEWARE = [
