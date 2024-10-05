@@ -372,7 +372,7 @@ class Commodity(models.Model):
     production_unit = models.CharField(max_length=256, null=True, blank=True)
     production_source = models.CharField(max_length=256, null=True, blank=True)
     production_name = models.CharField(max_length=256, null=True, blank=True)
-    production_total = models.IntegerField(null=True, blank=True)
+    production_total = models.BigIntegerField(null=True, blank=True)
     basic_description = models.TextField()
     use = models.TextField(null=True, blank=True)
     world_total = models.TextField(null=True, blank=True)

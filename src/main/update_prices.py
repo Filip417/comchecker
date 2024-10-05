@@ -28,6 +28,7 @@ from django.core.mail import EmailMultiAlternatives
 from django.db.models.functions import Cast
 from django.db.models import ExpressionWrapper, F, fields
 from django.db.models.functions import Abs, Extract
+from django.db import transaction
 # from commodities_data import commodities_data
 
 # Set the Django settings module environment variable
@@ -78,69 +79,176 @@ def update_total_production(commodities):
 
 
 
-def add_1y_increase_to_products(products):    
+def add_1y_increase_to_products(products):
+    # Pre-fetch material proportions for all products
+    materials_proportions = MaterialProportion.objects.filter(product__in=products).select_related('commodity', 'commodity__currency')
+    
+    # Pre-fetch commodities data and store in lookup dict
+    commodities = Commodity.objects.filter(id__in=[m.commodity_id for m in materials_proportions])
+    commodity_lookup = {commodity.id: commodity for commodity in commodities}
+
+    # Group materials by product for processing
+    product_materials = {}
+    for material in materials_proportions:
+        product_materials.setdefault(material.product_id, []).append(material)
+    
+    # Process each product
+    products_to_update = []
     for product in products:
-        materials_proportions = MaterialProportion.objects.filter(product=product.id)
-        total_proportion = materials_proportions.aggregate(total_proportion=Sum('proportion'))['total_proportion'] or 0
+        if product.id not in product_materials:
+            continue
+        
+        materials = product_materials[product.id]
+        total_proportion = sum([material.proportion for material in materials]) or 0
 
         weighted_price_lastyear = 0
         weighted_price_today = 0
 
-        # Fetch all commodities that are in the materials_proportions list
-        commodities = Commodity.objects.filter(id__in=[m.commodity_id for m in materials_proportions])
-
-        # Build a lookup dictionary for commodities
-        commodity_lookup = {commodity.id: commodity for commodity in commodities}
-
-        # Loop through materials and process the required data
-        for material in materials_proportions[:10]:
+        # Loop through up to 10 materials for the product
+        for material in materials[:10]:
             commodity = commodity_lookup.get(material.commodity_id)
             
-            # Retrieve prices for last year and today
+            # Retrieve last year and today prices once
             last_year_price_raw = get_price(last_year, material.commodity_id)
             today_price_raw = get_price(today, material.commodity_id)
             
-            # Accessing rate_for_price_kg and currency rate
+            # Access commodity data
             rate_for_price_kg = commodity.rate_for_price_kg
             currency_rate = commodity.currency.rate
 
-            # Retrieve prices for last year and today
-            last_year_price_raw = get_price(last_year, material.commodity_id)
-            today_price_raw = get_price(today, material.commodity_id)
-
             if total_proportion > 0:
-                print(f'Last year price: {last_year_price_raw}')
-                print(f'Material proportion: {material.proportion}')
-                print(f'Rate price per kg: {rate_for_price_kg}')
-                print(f'Currency rate: {currency_rate}')
-
                 weighted_price_lastyear += last_year_price_raw * material.proportion * rate_for_price_kg / currency_rate
                 weighted_price_today += today_price_raw * material.proportion * rate_for_price_kg / currency_rate
         
-        if weighted_price_lastyear != 0 and last_year_price_raw != 0 and today_price_raw != 0:
+        # Calculate increase and update product field
+        if weighted_price_lastyear != 0:
             product.increasefromlastyear = (weighted_price_today - weighted_price_lastyear) / weighted_price_lastyear * 100
         else:
-            product.increasefromlastyear = None  # Or any default value
-        product.save()
+            product.increasefromlastyear = None
+        
+        products_to_update.append(product)
+    
+    # Perform bulk update
+    Product.objects.bulk_update(products_to_update, ['increasefromlastyear'])
+    print('Bulk update add_1y_increase_to_products done')
+
+
 
 def add_1y_increase_to_commodities(commodities):
+    # List to store updated commodities
+    commodities_to_update = []
+    
     for commodity in commodities:
         last_year_price = get_price(last_year, commodity.id)
         today_price = get_price(today, commodity.id)
+
         if last_year_price and today_price:
             commodity.increasefromlastyear = (today_price - last_year_price) / last_year_price * 100
         else:
             commodity.increasefromlastyear = None  # Or any default value
-        commodity.save()
-        print(f'{commodity.name} - 1 year increase saved: {commodity.increasefromlastyear}')
+        
+        # Append the modified commodity to the list
+        commodities_to_update.append(commodity)
+    
+    # Perform a bulk update for all commodities
+    Commodity.objects.bulk_update(commodities_to_update, ['increasefromlastyear'])
+
+    print(f'1 year increase updated for {len(commodities_to_update)} commodities')
 
 
 def add_price_now(commodities):
+    # List to store commodities to be updated
+    commodities_to_update = []
+    
     for commodity in commodities:
         today_price = get_price(today, commodity.id)
         commodity.price_now = today_price
-        commodity.save()
-        print(f'{commodity.name} - Price now saved: {commodity.price_now}')
+        
+        # Append the modified commodity to the list
+        commodities_to_update.append(commodity)
+    
+    # Perform a bulk update for all commodities
+    Commodity.objects.bulk_update(commodities_to_update, ['price_now'])
+    
+    print(f'Price now updated for {len(commodities_to_update)} commodities')
+
+
+def add_1y_increase_to_products_and_add_top_value_commodities(products, batch_size=100):
+    # Pre-fetch all necessary data in bulk
+    materials_proportions = MaterialProportion.objects.filter(product__in=products).select_related('commodity', 'commodity__currency')
+
+    # Pre-fetch commodities data and store in lookup dict
+    commodity_ids = [m.commodity_id for m in materials_proportions]
+    commodities = Commodity.objects.filter(id__in=commodity_ids)
+    commodity_lookup = {commodity.id: commodity for commodity in commodities}
+
+    # Group materials by product for processing
+    product_materials = {}
+    for material in materials_proportions:
+        product_materials.setdefault(material.product_id, []).append(material)
+
+    # Create lists to hold updated products
+    products_to_update = []
+    
+    for product in products:
+        if product.id not in product_materials:
+            continue
+        
+        materials = product_materials[product.id]
+        total_proportion = sum([material.proportion for material in materials]) or 0
+
+        weighted_price_lastyear = 0
+        weighted_price_today = 0
+
+        commodity_contributions = {}
+
+        # Process up to 10 materials for each product
+        for material in materials:
+            commodity = commodity_lookup.get(material.commodity_id)
+
+            # Retrieve last year and today prices once
+            last_year_price_raw = get_price(last_year, material.commodity_id)
+            today_price_raw = get_price(today, material.commodity_id)
+
+            # Access commodity data
+            rate_for_price_kg = commodity.rate_for_price_kg
+            currency_rate = commodity.currency.rate
+
+            if total_proportion > 0:
+                # Calculate weighted prices for last year and today
+                weighted_price_lastyear += last_year_price_raw * material.proportion * rate_for_price_kg / currency_rate
+                weighted_price_today += today_price_raw * material.proportion * rate_for_price_kg / currency_rate
+
+                # Calculate weighted value for top commodity
+                weighted_today_value = today_price_raw * material.proportion * rate_for_price_kg / currency_rate
+                if commodity.id not in commodity_contributions:
+                    commodity_contributions[commodity.id] = {'commodity': commodity, 'contribution': 0}
+                commodity_contributions[commodity.id]['contribution'] += weighted_today_value
+        
+        # Calculate the 1-year increase
+        if weighted_price_lastyear != 0:
+            product.increasefromlastyear = (weighted_price_today - weighted_price_lastyear) / weighted_price_lastyear * 100
+        else:
+            product.increasefromlastyear = None
+
+        # Determine the top-value commodity by the highest cumulative contribution
+        top_value_commodity = max(commodity_contributions.values(), key=lambda x: x['contribution'])['commodity'] if commodity_contributions else None
+        product.top_value_commodity = top_value_commodity
+
+        products_to_update.append(product)
+
+        # Batch update every batch_size products
+        if len(products_to_update) >= batch_size:
+            with transaction.atomic():
+                Product.objects.bulk_update(products_to_update, ['increasefromlastyear', 'top_value_commodity'])
+            products_to_update.clear()
+
+    # Final bulk update for remaining products
+    if products_to_update:
+        with transaction.atomic():
+            Product.objects.bulk_update(products_to_update, ['increasefromlastyear', 'top_value_commodity'])
+
+    print('Batch processing completed for products.')
 
 
 def add_top_value_commodities(products):
@@ -389,29 +497,78 @@ def save_to_excel(new_dict, directory_to_save):
         print('error occured not saved to excel')
 
 
-def update_live_commodity_prices(commodity_data):
+def update_live_commodity_prices(commodity_data, batch_size=100):
+    # Pre-fetch all commodities and currencies
+    commodity_names = commodity_data.keys()
+    commodities = Commodity.objects.filter(name__in=commodity_names)
+    currencies = Currency.objects.filter(code__in=[data.get('currency') for data in commodity_data.values()])
+
+    # Create lookup dictionaries for commodities and currencies
+    commodity_lookup = {commodity.name: commodity for commodity in commodities}
+    currency_lookup = {currency.code: currency for currency in currencies}
+
+    # Lists to hold new or updated CommodityPrice instances
+    prices_to_create = []
+    prices_to_update = []
+
+    # Fetch existing CommodityPrices to avoid duplicates during insert
+    existing_prices = CommodityPrice.objects.filter(
+        commodity__name__in=commodity_names,
+        date__in=[data.get('date') for data in commodity_data.values()]
+    )
+    existing_prices_lookup = {
+        (price.commodity_id, price.currency_id, price.date): price for price in existing_prices
+    }
+
+    # Process each commodity data
     for com, data in commodity_data.items():
-        # Extract relevant data
         price = data.get('price')
         date = data.get('date')
         currency_code = data.get('currency')
-        if price and date and currency_code and com:
-            commodity = Commodity.objects.get(name=com)
-            currency = Currency.objects.get(code=currency_code)
 
-            # Update or create the CommodityPrice record
-            obj, created = CommodityPrice.objects.update_or_create(
-                commodity=commodity,
-                currency=currency,
-                date=date,
-                defaults={'price': price}
-            )
-            
-            # Optionally, print to verify
-            if created:
-                print(f"Created new CommodityPrice record: {obj}")
+        if price and date and currency_code and com:
+            commodity = commodity_lookup.get(com)
+            currency = currency_lookup.get(currency_code)
+
+            if not commodity or not currency:
+                # Skip if commodity or currency not found
+                continue
+
+            # Check if the CommodityPrice record already exists
+            price_key = (commodity.id, currency.id, date)
+            if price_key in existing_prices_lookup:
+                # If exists, update the price
+                existing_price = existing_prices_lookup[price_key]
+                existing_price.price = price
+                prices_to_update.append(existing_price)
             else:
-                print(f"Updated CommodityPrice record: {obj}")
+                # If not, prepare to create a new record
+                prices_to_create.append(
+                    CommodityPrice(commodity=commodity, currency=currency, date=date, price=price)
+                )
+
+        # Bulk create in batches
+        if len(prices_to_create) >= batch_size:
+            with transaction.atomic():
+                CommodityPrice.objects.bulk_create(prices_to_create, batch_size)
+            prices_to_create.clear()
+
+        # Bulk update in batches
+        if len(prices_to_update) >= batch_size:
+            with transaction.atomic():
+                CommodityPrice.objects.bulk_update(prices_to_update, ['price'], batch_size)
+            prices_to_update.clear()
+
+    # Final bulk create and update for remaining records
+    if prices_to_create:
+        with transaction.atomic():
+            CommodityPrice.objects.bulk_create(prices_to_create, batch_size)
+
+    if prices_to_update:
+        with transaction.atomic():
+            CommodityPrice.objects.bulk_update(prices_to_update, ['price'], batch_size)
+
+    print("Bulk update completed for commodity prices.")
 
 ####
 ####
@@ -539,47 +696,67 @@ def get_live_prices(futures_commodities_data):
     return futures_commodities_data
 
 def update_futures_prices_in_db(futures_commodities_data):
+    # Prepare to hold commodities and currencies
+    commodities = Commodity.objects.filter(name__in=futures_commodities_data.keys())
+    currency_codes = {data.get('currency') for data in futures_commodities_data.values()}
+    currencies = Currency.objects.filter(code__in=currency_codes)
+
+    # Create lookup dictionaries for commodities and currencies
+    commodity_lookup = {commodity.name: commodity for commodity in commodities}
+    currency_lookup = {currency.code: currency for currency in currencies}
+
+    # Prepare to collect all CommodityPrice records for bulk updates
+    prices_to_create_or_update = []
+    
     for com, data in futures_commodities_data.items():
         currency_code = data.get('currency')
-        commodity = Commodity.objects.get(name=com)
-        currency = Currency.objects.get(code=currency_code)
+        commodity = commodity_lookup.get(com)
+        currency = currency_lookup.get(currency_code)
+        
         futures = data.get('futures')
         if futures:
             # Clear all existing futures_prices for this commodity before inserting new ones
             CommodityPrice.objects.filter(commodity=commodity).update(futures_price=None)
-            for date, data in futures.items():
+
+            for date, future_data in futures.items():
                 # Extract relevant data
+                price_str = re.sub(r'[^\d.,]', '', future_data.get('Last', ''))
                 try:
-                    price_str = re.sub(r'[^\d.,]', '', data.get('Last'))
                     price = float(price_str.replace(',', ''))
                 except ValueError:
                     price = None
-                if price and date and currency_code and commodity.id:
-                    # Update or create the CommodityPrice record
+                
+                if price and date:
                     today = datetime.today().strftime("%Y-%m-%d")
+                    # Determine if we need to insert/update
+                    price_record = {
+                        'commodity': commodity,
+                        'currency': currency,
+                        'date': date if date != 'Cash' else today,  # Store 'Cash' as today's date
+                    }
+                    
                     if date == today:
                         # Insert price into the 'price' field
-                        obj, created = CommodityPrice.objects.update_or_create(
-                            commodity=commodity,
-                            currency=currency,
-                            date=date if date != 'Cash' else today,  # Store 'Cash' as today's date in the DB
-                            defaults={'price': price}
-                        )
+                        price_record['price'] = price
                     else:
-                        obj, created = CommodityPrice.objects.update_or_create(
-                            commodity=commodity,
-                            currency=currency,
-                            date=date,
-                            defaults={'futures_price': price}
-                        )
-                        
-                    # Optionally, print to verify
-                    if created:
-                        print(f"Created new CommodityPrice record: {obj}")
-                    else:
-                        print(f"Updated CommodityPrice record: {obj}")
+                        price_record['futures_price'] = price
+                    
+                    prices_to_create_or_update.append(price_record)
+
         else:
             print(f"No futures prices available for {com}")
+
+    # Bulk create or update the CommodityPrice records
+    with transaction.atomic():
+        for price_record in prices_to_create_or_update:
+            CommodityPrice.objects.update_or_create(
+                commodity=price_record['commodity'],
+                currency=price_record['currency'],
+                date=price_record['date'],
+                defaults=price_record
+            )
+            
+    print("Futures prices update completed.")
 
 
 # futures_commodities_data = get_live_prices(futures_commodities_data_input)

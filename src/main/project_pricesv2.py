@@ -331,10 +331,10 @@ def get_forecast_df_for_futures(commodity_df, years_history=1, cap_value_multipl
 
 # Assuming you have the futures_df loaded as pandas dataframe
 
-def upload_to_db(commodity_df, futures_df):
-    df_pro = commodity_df.drop(columns=['commodity_id','currency_id'])
+def upload_to_db(commodity_df, futures_df, batch_size=1000):
+    df_pro = commodity_df.drop(columns=['commodity_id', 'currency_id'])
     df_pro['date'] = pd.to_datetime(df_pro['date'], format='%d/%m/%Y', errors='coerce')
-    df_pro.sort_values('date')
+    df_pro.sort_values('date', inplace=True)
 
     futures_df['ds'] = pd.to_datetime(futures_df['ds'])
     futures_df.set_index('ds', inplace=True)
@@ -363,7 +363,7 @@ def upload_to_db(commodity_df, futures_df):
 
     # Function to scale the confidence intervals linearly
     def scale_confidence_interval(yhat, yhat_lower, yhat_upper, date):
-        years_5_future_date = today + timedelta(days=5*365)
+        years_5_future_date = today + timedelta(days=5 * 365)
         # Calculate the scale factor
         days_until_date = (date.date() - today).days
         days_until_5_years = (years_5_future_date - today).days
@@ -371,39 +371,25 @@ def upload_to_db(commodity_df, futures_df):
         # if dont want to use scale_factor:
         scale_factor = 1
 
-        top_90_percent = yhat + scale_factor * (yhat_upper - yhat)
-        bottom_90_percent = yhat + scale_factor * (yhat_lower - yhat)
-        
-        top_75_percent = yhat + scale_factor * (yhat_upper - yhat) * 0.75 / 0.9
-        bottom_75_percent = yhat + scale_factor * (yhat_lower - yhat) * 0.75 / 0.9
-        
-        top_50_percent = yhat + scale_factor * (yhat_upper - yhat) * 0.50 / 0.9
-        bottom_50_percent = yhat + scale_factor * (yhat_lower - yhat) * 0.50 / 0.9
-        
-        top_25_percent = yhat + scale_factor * (yhat_upper - yhat) * 0.25 / 0.9
-        bottom_25_percent = yhat + scale_factor * (yhat_lower - yhat) * 0.25 / 0.9
-        
-        top_10_percent = yhat + scale_factor * (yhat_upper - yhat) * 0.10 / 0.9
-        bottom_10_percent = yhat + scale_factor * (yhat_lower - yhat) * 0.10 / 0.9
-        
         return {
-            "top_90_percent": top_90_percent,
-            "bottom_90_percent": bottom_90_percent,
-            "top_75_percent": top_75_percent,
-            "bottom_75_percent": bottom_75_percent,
-            "top_50_percent": top_50_percent,
-            "bottom_50_percent": bottom_50_percent,
-            "top_25_percent": top_25_percent,
-            "bottom_25_percent": bottom_25_percent,
-            "top_10_percent": top_10_percent,
-            "bottom_10_percent": bottom_10_percent
+            "top_90_percent": yhat + scale_factor * (yhat_upper - yhat),
+            "bottom_90_percent": yhat + scale_factor * (yhat_lower - yhat),
+            "top_75_percent": yhat + scale_factor * (yhat_upper - yhat) * 0.75 / 0.9,
+            "bottom_75_percent": yhat + scale_factor * (yhat_lower - yhat) * 0.75 / 0.9,
+            "top_50_percent": yhat + scale_factor * (yhat_upper - yhat) * 0.50 / 0.9,
+            "bottom_50_percent": yhat + scale_factor * (yhat_lower - yhat) * 0.50 / 0.9,
+            "top_25_percent": yhat + scale_factor * (yhat_upper - yhat) * 0.25 / 0.9,
+            "bottom_25_percent": yhat + scale_factor * (yhat_lower - yhat) * 0.25 / 0.9,
+            "top_10_percent": yhat + scale_factor * (yhat_upper - yhat) * 0.10 / 0.9,
+            "bottom_10_percent": yhat + scale_factor * (yhat_lower - yhat) * 0.10 / 0.9,
         }
 
-    # Loop through the futures_df and insert/update records in CommodityPrice
+    # Prepare a list for bulk updates
+    bulk_updates = []
+
+    # Loop through the futures_df and prepare records for bulk insert/update
     for date, row in futures_df.iterrows():
-        # Insert the price into the .price field for dates starting from tomorrow
         if date.date() >= today + timedelta(days=1):
-            # Calculate scaled confidence intervals
             scaled_intervals = scale_confidence_interval(
                 yhat=row['yhat'],
                 yhat_lower=row['yhat_lower'],
@@ -411,33 +397,42 @@ def upload_to_db(commodity_df, futures_df):
                 date=date
             )
 
-            # Use update_or_create to update existing records or create new ones
-            obj, created = CommodityPrice.objects.update_or_create(
-                commodity=commodity,
-                currency=currency,
-                date=date.date(),
-                defaults={
-                    'price':None,
-                    'projected_price': row['yhat'],
-                    'top_90_percent': scaled_intervals['top_90_percent'],
-                    'bottom_90_percent': scaled_intervals['bottom_90_percent'],
-                    'top_75_percent': scaled_intervals['top_75_percent'],
-                    'bottom_75_percent': scaled_intervals['bottom_75_percent'],
-                    'top_50_percent': scaled_intervals['top_50_percent'],
-                    'bottom_50_percent': scaled_intervals['bottom_50_percent'],
-                    'top_25_percent': scaled_intervals['top_25_percent'],
-                    'bottom_25_percent': scaled_intervals['bottom_25_percent'],
-                    'top_10_percent': scaled_intervals['top_10_percent'],
-                    'bottom_10_percent': scaled_intervals['bottom_10_percent'],
-                }
+            # Create an instance of CommodityPrice to be bulk created/updated
+            bulk_updates.append(
+                CommodityPrice(
+                    commodity=commodity,
+                    currency=currency,
+                    date=date.date(),
+                    projected_price=row['yhat'],
+                    top_90_percent=scaled_intervals['top_90_percent'],
+                    bottom_90_percent=scaled_intervals['bottom_90_percent'],
+                    top_75_percent=scaled_intervals['top_75_percent'],
+                    bottom_75_percent=scaled_intervals['bottom_75_percent'],
+                    top_50_percent=scaled_intervals['top_50_percent'],
+                    bottom_50_percent=scaled_intervals['bottom_50_percent'],
+                    top_25_percent=scaled_intervals['top_25_percent'],
+                    bottom_25_percent=scaled_intervals['bottom_25_percent'],
+                    top_10_percent=scaled_intervals['top_10_percent'],
+                    bottom_10_percent=scaled_intervals['bottom_10_percent'],
+                )
             )
-            # Do not modify futures_price if it exists
-            if not created and obj.futures_price is not None:
-                CommodityPrice.objects.filter(pk=obj.pk).update(futures_price=F('futures_price'))
 
-list_to_update = range(1,55)
+            # Perform bulk operation if batch size is reached
+            if len(bulk_updates) >= batch_size:
+                CommodityPrice.objects.bulk_create(bulk_updates, ignore_conflicts=True)
+                bulk_updates = []  # Reset the list for the next batch
+
+    # Create any remaining updates that didn't fill an entire batch
+    if bulk_updates:
+        CommodityPrice.objects.bulk_create(bulk_updates, ignore_conflicts=True)
+
+    # Optionally, log that the upload is complete
+    print("Upload to DB completed.")
+
+
 
 def update_forecast_prices():
+    list_to_update = range(1,55)
     for _ in list_to_update:
         print(f'Commodity id started: {_}')
         commodity_df = get_dataframe(_)

@@ -13,6 +13,7 @@ from ...update_prices import (
     futures_commodities_data_input,
     update_futures_prices_in_db,
     check_all_notifications_and_send_emails,
+    add_1y_increase_to_products_and_add_top_value_commodities
 )
 
 from ...project_pricesv2 import (
@@ -25,7 +26,7 @@ logger = logging.getLogger(__name__)
 from django.conf import settings
 
 class Command(BaseCommand):
-    help = 'Describe what your command does here'
+    help = 'It updates current, future and projected prices and corresponding model values and sends email notifications afterwards.'
 
     def handle(self, *args, **kwargs):
         try:
@@ -34,29 +35,31 @@ class Command(BaseCommand):
             update_currencies(API_KEY)
 
             # # Live prices
-            #new_dict = get_live_prices_commodities(commodities_data)
+            new_dict = get_live_prices_commodities(commodities_data)
             #directory_to_save = r'C:\Users\sawin\Documents\Commodity Project\django_project\comchecker\main'
             #save_to_excel(new_dict, directory_to_save)
-            #update_live_commodity_prices(new_dict)
+            update_live_commodity_prices(new_dict)
 
             # # Futures prices
-            #futures_commodities_data = get_live_prices(futures_commodities_data_input)
-            #update_futures_prices_in_db(futures_commodities_data)
+            # futures_commodities_data = get_live_prices(futures_commodities_data_input)
+            # update_futures_prices_in_db(futures_commodities_data)
 
             # # Update values
             products = Product.objects.all()
             commodities = Commodity.objects.all()
-            add_1y_increase_to_products(products)
+            
             add_1y_increase_to_commodities(commodities)
             add_price_now(commodities)
-            add_top_value_commodities(products)
             update_total_production(commodities)
+            # add_1y_increase_to_products(products)
+            # add_top_value_commodities(products)
+            # add_1y_increase_to_products_and_add_top_value_commodities(products) # combined separate functions for efficiency         
 
             # Forecast prices
-            update_forecast_prices()
+            # update_forecast_prices()
 
             # Check notifications
-            #check_all_notifications_and_send_emails()
+            check_all_notifications_and_send_emails()
 
             self.stdout.write(self.style.SUCCESS('Successfully executed dailytasks'))
             logger.info('dailytasks executed successfully')
