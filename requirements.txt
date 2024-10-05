@@ -17,3 +17,5 @@ django-allauth
 django-allauth-ui
 django-widget-tweaks
 slippers
+apscheduler
+django_apscheduler

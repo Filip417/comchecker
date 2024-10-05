@@ -78,6 +78,7 @@ INSTALLED_APPS = [
     # The following apps are required for allauth:
     'allauth',
     'allauth.account',
+    'django_apscheduler',  # To store job details in the DB
 ]
 
 MIDDLEWARE = [
