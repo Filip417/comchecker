@@ -64,13 +64,10 @@ chrome_options = Options()
 
 GITHUB_ACTIONS = config('GH_ACTIONS', cast=bool)
 if GITHUB_ACTIONS:
-    service = Service('/usr/bin/chromedriver')
     chrome_options.add_argument("--no-sandbox")
     chrome_options.add_argument("--disable-dev-shm-usage")  # Overcome limited resource problems
     chrome_options.add_argument("--disable-gpu")  # Applicable for some older environments
     chrome_options.add_argument("--remote-debugging-port=9222")  # Enable remote debugging
-else:
-    service = None
 
 
 
@@ -403,7 +400,7 @@ def get_investing_com_price(url, commodities_data, com):
 
 def get_trading_economics(url, element_id, commodities_data, com):
     # Initialize WebDriver (assuming you're using Chrome, you can adjust if using a different browser)
-    driver = webdriver.Chrome(service=service, options=chrome_options)
+    driver = webdriver.Chrome(options=chrome_options)
 
     # Open the specified URL
     driver.get(url)
@@ -649,7 +646,7 @@ def get_futures_prices(url_code):
     url = f'https://www.barchart.com/futures/quotes/{url_code}/futures-prices'
 
     # Initialize WebDriver (assuming you're using Chrome)
-    driver = webdriver.Chrome(service=service, options=chrome_options)
+    driver = webdriver.Chrome(options=chrome_options)
 
     try:
         # Open the specified URL
