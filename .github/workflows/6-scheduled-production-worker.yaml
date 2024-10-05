@@ -62,8 +62,8 @@ jobs:
         if: github.event.schedule == '0 4 1 * *'
         run: |
           python manage.py sync_user_subs --clear-dangling
-      - name: Django db dailytasks run values update
-        if: github.event.schedule != '0 4 1 * *'
-        working-directory: ./src
-        run: |
-          python manage.py dailytasks
+      # - name: Django db dailytasks run values update
+      #   if: github.event.schedule != '0 4 1 * *'
+      #   working-directory: ./src
+      #   run: |
+      #     python manage.py dailytasks
