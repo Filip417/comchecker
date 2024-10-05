@@ -30,31 +30,19 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: "20.11"
-      - name: Install Chrome and ChromeDriver
+      - name: Install Chrome Dev and ChromeDriver
         run: |
           sudo apt-get update
           sudo apt-get install -y wget unzip
-          
-          # Install Google Chrome
-          wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
-          sudo dpkg -i google-chrome-stable_current_amd64.deb || sudo apt-get -f install -y
-          
-          # Get Chrome version
-          CHROME_VERSION=$(google-chrome --version | grep -oP '\d+\.\d+\.\d+' | head -1)
-          echo "Installing ChromeDriver for Chrome version: $CHROME_VERSION"
 
-          # Get the major version number
-          MAJOR_VERSION=${CHROME_VERSION%%.*}
+          # Install Google Chrome Dev
+          wget https://dl.google.com/linux/direct/google-chrome-dev_current_amd64.deb
+          sudo dpkg -i google-chrome-dev_current_amd64.deb || sudo apt-get -f install -y
           
-          # Get the corresponding ChromeDriver version
-          CHROMEDRIVER_VERSION=$(curl -sS "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_${MAJOR_VERSION}")
-
-          if [ -z "$CHROMEDRIVER_VERSION" ]; then
-            echo "ChromeDriver version not found for Chrome version $CHROME_VERSION"
-            exit 1
-          fi
+          # Install specific ChromeDriver version
+          CHROMEDRIVER_VERSION="114.0.5735.90"
+          echo "Installing ChromeDriver version: $CHROMEDRIVER_VERSION"
           
-          echo "Downloading ChromeDriver version: $CHROMEDRIVER_VERSION"
           wget "https://chromedriver.storage.googleapis.com/${CHROMEDRIVER_VERSION}/chromedriver_linux64.zip"
           unzip chromedriver_linux64.zip
           sudo mv chromedriver /usr/bin/chromedriver
