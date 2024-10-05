@@ -31,6 +31,13 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: "20.11"
+      - name: Install Railway
+        run: npm i -g @railway/cli
+
+      - name: Install Python packages
+        run: railway run --service 88a150c7-964b-4903-98d2-f1c1102d4570 pip install -r requirements.txt
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
       - name: Setup Chrome
         uses: browser-actions/setup-chrome@v1
       - name: Install Neon CLI
@@ -62,8 +69,9 @@ jobs:
         if: github.event.schedule == '0 4 1 * *'
         run: |
           python manage.py sync_user_subs --clear-dangling
-      # - name: Django db dailytasks run values update
-      #   if: github.event.schedule != '0 4 1 * *'
-      #   working-directory: ./src
-      #   run: |
-      #     python manage.py dailytasks
+      - name: Railway dailytasks command
+        if: github.event.schedule != '0 4 1 * *'
+        run: |
+          railway run --service {{SERVICE_ID}} python manage.py dailytasks
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
