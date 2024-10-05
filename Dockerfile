@@ -1,5 +1,4 @@
 # Set the python version as a build-time argument
-# with Python 3.12 as the default
 ARG PYTHON_VERSION=3.12-slim-bullseye
 FROM python:${PYTHON_VERSION}
 
@@ -45,36 +44,35 @@ COPY ./src /code
 # Install the Python project requirements
 RUN pip install -r /tmp/requirements.txt
 
-# database isn't available during build
-# run any other commands that do not need the database
-# such as:
-# RUN python manage.py collectstatic --noinput
+# Copy the crontab file to the correct location
+COPY crontab_file /etc/cron.d/scheduled_test
 
-# set the Django default project name
+# Give execution rights to the cron file
+RUN chmod 0644 /etc/cron.d/scheduled_test
+
+# Apply crontab
+RUN crontab /etc/cron.d/scheduled_test
+
+# Create the log file to track cron logs
+RUN touch /var/log/cron.log
+
+# Set the Django default project name
 ARG PROJ_NAME="comchecker"
 
-# Create a bash script to run the Django project
 # Create a bash script to run the Django project
 RUN printf "#!/bin/bash\n" > ./paracord_runner.sh && \
     printf "RUN_PORT=\"\${PORT:-8000}\"\n\n" >> ./paracord_runner.sh && \
     printf "python manage.py migrate --no-input\n" >> ./paracord_runner.sh && \
-    printf "service cron start\n" >> ./paracord_runner.sh && \
-    printf "gunicorn ${PROJ_NAME}.wsgi:application --bind \"0.0.0.0:\$RUN_PORT\"\n" >> ./paracord_runner.sh
+    printf "cron && gunicorn ${PROJ_NAME}.wsgi:application --bind \"0.0.0.0:\$RUN_PORT\"\n" >> ./paracord_runner.sh
 
-# make the bash script executable
+# Make the bash script executable
 RUN chmod +x paracord_runner.sh
 
-# Add the cron job to the crontab
-# Add the cron job to a new file in cron.d
-RUN echo "* * * * * root cd /code && /opt/venv/bin/python manage.py scheduled_test >> /var/log/cron.log 2>&1" > /etc/cron.d/scheduled_test && \
-    touch /var/log/cron.log && chmod 666 /var/log/cron.log
-    
 # Clean up apt cache to reduce image size
 RUN apt-get remove --purge -y \
     && apt-get autoremove -y \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-# Run the Django project via the runtime script
-# when the container starts
-CMD ./paracord_runner.sh
+# Run the Django project and start cron
+CMD cron && ./paracord_runner.sh && tail -f /var/log/cron.log

@@ -1,0 +1,1 @@
+* * * * * cd /code && /opt/venv/bin/python manage.py scheduled_test >> /var/log/cron.log 2>&1
