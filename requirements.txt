@@ -4,7 +4,7 @@ freecurrencyapi==0.1.0
 matplotlib==3.8.4
 numpy==2.1.1
 pandas==2.2.2
-prophet==1.1.5
+prophet==1.1.6
 python-decouple==3.8
 Requests==2.32.3
 selenium==4.24.0
