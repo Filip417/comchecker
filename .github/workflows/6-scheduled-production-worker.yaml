@@ -3,8 +3,8 @@ name: 6 - Scheduled Production Worker
 on:
   workflow_dispatch:
   schedule:
-  - cron: '0 1,12 * * *'
-  - cron: '0 4 1 * *'
+  - cron: '0 1,12 * * *' # Runs at 01:00 and 12:00 UTC every day
+  - cron: '0 4 1 * *' # Runs at 04:00 UTC on the first day of every month
 
 # https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#schedule
 jobs:
@@ -30,6 +30,20 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: "20.11"
+      - name: Install Chrome and ChromeDriver
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y wget unzip
+          # Install Google Chrome
+          wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+          sudo dpkg -i google-chrome-stable_current_amd64.deb || sudo apt-get -f install -y
+          # Install ChromeDriver
+          CHROME_VERSION=$(google-chrome --version | grep -oP '\d+\.\d+\.\d+')
+          CHROMEDRIVER_VERSION=$(curl -sS chromedriver.storage.googleapis.com/LATEST_RELEASE_$CHROME_VERSION)
+          wget https://chromedriver.storage.googleapis.com/${CHROMEDRIVER_VERSION}/chromedriver_linux64.zip
+          unzip chromedriver_linux64.zip
+          sudo mv chromedriver /usr/bin/chromedriver
+          sudo chmod +x /usr/bin/chromedriver
       - name: Install Neon CLI
         run: |
           npm install -g neonctl

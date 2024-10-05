@@ -35,14 +35,14 @@ class Command(BaseCommand):
             update_currencies(API_KEY)
 
             # # Live prices
-            # new_dict = get_live_prices_commodities(commodities_data)
-            #directory_to_save = r'C:\Users\sawin\Documents\Commodity Project\django_project\comchecker\main'
-            #save_to_excel(new_dict, directory_to_save)
-            # update_live_commodity_prices(new_dict)
+            new_dict = get_live_prices_commodities(commodities_data)
+            # directory_to_save = r'C:\Users\sawin\Documents\Commodity Project\django_project\comchecker\main'
+            # save_to_excel(new_dict, directory_to_save)
+            update_live_commodity_prices(new_dict)
 
             # # Futures prices
-            # futures_commodities_data = get_live_prices(futures_commodities_data_input)
-            # update_futures_prices_in_db(futures_commodities_data)
+            futures_commodities_data = get_live_prices(futures_commodities_data_input)
+            update_futures_prices_in_db(futures_commodities_data)
 
             # # Update values
             products = Product.objects.all()
@@ -53,7 +53,7 @@ class Command(BaseCommand):
             update_total_production(commodities)
             # add_1y_increase_to_products(products)
             # add_top_value_commodities(products)
-            add_1y_increase_to_products_and_add_top_value_commodities(products) # combined separate functions for efficiency         
+            # add_1y_increase_to_products_and_add_top_value_commodities(products) # combined separate functions for efficiency         
 
             # Forecast prices
             # update_forecast_prices()
