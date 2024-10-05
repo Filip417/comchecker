@@ -2,9 +2,9 @@ name: 5 - Branch Neon DB for Django Tests
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - main
+  # push:
+  #   branches:
+  #     - main
 
 jobs:
   test:
@@ -17,6 +17,7 @@ jobs:
       NEON_PROD_BRANCH: "main"
       NEON_GITHUB_BRANCH: "gh-delete"
       CURRENCIES_API_KEY: ${{ secrets.CURRENCIES_API_KEY }}
+      GH_ACTIONS: ${{ secrets.GH_ACTIONS }}
       # DJANGO_SECRET_KEY: not-good
     steps:
       - name: Checkout Code
