@@ -71,6 +71,7 @@ jobs:
           python manage.py sync_user_subs --clear-dangling
       - name: Railway dailytasks command
         if: github.event.schedule != '0 4 1 * *'
+        working-directory: ./src
         run: |
           railway run --service b7ef3df6-5a9b-4d54-bcd5-13dc719cf87e python manage.py dailytasks
         env:
