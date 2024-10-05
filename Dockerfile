@@ -17,15 +17,10 @@ ENV PYTHONUNBUFFERED 1
 
 # Install os dependencies for our mini vm
 RUN apt-get update && apt-get install -y \
-    # for postgres
     libpq-dev \
-    # for Pillow
     libjpeg-dev \
-    # for CairoSVG
     libcairo2 \
-    # other
     gcc \
-    # install cron
     cron \
     && rm -rf /var/lib/apt/lists/*
 
@@ -56,6 +51,9 @@ RUN crontab /etc/cron.d/scheduled_test
 # Create the log file to track cron logs
 RUN touch /var/log/cron.log
 
+# Ensure crond is not started twice
+RUN rm -f /var/run/crond.pid
+
 # Set the Django default project name
 ARG PROJ_NAME="comchecker"
 
@@ -75,4 +73,4 @@ RUN apt-get remove --purge -y \
     && rm -rf /var/lib/apt/lists/*
 
 # Run the Django project and start cron
-CMD cron && ./paracord_runner.sh && tail -f /var/log/cron.log
+CMD ./paracord_runner.sh && tail -f /var/log/cron.log
