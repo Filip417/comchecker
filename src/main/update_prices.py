@@ -1,6 +1,5 @@
 from datetime import date
 from django.db.models import Sum, F, ExpressionWrapper, fields
-from django.db.models.functions import Abs
 import sys
 import os
 import freecurrencyapi
@@ -26,8 +25,9 @@ from django.utils.encoding import force_bytes
 from .tokens import email_notification_token
 from django.template.loader import render_to_string
 from django.core.mail import EmailMultiAlternatives
-
-
+from django.db.models.functions import Cast
+from django.db.models import ExpressionWrapper, F, fields
+from django.db.models.functions import Abs, Extract
 # from commodities_data import commodities_data
 
 # Set the Django settings module environment variable
@@ -58,16 +58,18 @@ today = date(2024, 7, 1)
 last_year = date(2023, 7, 1)
 
 def get_price(date, commodity_id):
-    # Calculate the absolute difference between the entry date and the provided date
-        closest_price_entry = (
-            CommodityPrice.objects
-            .filter(commodity=commodity_id)
-            .annotate(date_diff=ExpressionWrapper(Abs(F('date') - date), output_field=fields.DurationField()))
-            .order_by('date_diff')  # Order by the smallest date difference
-            .values('price')
-            .first()
-        )        
-        return closest_price_entry['price'] if closest_price_entry else 0
+    closest_price_entry = (
+        CommodityPrice.objects
+        .filter(commodity=commodity_id)
+        .annotate(date_diff=ExpressionWrapper(
+            Abs(Extract(F('date') - date, 'epoch') / 86400),  # Extract seconds and convert to days
+            output_field=fields.FloatField()  # Use a float field for the date difference
+        ))
+        .order_by('date_diff')  # Order by the smallest date difference
+        .values('price')
+        .first()
+    )        
+    return closest_price_entry['price'] if closest_price_entry else 0
 
 def update_total_production(commodities):
     for commodity in commodities:

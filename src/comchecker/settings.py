@@ -130,7 +130,7 @@ WSGI_APPLICATION = 'comchecker.wsgi.application'
 CONN_MAX_AGE = config("CONN_MAX_AG", cast=int, default=30)
 DATABASE_URL = config("DATABASE_URL", cast=str)
 
-if DATABASE_URL is not None and not DEBUG:
+if DATABASE_URL is not None: # and not DEBUG: # TODO update later 
     import dj_database_url
     DATABASES = {
         'default': dj_database_url.config(

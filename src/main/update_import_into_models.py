@@ -7,7 +7,7 @@ import ast
 
 # Set the Django settings module environment variable
 # Add the Django project root directory to the Python path
-project_root = r'C:\\Users\\sawin\\Documents\\Commodity Project\\django_project\\comchecker'
+project_root = r'C:\\Coding projects\\Commodity Project\\django_project\\comchecker\\src'
 sys.path.append(project_root)
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "comchecker.settings")
@@ -27,7 +27,7 @@ from main.models import (
 )
 
 # Load the Excel file
-excel_file_path = r'C:\Users\sawin\Documents\Commodity Project\django_project\comchecker\static\db_v1_demo\db_v_1_0.xlsx'
+excel_file_path = r'C:\Coding projects\Commodity Project\django_project\comchecker\src\static\db_v1_demo\db_v_1_0.xlsx'
 xls = pd.ExcelFile(excel_file_path)
 
 # Try to load the Excel file and catch exceptions if any
@@ -56,10 +56,10 @@ def populate_products():
         product, created = Product.objects.get_or_create(
             epd_id=row['epd_id'],
             defaults={
-                'name': row['product_name'],
+                'name': row['name'],
                 'original_name' : row['original_name'],
                 'product_img_url': product_img_url,
-                'description': row['product_description'],
+                'description': row['description'],
                 'pcr': row['pcr'],
                 'pcr_category': row['pcr_category'],
                 'category_1': row['category_1'],
@@ -78,10 +78,10 @@ def populate_products():
         if created:
             print(f"Created {product.name}")
         else:
-            product.name = row['product_name']
+            product.name = row['name']
             product.original_name = row['original_name']
             product.product_img_url = product_img_url
-            product.description = row['product_description']
+            product.description = row['description']
             product.pcr = row['pcr']
             product.pcr_category = row['pcr_category']
             product.category_1 = row['category_1']
@@ -194,7 +194,7 @@ def populate_commodity_production():
     errors = []
     for index, row in df.iterrows():
         try:
-            commodity = Commodity.objects.get(name=row['commodity_name'])
+            commodity = Commodity.objects.get(id=row['commodity_id'])
             production, created = CommodityProduction.objects.get_or_create(
                 commodity=commodity,
                 country_code=row['country_code'],
@@ -207,7 +207,7 @@ def populate_commodity_production():
             )
             print(f"{'Created' if created else 'Updated'} CommodityProduction: {production}")
         except ObjectDoesNotExist as e:
-            errors.append(f'Error: {e} {row['commodity_name']} {row['country_name']} {row['production']} {row['unit']}')
+            errors.append(f'Error: {e} {row['country_name']} {row['production']} {row['unit']}')
             print(f"Error: {e}")
     print(f'Errors are: {errors}')
 
@@ -223,9 +223,18 @@ def populate_material_proportions():
                 commodity=commodity,
                 material_proportion_other_id=row['material_proportion_other_id'],
                 material=row['material'],
-                proportion=row['proportion'],
-                unit=row['unit']
+                defaults={
+                'proportion':row['proportion'],
+                'unit':row['unit']
+                }
             )
+            if not created:
+                material_proportion.product = product
+                material_proportion.commodity = commodity
+                material_proportion.material_proportion_other_id = row['material_proportion_other_id']
+                material_proportion.material = row['material']
+                material_proportion.proportion = row['proportion']
+                material_proportion.unit = row['unit']
             print(f"{'Created' if created else 'Updated'} Material Proportion: {material_proportion} EPD_ID: {material_proportion.product.epd_id}")
         except ObjectDoesNotExist as e:
             errors.append(f'Error: {e} {row['product_epd_id']} {row['commodity']} {row['material']} {row['proportion']}')
@@ -239,8 +248,8 @@ def populate_commodity_prices():
     errors = []
     for index, row in df.iterrows():
         try:
-            commodity = Commodity.objects.get(name=row['commodity'])
-            currency = Currency.objects.get(code=row['currency'])
+            commodity = Commodity.objects.get(id=row['commodity_id'])
+            currency = Currency.objects.get(id=row['currency_id'])
             price, created = CommodityPrice.objects.get_or_create(
                 commodity=commodity,
                 currency=currency,
@@ -259,15 +268,16 @@ def populate_commodity_prices():
                 price.save()
             print(f"{'Created' if created else 'Updated'} CommodityPrice: {price}")
         except ObjectDoesNotExist as e:
-            errors.append(f'Error: {e} {row['commodity']} {row['date']} {row['price']} {row['unit']} {currency.code}')
+            errors.append(f'Error: {e} {row['date']} {row['price']} {row['unit']} {currency.code}')
             print(f"Error: {e}")
     print(f'Errors are: {errors}')
 
 
 def main():
-    populate_currencies()
-    populate_commodities()
-    populate_products()
-    populate_material_proportions()
-    populate_commodity_production()
-    populate_commodity_prices()
+    # populate_currencies()
+    # populate_commodities()
+    # populate_products()
+    # populate_material_proportions()
+    # populate_commodity_production()
+    # populate_commodity_prices()
+    pass

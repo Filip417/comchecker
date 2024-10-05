@@ -376,6 +376,9 @@ def create(request):
 @show_new_notifications
 @valid_lite_membership_required
 def profile(request):
+    user_sub_obj, created = UserSubscription.objects.get_or_create(user=request.user)
+    sub_data = user_sub_obj.serialize()
+
     owned_projects = request.user.owned_projects.all().order_by('-name')
     shared_projects = request.user.shared_projects.all().order_by('-name')
 
@@ -413,6 +416,7 @@ def profile(request):
         "your_products":your_products,
         "your_products_average_1y_increase":your_products_average_1y_increase,
         "sort":sort,
+        "subscription": sub_data,
     }
     return render(request, "main/profile.html", context)
 
