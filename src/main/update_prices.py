@@ -31,6 +31,7 @@ from django.db.models.functions import Abs, Extract
 from django.db import transaction
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
+from decouple import config
 # from commodities_data import commodities_data
 
 # Set the Django settings module environment variable
@@ -60,6 +61,11 @@ chrome_options = Options()
 # chrome_options.add_argument("--headless")  # Run headless
 # chrome_options.add_argument("--no-sandbox")
 # chrome_options.add_argument("--disable-dev-shm-usage")  # Overcome limited resource problems
+GITHUB_ACTIONS = config('GH_ACTIONS', cast=bool)
+if GITHUB_ACTIONS:
+    service = Service('/usr/bin/chromedriver')
+else:
+    service = None
 
 
 
@@ -392,7 +398,7 @@ def get_investing_com_price(url, commodities_data, com):
 
 def get_trading_economics(url, element_id, commodities_data, com):
     # Initialize WebDriver (assuming you're using Chrome, you can adjust if using a different browser)
-    driver = webdriver.Chrome(options=chrome_options)
+    driver = webdriver.Chrome(service=service, options=chrome_options)
 
     # Open the specified URL
     driver.get(url)
@@ -638,7 +644,7 @@ def get_futures_prices(url_code):
     url = f'https://www.barchart.com/futures/quotes/{url_code}/futures-prices'
 
     # Initialize WebDriver (assuming you're using Chrome)
-    driver = webdriver.Chrome(options=chrome_options)
+    driver = webdriver.Chrome(service=service, options=chrome_options)
 
     try:
         # Open the specified URL
