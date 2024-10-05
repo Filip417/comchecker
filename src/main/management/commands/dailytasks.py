@@ -53,7 +53,7 @@ class Command(BaseCommand):
             update_total_production(commodities)
             # add_1y_increase_to_products(products)
             # add_top_value_commodities(products)
-            # add_1y_increase_to_products_and_add_top_value_commodities(products) # combined separate functions for efficiency         
+            add_1y_increase_to_products_and_add_top_value_commodities(products) # combined separate functions for efficiency         
 
             # Forecast prices
             # update_forecast_prices()
