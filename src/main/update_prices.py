@@ -663,6 +663,8 @@ def get_futures_prices(url_code):
     # Open the specified URL
     driver.get(url)
     try:
+        print("WEBSITE SORUCE CODE PRINT:")
+        print(driver.page_source)
         # Wait for the bc-data-grid element to load
         wait = WebDriverWait(driver, 5)  # Increase the wait to 60 seconds
         bc_data_grid = wait.until(
