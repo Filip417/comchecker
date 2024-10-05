@@ -1,7 +1,7 @@
 from apscheduler.schedulers.background import BackgroundScheduler
 from django_apscheduler.jobstores import DjangoJobStore
 from django.core.management import call_command
-from datetime import datetime
+from datetime import datetime, timedelta
 
 scheduler = None  # Global scheduler instance
 
@@ -18,7 +18,7 @@ def start():
 
         job = scheduler.add_job(run_daily_tasks, 'interval', hours=24, id="dailytasks", replace_existing=True)
         
-        job.modify(next_run_time=datetime.now())
+        job.modify(next_run_time=datetime.now() + timedelta(seconds=20))
 
         scheduler.start()
 
