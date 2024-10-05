@@ -82,16 +82,16 @@ def logged_in_cant_access(view_func):
 #TODO update limits consistent with SubscriptionPrice features in db
 LIMITS = {
     "lite":{
-        "product_views":100,
-        "commodity_views":6,
-        "custom_products":4,
-        "custom_projects":2
+        "product_views":1000,
+        "commodity_views":600,
+        "custom_products":400,
+        "custom_projects":200
     },
     "standard":{
-        "product_views":200,
-        "commodity_views":12,
-        "custom_products":8,
-        "custom_projects":4
+        "product_views":2000,
+        "commodity_views":1200,
+        "custom_products":800,
+        "custom_projects":400
     },
 }
 
