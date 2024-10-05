@@ -68,11 +68,43 @@ if GITHUB_ACTIONS:
     chrome_options.add_argument("--disable-blink-features=AutomationControlled")
     chrome_options.add_argument("--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36")
     chrome_options.add_argument("--window-size=1920,1080")
+    # Optional to add perhaps to reduce load time for selenium
+    # chrome_options.add_argument("--disable-extensions")
+    # chrome_options.add_argument("--disable-infobars")
 
 
 
 today = date(2024, 7, 1)
 last_year = date(2023, 7, 1)
+
+
+
+futures_commodities_data_input  = {
+    "Aluminium": {"url_code": "Q8Y00", "currency": "USD"},
+    "Coal": {"url_code": "LQY00", "currency": "USD"},
+    "Cobalt": {"url_code": "U8Y00", "currency": "USD"},
+    "Copper": {"url_code": "O9Y00", "currency": "USD"},
+    "Cotton": {"url_code": "CTY00", "currency": "USD"},
+    "Crude Oil": {"url_code": "CLY00", "currency": "USD"},
+    "Gold": {"url_code": "GCY00", "currency": "USD"},
+    "Iron Ore": {"url_code": "TRY00", "currency": "USD"},
+    "Kraft Pulp": {"url_code": "VLY00", "currency": "CNY"},
+    "Lead": {"url_code": "R0Y00", "currency": "USD"},
+    "Lumber": {"url_code": "LBY00", "currency": "USD"},
+    "Natural Gas": {"url_code": "NGY00", "currency": "USD"},
+    "Nickel": {"url_code": "Q0Y00", "currency": "USD"},
+    "Palladium": {"url_code": "PAY00", "currency": "USD"},
+    "Silver": {"url_code": "SIU00", "currency": "USD"},
+    "Steel": {"url_code": "V7Y00", "currency": "USD"},
+    "Steel Scrap": {"url_code": "C-F24", "currency": "USD"},
+    "Tin": {"url_code": "S4Y00", "currency": "USD"},
+    "Zinc": {"url_code": "O0Y00", "currency": "USD"},
+    "EU Carbon Permits": {"url_code": "CKH23", "currency": "EUR"},
+    "Rubber": {"url_code": "W2Y00", "currency": "USD"}
+}
+
+
+
 
 def get_price(date, commodity_id):
     closest_price_entry = (
@@ -606,29 +638,7 @@ def update_live_commodity_prices(commodity_data, batch_size=100):
 #########################
 
 
-futures_commodities_data_input  = {
-    "Aluminium": {"url_code": "Q8Y00", "currency": "USD"},
-    "Coal": {"url_code": "LQY00", "currency": "USD"},
-    "Cobalt": {"url_code": "U8Y00", "currency": "USD"},
-    "Copper": {"url_code": "O9Y00", "currency": "USD"},
-    "Cotton": {"url_code": "CTY00", "currency": "USD"},
-    "Crude Oil": {"url_code": "CLY00", "currency": "USD"},
-    "Gold": {"url_code": "GCY00", "currency": "USD"},
-    "Iron Ore": {"url_code": "TRY00", "currency": "USD"},
-    "Kraft Pulp": {"url_code": "VLY00", "currency": "CNY"},
-    "Lead": {"url_code": "R0Y00", "currency": "USD"},
-    "Lumber": {"url_code": "LBY00", "currency": "USD"},
-    "Natural Gas": {"url_code": "NGY00", "currency": "USD"},
-    "Nickel": {"url_code": "Q0Y00", "currency": "USD"},
-    "Palladium": {"url_code": "PAY00", "currency": "USD"},
-    "Silver": {"url_code": "SIU00", "currency": "USD"},
-    "Steel": {"url_code": "V7Y00", "currency": "USD"},
-    "Steel Scrap": {"url_code": "C-F24", "currency": "USD"},
-    "Tin": {"url_code": "S4Y00", "currency": "USD"},
-    "Zinc": {"url_code": "O0Y00", "currency": "USD"},
-    "EU Carbon Permits": {"url_code": "CKH23", "currency": "EUR"},
-    "Rubber": {"url_code": "W2Y00", "currency": "USD"}
-}
+
 
 def parse_contract_date(contract_name):
     # Extract the date part from the contract name, e.g., "Oct '24" from "VLV24 (Oct '24)"
@@ -645,16 +655,16 @@ def parse_contract_date(contract_name):
 
 def get_futures_prices(url_code):
     url = f'https://www.barchart.com/futures/quotes/{url_code}/futures-prices'
+    data_dict = {}
 
     # Initialize WebDriver (assuming you're using Chrome)
     driver = webdriver.Chrome(options=chrome_options)
-
     try:
         # Open the specified URL
         driver.get(url)
 
         # Wait for the bc-data-grid element to load
-        wait = WebDriverWait(driver, 20)
+        wait = WebDriverWait(driver, 60)  # Increase the wait to 60 seconds
         bc_data_grid = wait.until(
             EC.presence_of_element_located((By.CSS_SELECTOR, "bc-data-grid"))
         )
@@ -683,7 +693,7 @@ def get_futures_prices(url_code):
         headers = ["Contract", "Last", "Change", "Open", "High", "Low", "Previous", "Volume", "Open Int", "Time"]
 
         # Create dictionary with contract names as keys
-        data_dict = {}
+        
         for row in rows:
             if (len(row) - 2) == len(headers):  # Ensure each row has the correct number of columns
                 contract_name = row[1]  # Assuming the contract name is in the second column
