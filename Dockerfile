@@ -26,6 +26,8 @@ RUN apt-get update && apt-get install -y \
     libcairo2 \
     # other
     gcc \
+    # install cron
+    cron \
     && rm -rf /var/lib/apt/lists/*
 
 # Create the mini vm's code directory
@@ -58,10 +60,13 @@ RUN printf "#!/bin/bash\n" > ./paracord_runner.sh && \
     printf "python manage.py migrate --no-input\n" >> ./paracord_runner.sh && \
     printf "python manage.py migrate django_cron --no-input\n" >> ./paracord_runner.sh && \
     printf "python manage.py runcrons\n" >> ./paracord_runner.sh && \
-    printf "gunicorn ${PROJ_NAME}.wsgi:application --bind \"0.0.0.0:\$RUN_PORT\"\n" >> ./paracord_runner.sh
+    printf "cron && gunicorn ${PROJ_NAME}.wsgi:application --bind \"0.0.0.0:\$RUN_PORT\"\n" >> ./paracord_runner.sh
 
 # make the bash script executable
 RUN chmod +x paracord_runner.sh
+
+# Add the cron job to the crontab
+RUN echo "* * * * * cd /code && python manage.py scheduled_test >> /var/log/cron.log 2>&1" >> /etc/crontab
 
 # Clean up apt cache to reduce image size
 RUN apt-get remove --purge -y \

@@ -5,6 +5,7 @@ class Command(BaseCommand):
     help = 'Test command for scheduler'
 
     def handle(self, *args, **kwargs):
+        print('schedule test started')
         commodity = Commodity.objects.get(id=1)
         commodity.price_now += 1
         commodity.save()
