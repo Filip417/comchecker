@@ -1,6 +1,7 @@
 from apscheduler.schedulers.background import BackgroundScheduler
 from django_apscheduler.jobstores import DjangoJobStore
 from django.core.management import call_command
+from datetime import datetime
 
 scheduler = None  # Global scheduler instance
 
@@ -15,7 +16,9 @@ def start():
         # Schedule the `scheduled_test` command to run every minute
         scheduler.add_job(run_scheduled_test, 'interval', minutes=1, id='scheduled_test', replace_existing=True)
 
-        scheduler.add_job(run_daily_tasks, 'interval', hours=24, id="dailytasks", replace_existing=True)
+        job = scheduler.add_job(run_daily_tasks, 'interval', hours=24, id="dailytasks", replace_existing=True)
+        
+        job.modify(next_run_time=datetime.now())
 
         scheduler.start()
 
