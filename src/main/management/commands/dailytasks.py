@@ -31,29 +31,29 @@ class Command(BaseCommand):
     def handle(self, *args, **kwargs):
         try:
             # 1. Currencies
-            API_KEY = settings.CURRENCIES_API_KEY
-            update_currencies(API_KEY)
+            # API_KEY = settings.CURRENCIES_API_KEY
+            # update_currencies(API_KEY)
 
             # 2. Live prices
-            new_dict = get_live_prices_commodities(commodities_data)
+            # new_dict = get_live_prices_commodities(commodities_data)
             # directory_to_save = r'C:\Users\sawin\Documents\Commodity Project\django_project\comchecker\main'
             # save_to_excel(new_dict, directory_to_save)
-            update_live_commodity_prices(new_dict)
+            # update_live_commodity_prices(new_dict)
 
             # 3. Futures prices
-            futures_commodities_data = get_live_prices(futures_commodities_data_input)
-            update_futures_prices_in_db(futures_commodities_data)
+            # futures_commodities_data = get_live_prices(futures_commodities_data_input)
+            # update_futures_prices_in_db(futures_commodities_data)
 
             # 4. Update values
-            products = Product.objects.all()
-            commodities = Commodity.objects.all()
+            # products = Product.objects.all()
+            # commodities = Commodity.objects.all()
             
             # add_1y_increase_to_commodities(commodities)
-            add_price_now(commodities)
-            update_total_production(commodities)
-            add_1y_increase_to_products(products) # irrelevant
-            add_top_value_commodities(products) # irrelevant
-            add_1y_increase_to_products_and_add_top_value_commodities(products) # combined separate functions for efficiency         
+            # add_price_now(commodities)
+            # update_total_production(commodities)
+            # # add_1y_increase_to_products(products) # irrelevant
+            # # add_top_value_commodities(products) # irrelevant
+            # add_1y_increase_to_products_and_add_top_value_commodities(products) # combined separate functions for efficiency         
 
             # 5. Forecast prices
             update_forecast_prices()
