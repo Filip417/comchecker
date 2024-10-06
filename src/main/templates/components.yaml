@@ -1,0 +1,4 @@
+components:
+  container: "main/components/container.html"
+  form: "main/components/form.html"
+  form_field: "main/components/form_field.html"

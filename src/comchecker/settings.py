@@ -139,7 +139,6 @@ if DATABASE_URL is not None: # and not DEBUG: # TODO update later
                 conn_max_age=CONN_MAX_AGE,
                 conn_health_checks=True
             )
-        
     }
 else:
     DATABASES = {

@@ -5,7 +5,7 @@ from datetime import datetime, timedelta
 
 scheduler = None  # Global scheduler instance
 
-def start():
+def start_scheduler():
     global scheduler
     if scheduler is None:  # Check if scheduler is already initialized
         scheduler = BackgroundScheduler()
@@ -13,18 +13,12 @@ def start():
 
         scheduler.remove_all_jobs()
 
-        # Schedule the `scheduled_test` command to run every minute
-        # scheduler.add_job(run_scheduled_test, 'interval', minutes=1, id='scheduled_test', replace_existing=True)
-
+        # Schedule the `run_daily_tasks` command to run every 24 hours
         job = scheduler.add_job(run_daily_tasks, 'interval', hours=24, id="dailytasks", replace_existing=True)
-        
-        job.modify(next_run_time=datetime.now() + timedelta(seconds=20))
+        job.modify(next_run_time=datetime.now() + timedelta(seconds=30))
 
         scheduler.start()
 
-def run_scheduled_test():
-    # Calls the custom Django management command
-    call_command('scheduled_test')
 
 def run_daily_tasks():
     call_command('dailytasks')

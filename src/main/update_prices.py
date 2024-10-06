@@ -583,41 +583,24 @@ def update_live_commodity_prices(commodity_data, batch_size=100):
                 # Skip if commodity or currency not found
                 continue
 
-            # Check if the CommodityPrice record already exists
-            price_key = (commodity.id, currency.id, date)
-            if price_key in existing_prices_lookup:
-                # If exists, update the price
-                existing_price = existing_prices_lookup[price_key]
-                existing_price.price = price
-                prices_to_update.append(existing_price)
+            commodity = Commodity.objects.get(name=com)
+            currency = Currency.objects.get(code=currency_code)
+
+            # Update or create the CommodityPrice record
+            obj, created = CommodityPrice.objects.update_or_create(
+                commodity=commodity,
+                currency=currency,
+                date=date,
+                defaults={'price': price}
+            )
+
+            # TODO remove printing when stable code Optionally, print to verify
+            if created:
+                print(f"Created new CommodityPrice record: {obj}")
             else:
-                # If not, prepare to create a new record
-                prices_to_create.append(
-                    CommodityPrice(commodity=commodity, currency=currency, date=date, price=price)
-                )
+                print(f"Updated CommodityPrice record: {obj}")
 
-        # Bulk create in batches
-        if len(prices_to_create) >= batch_size:
-            with transaction.atomic():
-                CommodityPrice.objects.bulk_create(prices_to_create, batch_size)
-            prices_to_create.clear()
-
-        # Bulk update in batches
-        if len(prices_to_update) >= batch_size:
-            with transaction.atomic():
-                CommodityPrice.objects.bulk_update(prices_to_update, ['price'], batch_size)
-            prices_to_update.clear()
-
-    # Final bulk create and update for remaining records
-    if prices_to_create:
-        with transaction.atomic():
-            CommodityPrice.objects.bulk_create(prices_to_create, batch_size)
-
-    if prices_to_update:
-        with transaction.atomic():
-            CommodityPrice.objects.bulk_update(prices_to_update, ['price'], batch_size)
-
-    print("Bulk update completed for commodity prices.")
+    print("Update live commodity prices completed.")
 
 ####
 ####
@@ -740,50 +723,39 @@ def update_futures_prices_in_db(futures_commodities_data):
         currency_code = data.get('currency')
         commodity = commodity_lookup.get(com)
         currency = currency_lookup.get(currency_code)
-        
         futures = data.get('futures')
-        if futures:
-            # Clear all existing futures_prices for this commodity before inserting new ones
-            CommodityPrice.objects.filter(commodity=commodity).update(futures_price=None)
 
-            for date, future_data in futures.items():
-                # Extract relevant data
-                price_str = re.sub(r'[^\d.,]', '', future_data.get('Last', ''))
-                try:
-                    price = float(price_str.replace(',', ''))
-                except ValueError:
-                    price = None
-                
-                if price and date:
-                    today = datetime.today().strftime("%Y-%m-%d")
-                    # Determine if we need to insert/update
-                    price_record = {
-                        'commodity': commodity,
-                        'currency': currency,
-                        'date': date if date != 'Cash' else today,  # Store 'Cash' as today's date
-                    }
-                    
-                    if date == today:
-                        # Insert price into the 'price' field
-                        price_record['price'] = price
-                    else:
-                        price_record['futures_price'] = price
-                    
-                    prices_to_create_or_update.append(price_record)
-
-        else:
+        if not futures:
             print(f"No futures prices available for {com}")
-
-    # Bulk create or update the CommodityPrice records
-    with transaction.atomic():
-        for price_record in prices_to_create_or_update:
-            CommodityPrice.objects.update_or_create(
-                commodity=price_record['commodity'],
-                currency=price_record['currency'],
-                date=price_record['date'],
-                defaults=price_record
-            )
-            
+            continue
+        # Clear all existing futures_prices for this commodity before inserting new ones
+        CommodityPrice.objects.filter(commodity=commodity).update(futures_price=None)
+        for date, data in futures.items():
+            # Extract relevant data
+            try:
+                price_str = re.sub(r'[^\d.,]', '', data.get('Last'))
+                price = float(price_str.replace(',', ''))
+            except ValueError:
+                price = None
+            if price and date and currency_code and commodity.id:
+                # Update or create the CommodityPrice record
+                today = datetime.today().strftime("%Y-%m-%d")
+                
+                # Handle the 'Cash' date case and futures price insertion
+                final_date = today if date == 'Cash' else date
+                
+                # Insert price into 'price' if date is today, otherwise 'futures_price'
+                obj, created = CommodityPrice.objects.update_or_create(
+                    commodity=commodity,
+                    currency=currency,
+                    date=final_date,
+                    defaults={'price': price} if final_date == today else {'futures_price': price}
+                )
+                # Optionally, print to verify
+                if created:
+                    print(f"Created new CommodityPrice record: {obj}")
+                else:
+                    print(f"Updated CommodityPrice record: {obj}")
     print("Futures prices update completed.")
 
 

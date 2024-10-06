@@ -1,25 +1,24 @@
 import os, sys
+import pandas as pd
+from prophet import Prophet
+from datetime import datetime, timedelta
+from django.utils import timezone
+from django.db.models import Q, F
+import os, sys
 import numpy as np
 import pandas as pd
 from prophet import Prophet
 from matplotlib import pyplot as plt
 from prophet.plot import add_changepoints_to_plot
 
-import numpy as np
-import pandas as pd
-from datetime import datetime, timedelta
-from django.utils import timezone
-from django.db.models import F
-import time
-
 # Set the Django settings module environment variable
 # Add the Django project root directory to the Python path
-project_root = r'C:\\Users\\sawin\\Documents\\Commodity Project\\django_project\\comchecker'
-sys.path.append(project_root)
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "comchecker.settings")
-# Initialize Django
-import django
-django.setup()
+# project_root = r'C:\\Users\\sawin\\Documents\\Commodity Project\\django_project\\comchecker'
+# sys.path.append(project_root)
+# os.environ.setdefault("DJANGO_SETTINGS_MODULE", "comchecker.settings")
+# # Initialize Django
+# import django
+# django.setup()
 from main.models import (
     CommodityPrice,
     Commodity,
@@ -119,9 +118,9 @@ def rolling_average(forecast, window=30):
     forecast['yhat_upper'] = forecast['yhat_upper'].rolling(window=window).mean()
 
     # Fill in any NaN values that result from the rolling operation
-    forecast['yhat'].fillna(method='bfill', inplace=True)
-    forecast['yhat_lower'].fillna(method='bfill', inplace=True)
-    forecast['yhat_upper'].fillna(method='bfill', inplace=True)
+    forecast['yhat'] = forecast['yhat'].bfill()
+    forecast['yhat_lower'] = forecast['yhat_lower'].bfill()
+    forecast['yhat_upper'] = forecast['yhat_upper'].bfill()
 
 # Linear smoothing of predictions
 def linear_smoothing(df_pro, forecast, months_to_smooth=12):
@@ -138,7 +137,8 @@ def linear_smoothing(df_pro, forecast, months_to_smooth=12):
         raise ValueError("No valid past prices found in df_pro.")
 
     # Compute the difference between the date and today
-    df_pro_filtered['date_diff'] = (df_pro_filtered['ds'] - today)
+    df_pro_filtered = df_pro_filtered.copy()  # Create a deep copy to avoid SettingWithCopyWarning
+    df_pro_filtered.loc[:, 'date_diff'] = df_pro_filtered['ds'] - today
 
     # Find the closest past date or today by finding the maximum negative value
     closest_past_dates = df_pro_filtered[df_pro_filtered['date_diff'] <= pd.Timedelta(0)]
@@ -195,11 +195,14 @@ def get_dataframe(commodity_id):
     data = CommodityPrice.objects.filter(commodity_id=commodity_id).values(
         'date', 'price', 'futures_price', 'commodity_id', 'currency_id'
     )
+    objects_with_price_or_futures_price = data.filter(
+        Q(price__isnull=False) | Q(futures_price__isnull=False)
+    )
 
     commodity = Commodity.objects.get(id=commodity_id)
 
     # Convert to a pandas DataFrame
-    df = pd.DataFrame(data)
+    df = pd.DataFrame(objects_with_price_or_futures_price)
 
     # Ensure data is sorted by date
     df = df.sort_values('date')
@@ -207,13 +210,18 @@ def get_dataframe(commodity_id):
     # Convert 'date' to datetime format
     df['date'] = pd.to_datetime(df['date'], format='%Y-%m-%d')
 
+    # Convert 'futures_price' to float and handle None values by replacing them with NaN
+    df['futures_price'] = pd.to_numeric(df['futures_price'], errors='coerce')
+
     # Filter data to include only the last 5 years
     today = pd.Timestamp.today()
     last_5_years = today - pd.DateOffset(years=5)
+    
     if commodity.futures:
-        df.loc[(df['date'] > today) & (df['futures_price'] != 0), 'price'] = df['futures_price']
+        # Assign futures_price to price where date > today and futures_price is not NaN
+        df.loc[(df['date'] > today) & (df['futures_price'].notna()) & (df['futures_price'] != 0), 'price'] = df['futures_price']
     else:
-       df = df[df['date'] <= today]
+        df = df[df['date'] <= today]
 
     # Convert 'date' column to the desired format '%d/%m/%Y'
     df['date'] = df['date'].dt.strftime('%d/%m/%Y')
@@ -226,13 +234,10 @@ def get_forecast_df(commodity_df, years_history=None, cap_value_multiple=1, floo
     df_pro = commodity_df.drop(columns=['commodity_id','currency_id'])
     df_pro = df_pro.rename(columns={"price":"y","date":"ds"})
     df_pro['ds'] = pd.to_datetime(df_pro['ds'], format='%d/%m/%Y', errors='coerce')
-
-    print(df_pro.describe())
-
+    
     today = pd.to_datetime(datetime.now().date())
     cap_value = df_pro['y'].max() * cumulative_rate * cap_value_multiple
     floor_value = 0 * floor_value_multiple
-    print(f'Floor value: {floor_value}')
 
     if years_history:
         df_pro = df_pro[df_pro['ds'] > (today - timedelta(days=years_history*365))]
@@ -361,6 +366,14 @@ def upload_to_db(commodity_df, futures_df, batch_size=1000):
         bottom_10_percent=None
     )
 
+    # Clean empty CommodityPrice
+    CommodityPrice.objects.filter(
+        commodity=commodity,
+        currency=currency,
+        price__isnull=True,
+        futures_price__isnull=True
+    ).delete()
+
     # Function to scale the confidence intervals linearly
     def scale_confidence_interval(yhat, yhat_lower, yhat_upper, date):
         years_5_future_date = today + timedelta(days=5 * 365)
@@ -384,47 +397,40 @@ def upload_to_db(commodity_df, futures_df, batch_size=1000):
             "bottom_10_percent": yhat + scale_factor * (yhat_lower - yhat) * 0.10 / 0.9,
         }
 
-    # Prepare a list for bulk updates
-    bulk_updates = []
-
-    # Loop through the futures_df and prepare records for bulk insert/update
+    # Loop through the futures_df and insert/update records in CommodityPrice
     for date, row in futures_df.iterrows():
-        if date.date() >= today + timedelta(days=1):
+        # Insert the price into the .price field for dates starting from tomorrow
+        if date.date() >= today + timedelta(days=1) and date.date() <= today + timedelta(days=5*365+15):
+            # Calculate scaled confidence intervals
             scaled_intervals = scale_confidence_interval(
                 yhat=row['yhat'],
                 yhat_lower=row['yhat_lower'],
                 yhat_upper=row['yhat_upper'],
                 date=date
             )
-
-            # Create an instance of CommodityPrice to be bulk created/updated
-            bulk_updates.append(
-                CommodityPrice(
-                    commodity=commodity,
-                    currency=currency,
-                    date=date.date(),
-                    projected_price=row['yhat'],
-                    top_90_percent=scaled_intervals['top_90_percent'],
-                    bottom_90_percent=scaled_intervals['bottom_90_percent'],
-                    top_75_percent=scaled_intervals['top_75_percent'],
-                    bottom_75_percent=scaled_intervals['bottom_75_percent'],
-                    top_50_percent=scaled_intervals['top_50_percent'],
-                    bottom_50_percent=scaled_intervals['bottom_50_percent'],
-                    top_25_percent=scaled_intervals['top_25_percent'],
-                    bottom_25_percent=scaled_intervals['bottom_25_percent'],
-                    top_10_percent=scaled_intervals['top_10_percent'],
-                    bottom_10_percent=scaled_intervals['bottom_10_percent'],
-                )
+            # Use update_or_create to update existing records or create new ones
+            obj, created = CommodityPrice.objects.update_or_create(
+                commodity=commodity,
+                currency=currency,
+                date=date.date(),
+                defaults={
+                    'price':None,
+                    'projected_price': row['yhat'],
+                    'top_90_percent': scaled_intervals['top_90_percent'],
+                    'bottom_90_percent': scaled_intervals['bottom_90_percent'],
+                    'top_75_percent': scaled_intervals['top_75_percent'],
+                    'bottom_75_percent': scaled_intervals['bottom_75_percent'],
+                    'top_50_percent': scaled_intervals['top_50_percent'],
+                    'bottom_50_percent': scaled_intervals['bottom_50_percent'],
+                    'top_25_percent': scaled_intervals['top_25_percent'],
+                    'bottom_25_percent': scaled_intervals['bottom_25_percent'],
+                    'top_10_percent': scaled_intervals['top_10_percent'],
+                    'bottom_10_percent': scaled_intervals['bottom_10_percent'],
+                }
             )
-
-            # Perform bulk operation if batch size is reached
-            if len(bulk_updates) >= batch_size:
-                CommodityPrice.objects.bulk_create(bulk_updates, ignore_conflicts=True)
-                bulk_updates = []  # Reset the list for the next batch
-
-    # Create any remaining updates that didn't fill an entire batch
-    if bulk_updates:
-        CommodityPrice.objects.bulk_create(bulk_updates, ignore_conflicts=True)
+            # Do not modify futures_price if it exists
+            if not created and obj.futures_price is not None:
+                CommodityPrice.objects.filter(pk=obj.pk).update(futures_price=F('futures_price'))
 
     # Optionally, log that the upload is complete
     print("Upload to DB completed.")
@@ -446,6 +452,7 @@ def update_forecast_prices():
                 futures_df = get_forecast_df_for_futures(commodity_df)
         else:
             if commodity.id in adjustment_dict.keys():
+                # TODO fix error
                 futures_df = get_forecast_df(commodity_df,
                             years_history=adjustment_dict[commodity.id]['years_history'],
                             floor_value_multiple=adjustment_dict[commodity.id]['floor_value_multiple'])

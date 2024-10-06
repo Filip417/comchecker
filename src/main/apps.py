@@ -9,5 +9,5 @@ class MainConfig(AppConfig):
 
     def ready(self):
         # Start the scheduler when the Django app is ready
-        from .scheduler import start
-        start()
+        from .scheduler import start_scheduler
+        start_scheduler()
