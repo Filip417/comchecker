@@ -80,12 +80,19 @@ INSTALLED_APPS = [
     "widget_tweaks",
     "slippers",
     # The following apps are required for allauth:
+    'django.contrib.sites',
     'allauth',
     'allauth.account',
     'django_apscheduler',  # To store job details in the DB
     # settings
     'storages',
 ]
+
+SITE_ID = config('SITE_ID', cast=int)
+
+SECURE_SSL_REDIRECT = True
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
 
 AWS_ACCESS_KEY_ID = config('AWS_ACCESS_KEY_ID')
 AWS_SECRET_ACCESS_KEY = config('AWS_SECRET_ACCESS_KEY')
@@ -138,10 +145,15 @@ LOGIN_URL = "/accounts/login/" # custom setting to fit the urls.py
 
 # Django Allauth Config
 LOGIN_REDIRECT_URL = "/dashboard/"
+LOGOUT_REDIRECT_URL = 'index'
 ACCOUNT_AUTHENTICATION_METHOD = "email"
 ACCOUNT_EMAIL_REQUIRED=True
+ACCOUNT_USERNAME_REQUIRED = False
+ACCOUNT_UNIQUE_EMAIL = True
 ACCOUNT_EMAIL_VERIFICATION="mandatory"
 ACCOUNT_EMAIL_SUBJECT_PREFIX="[Material Wise] "
+ACCOUNT_LOGIN_ON_EMAIL_CONFIRMATION = True
+ACCOUNT_EMAIL_CONFIRMATION_EXPIRE_DAYS = 90
 
 ROOT_URLCONF = 'comchecker.urls'
 
