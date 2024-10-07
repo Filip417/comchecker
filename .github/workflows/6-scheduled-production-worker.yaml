@@ -2,9 +2,9 @@ name: 6 - Scheduled Production Worker
 
 on:
   workflow_dispatch:
-  schedule:
-  - cron: '0 1,12 * * *' # Runs at 01:00 and 12:00 UTC every day
-  - cron: '0 4 1 * *' # Runs at 04:00 UTC on the first day of every month
+  # schedule:
+  # - cron: '0 1,12 * * *' # Runs at 01:00 and 12:00 UTC every day
+  # - cron: '0 4 1 * *' # Runs at 04:00 UTC on the first day of every month
 
 # https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#schedule
 jobs:
