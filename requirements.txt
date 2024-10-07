@@ -19,3 +19,5 @@ django-widget-tweaks
 slippers
 apscheduler
 django_apscheduler
+django-storages
+boto3

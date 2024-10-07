@@ -2,6 +2,8 @@ from django.contrib import admin
 from . import views
 from django.urls import path, include
 from checkouts import views as checkout_views
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
     path("",views.index,name="index"),

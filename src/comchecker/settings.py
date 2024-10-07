@@ -47,8 +47,8 @@ ALLOWED_HOSTS = [
 
 CSRF_TRUSTED_ORIGINS = [
     "https://comchecker-production.up.railway.app", # must be full domain url
-    'www.materialwise.co.uk',
-    'materialwise.co.uk',
+    'https://www.materialwise.co.uk',
+    'https://materialwise.co.uk',
 ]
 
 if DEBUG:
@@ -83,7 +83,43 @@ INSTALLED_APPS = [
     'allauth',
     'allauth.account',
     'django_apscheduler',  # To store job details in the DB
+    # settings
+    'storages',
 ]
+
+AWS_ACCESS_KEY_ID = config('AWS_ACCESS_KEY_ID')
+AWS_SECRET_ACCESS_KEY = config('AWS_SECRET_ACCESS_KEY')
+AWS_STORAGE_BUCKET_NAME = config('AWS_STORAGE_BUCKET_NAME')
+AWS_S3_REGION_NAME = 'eu-north-1'  # e.g., us-east-1
+AWS_S3_CUSTOM_DOMAIN = f'{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com'
+
+# For serving static files directly from S3
+AWS_S3_USE_SSL = True
+AWS_S3_VERIFY = True
+
+# Static and media file configuration
+STATIC_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/static/'
+STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+
+MEDIA_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/media/'
+DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+
+# # AWS optional:
+# AWS_S3_FILE_OVERWRITE = False
+# AWS_DEFAULT_ACL = None
+# AWS_QUERYSTRING_AUTH = False  # Optional: to avoid query parameters in URLs
+
+# Static files (CSS, JavaScript, Images)
+# https://docs.djangoproject.com/en/5.0/howto/static-files/
+
+# STATIC_URL = 'static/' # using local static files
+
+# source for python manage.py collectstatic
+STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]
+
+# output for python manage.py collectstatic
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -190,16 +226,7 @@ USE_I18N = True
 USE_TZ = True
 
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/5.0/howto/static-files/
 
-STATIC_URL = 'static/'
-
-# source for python manage.py collectstatic
-STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]
-
-# output for python manage.py collectstatic
-STATIC_ROOT = os.path.join(BASE_DIR, 'local-cdn')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
