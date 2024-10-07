@@ -40,11 +40,15 @@ SECRET_KEY = config('DJANGO_SECRET_KEY')
 DEBUG = config('DJANGO_DEBUG', cast=bool)
 
 ALLOWED_HOSTS = [
-    ".railway.app" # for any ending with .railway.app
+    ".railway.app", # for any ending with .railway.app
+    'www.materialwise.co.uk',
+    'materialwise.co.uk',
 ]
 
 CSRF_TRUSTED_ORIGINS = [
-    "https://comchecker-production.up.railway.app" # must be full domain url
+    "https://comchecker-production.up.railway.app", # must be full domain url
+    'www.materialwise.co.uk',
+    'materialwise.co.uk',
 ]
 
 if DEBUG:
