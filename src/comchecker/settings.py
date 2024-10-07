@@ -27,7 +27,6 @@ BASE_URL = config("BASE_URL", default=None)
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
 CURRENCIES_API_KEY = config('CURRENCIES_API_KEY')
 
 # Quick-start development settings - unsuitable for production
@@ -80,7 +79,6 @@ INSTALLED_APPS = [
     "widget_tweaks",
     "slippers",
     # The following apps are required for allauth:
-    'django.contrib.sites',
     'allauth',
     'allauth.account',
     'django_apscheduler',  # To store job details in the DB
@@ -88,11 +86,12 @@ INSTALLED_APPS = [
     'storages',
 ]
 
-SITE_ID = config('SITE_ID', cast=int)
-
-SECURE_SSL_REDIRECT = False
-SESSION_COOKIE_SECURE = False
-CSRF_COOKIE_SECURE = False
+# TODO set True if secure
+RAILWAY=config('RAILWAY', cast=bool)
+if RAILWAY:
+    SECURE_SSL_REDIRECT = True
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
 
 AWS_ACCESS_KEY_ID = config('AWS_ACCESS_KEY_ID')
 AWS_SECRET_ACCESS_KEY = config('AWS_SECRET_ACCESS_KEY')
