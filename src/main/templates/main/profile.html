@@ -87,7 +87,7 @@
             <!-- Projects items -->
             <div class="group relative">
               <div class="flex flex-row aspect-square overflow-hidden rounded-md bg-gray-200 relative">
-                  <img src="{% get_product_image_url product.epd_id %}" alt="{{product.name}} image" class="h-full w-full object-fill object-center">
+                  <img src="{% get_product_image_url product.epd_id product.first_prod_image_format %}" alt="{{product.name}} image" class="h-full w-full object-fill object-center">
                 
                   <!-- Hidden content that appears on hover -->
                   <div class="absolute inset-0 flex justify-between items-start opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-gray-800 bg-opacity-75">
@@ -150,16 +150,16 @@
             <div class="group relative">
                 <div class="flex flex-row aspect-square overflow-hidden rounded-md bg-gray-200 relative">
                     {% if project.products.all|length > 0 %}
-                        <img src="{% get_product_image_url project.products.all.0.epd_id %}" alt="{{ project.products.all.0.name }} image" class="h-full w-[50%] object-cover object-center">
+                        <img src="{% get_product_image_url project.products.all.0.epd_id project.products.all.0.first_prod_image_format %}" alt="{{ project.products.all.0.name }} image" class="h-full w-[50%] object-cover object-center">
                     {% endif %}
 
                     <div class="flex flex-col">
                         {% if project.products.all|length > 1 %}
-                            <img src="{% get_product_image_url project.products.all.1.epd_id %}" alt="{{ project.products.all.1.name }} image" class="h-[50%] w-full object-cover object-center">
+                            <img src="{% get_product_image_url project.products.all.1.epd_id project.products.all.1.first_prod_image_format %}" alt="{{ project.products.all.1.name }} image" class="h-[50%] w-full object-cover object-center">
                         {% endif %}
                         
                         {% if project.products.all|length > 2 %}
-                            <img src="{% get_product_image_url project.products.all.2.epd_id %}" alt="{{ project.products.all.2.name }} image" class="h-[50%] w-full object-cover object-center">
+                            <img src="{% get_product_image_url project.products.all.2.epd_id project.products.all.2.first_prod_image_format %}" alt="{{ project.products.all.2.name }} image" class="h-[50%] w-full object-cover object-center">
                         {% endif %}
                     </div>
                     <!-- Hidden content that appears on hover -->

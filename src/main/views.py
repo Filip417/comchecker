@@ -140,7 +140,7 @@ def index_logged(request):
     unique_manufacturer_products = [products[0] for products in products_by_manufacturer.values()]
 
     # Limit the result to the top 20 products
-    LIMIT = 30
+    LIMIT = 20
     highest_products = unique_manufacturer_products[:LIMIT]
     lowest_products = unique_manufacturer_products[-LIMIT:]
     lowest_products.reverse()

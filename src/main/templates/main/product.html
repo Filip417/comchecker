@@ -15,7 +15,7 @@
       <div>
         <!-- Can change object-cover to cover-fill tbd -->
         <div class="relative shadow-xl sm:mr-5 lg:mr-10 max-lg:mb-5">
-        <img src="{% get_product_image_url product.epd_id %}" alt="Product_name"
+        <img src="{% get_product_image_url product.epd_id product.first_prod_image_format %}" alt="Product_name"
         class="pb-9 min-w-64 max-h-64 max-w-64 object-contain rounded-md">
         <div class="absolute bottom-0 w-full">
             <div class="rounded-b-md flex items-center justify-between px-3 py-2 bg-gray-200 dark:bg-gray-700">   
@@ -33,7 +33,7 @@
         <h1 class="text-xl lg:text-3xl font-bold tracking-wide text-gray-800 dark:text-white">{{ product.name }}</h1>
         <div>
             {% if product.manufacturer_img_url != 'nan' and product.manufacturer_img_url %}
-            <img src="{% get_manufacturer_image product.epd_id %}" alt="{{product.manufacturer_name}}_manufacturer_logo"
+            <img src="{% get_manufacturer_image product.epd_id product.first_man_image_format %}" alt="{{product.manufacturer_name}}_manufacturer_logo"
                 class="my-2 max-h-10 object-contain">
             {% endif %}
             <h2 class="text-sm lg:text-base font-semibold text-gray-600 dark:text-gray-100">

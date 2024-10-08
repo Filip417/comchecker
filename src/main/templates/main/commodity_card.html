@@ -2,7 +2,7 @@
 <div class="group relative flex-none snap-center snap-always w-40">
     <div class="aspect-square overflow-hidden rounded-md bg-gray-200 relative">
         
-      <img src="{% get_commodity_image_url commodity.name %}" alt="{{commodity.name}}" class="w-40 h-40 object-cover object-center">
+      <img src="{% get_commodity_image_url commodity.name commodity.image_format %}" alt="{{commodity.name}}" class="w-40 h-40 object-cover object-center">
       
       <!-- Hidden content that appears on hover -->
       <div class="absolute inset-0 flex justify-between items-start opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-gray-800 bg-opacity-75">

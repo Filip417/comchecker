@@ -123,11 +123,11 @@
                                     <img
                                     style="object-fit: cover; width: 40px; height: 40px; border-radius: 50%;"
                                     {% if notification.product %}
-                                    src="{% get_product_image_url notification.product.epd_id %}" alt="{{ notification.product.name }}"
+                                    src="{% get_product_image_url notification.product.epd_id notification.product.first_prod_image_format %}" alt="{{ notification.product.name }}"
                                     {% elif notification.commodity %}
-                                    src="{% get_commodity_image_url notification.commodity.name %}" alt="{{notification.commodity.name}}"
+                                    src="{% get_commodity_image_url notification.commodity.name commodity.image_format %}" alt="{{notification.commodity.name}}"
                                     {% elif notification.project %}
-                                    src="{% get_product_image_url notification.project.products.all.0.epd_id %}" alt="{{ notification.project.products.all.0.name }}"
+                                    src="{% get_product_image_url notification.project.products.all.0.epd_id notification.project.products.all.0.first_prod_image_format %}" alt="{{ notification.project.products.all.0.name }}"
                                     {% endif %}
                                     >
                                     <div style="margin-left: 8px;">

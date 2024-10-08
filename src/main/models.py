@@ -382,7 +382,8 @@ class Commodity(models.Model):
     recycling = models.TextField(null=True, blank=True)
     increasefromlastyear = models.FloatField(null=True, blank=True)
     view_count = models.IntegerField(default=0)
-    
+    image_format = models.CharField(max_length=5, blank=True, null=True)
+
     def __str__(self):
         return self.name
     
@@ -425,6 +426,8 @@ class Product(models.Model):
     increasefromlastyear = models.FloatField(null=True, blank=True)
     unique_commodities_count = models.IntegerField(null=True, blank=True)
     view_count = models.IntegerField(default=0)
+    first_prod_image_format = models.CharField(max_length=5, blank=True, null=True)
+    first_man_image_format = models.CharField(max_length=5, blank=True, null=True)
 
     def __str__(self):
         return self.name

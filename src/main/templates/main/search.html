@@ -878,7 +878,7 @@
                 <div class="product-container group relative">
                   <div class="aspect-square overflow-hidden rounded-md bg-gray-200 relative">
 
-                    <img src="{% get_product_image_url product.epd_id %}" alt="{{product.name}} image" class="h-full w-full object-fill object-center">
+                    <img src="{% get_product_image_url product.epd_id product.first_prod_image_format %}" alt="{{product.name}} image" class="h-full w-full object-fill object-center">
                     
                     <!-- Hidden content that appears on hover -->
                     <form method="POST" action="{% url 'change_product_to_project' product.id %}" class="">
@@ -980,7 +980,7 @@
           {% for commodity in page_commodity %}
           <div class="group relative">
             <div class="aspect-square overflow-hidden rounded-md bg-gray-200 relative">
-              <img src="{% get_commodity_image_url commodity.name %}" alt="Product_name" class="h-full w-full object-cover object-center xl:h-full xl:w-full">
+              <img src="{% get_commodity_image_url commodity.name commodity.image_format %}" alt="Product_name" class="h-full w-full object-cover object-center xl:h-full xl:w-full">
               
               <!-- Hidden content that appears on hover -->
               <div class="absolute inset-0 flex justify-between items-start opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-gray-800 bg-opacity-75">

@@ -14,43 +14,31 @@ from django.utils.timezone import now
 register = template.Library()
 
 @register.simple_tag
-def get_product_image_url(epd_id):
-    SIZE = 'large'
-    formats = ['jpg', 'png', 'bmp', 'gif']
+def get_product_image_url(epd_id, format):
+    SIZE = 'medium'
     if epd_id:
-        for format in formats:
-            path = f'main/images_resized/{epd_id}_prod_1_{SIZE}.{format}'
-            # No need to check if it exists in static, just return the path
-            result = finders.find(path)
-            if result:
-                return static(path)
+        path = f'main/images_resized/{epd_id}_prod_1_{SIZE}.{format}'
+        return static(path)
+    # Return default image if no format is found
     return static('main/images/product/default.png')
 
 
 @register.simple_tag
-def get_manufacturer_image(epd_id):
+def get_manufacturer_image(epd_id, format):
     SIZE = 'medium'
-    formats = ['jpg', 'png', 'bmp', 'gif']
-    if epd_id and epd_id != 'default':
-        for format in formats:
-            path = f'main/images_resized/{epd_id}_man_1_{SIZE}.{format}'
-            result = finders.find(path)
-            if result:
-                return static(path)
+    if epd_id:
+        path = f'main/images_resized/{epd_id}_man_1_{SIZE}.{format}'
+        return static(path)
     return "data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs="
 
 
 @register.simple_tag
-def get_commodity_image_url(name):
+def get_commodity_image_url(name, format):
     SIZE = 'large'
-    formats = ['jpg', 'png']
-    if name and name != 'default':
-        for format in formats:
-            path = f'main/commodities_images_resized/{name}_{SIZE}.{format}'
-            result = finders.find(path)
-            if result:
-                return static(path)
-    return static('main/commodities_images_resized/default_medium.jpg')
+    if name:
+        path = f'main/commodities_images_resized/{name}_{SIZE}.{format}'
+        return static(path)
+    return static('main/images/product/default.png')
         
 
 @register.simple_tag(takes_context=True)

@@ -14,7 +14,7 @@
     <div class="flex lg:flex-row flex-col max-lg:items-center">
       <div class="relative rounded-md max-h-60 sm:mr-5 lg:mr-10 max-lg:mb-5">
         <!-- Can change object-cover to cover-fill tbd -->
-        <img src="{% get_commodity_image_url commodity.name %}" alt="{{commodity.name}}" class="rounded-lg shadow-md h-60 w-60 max-w-60 object-cover object-center aspect-square">
+        <img src="{% get_commodity_image_url commodity.name commodity.image_format %}" alt="{{commodity.name}}" class="rounded-lg shadow-md h-60 w-60 max-w-60 object-cover object-center aspect-square">
         <div class="absolute bottom-0 w-full">
             <div class="rounded-b-md flex items-center justify-between px-3 py-2 bg-gray-200 dark:bg-gray-700">
                 <span class="font-bold text-gray-800 dark:text-gray-200">
