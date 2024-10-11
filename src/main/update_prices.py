@@ -769,136 +769,143 @@ def check_all_notifications_and_send_emails():
     notifications_to_check = Notification.objects.filter(user__isnull=False, activated=False)
     for notification in notifications_to_check:
         check_notification_and_send_email(notification.id)
-    
+
+def get_closest_commodity_price(commodity_id, target_date, days_range=365):
+    # First, check if there's an exact match for the given date
+    exact_price = CommodityPrice.objects.filter(commodity_id=commodity_id, date=target_date).first()
+
+    if exact_price:
+        # If price exists, use it; if not, use projected_price
+        if exact_price.price:
+            return exact_price.price
+        elif exact_price.projected_price:
+            return exact_price.projected_price
+
+    # Define a range for the search
+    date_range_start = target_date - timedelta(days_range)
+    date_range_end = target_date + timedelta(days_range)
+
+    # Retrieve all prices within the date range
+    possible_past_prices = CommodityPrice.objects.filter(
+        commodity_id=commodity_id,
+        price__isnull=False,
+        date__range=(date_range_start, target_date),
+    ).order_by('-date')  # Ordering by date descending for closest past
+
+    possible_future_prices = CommodityPrice.objects.filter(
+        commodity_id=commodity_id,
+        projected_price__isnull=False,
+        date__range=(target_date, date_range_end),
+    ).order_by('date')  # Ordering by date ascending for closest future
+
+    if not possible_past_prices.exists() and not possible_future_prices.exists():
+        return None  # No prices found in the date range
+
+    closest_past = possible_past_prices.first() if possible_past_prices.exists() else None
+    closest_future = possible_future_prices.first() if possible_future_prices.exists() else None
+
+    # Initialize variables for prices and days
+    closest_past_price = None
+    closest_future_price = None
+
+    # Calculate past-related values if closest_past exists
+    if closest_past:
+        days_to_closest_past = (target_date - closest_past.date).days
+        closest_past_price = closest_past.price or closest_past.projected_price
+
+    # Calculate future-related values if closest_future exists
+    if closest_future:
+        days_to_closest_future = (closest_future.date - target_date).days
+        closest_future_price = closest_future.price or closest_future.projected_price
+
+    # Handle cases where both past and future prices are present
+    if closest_past and closest_future:
+        total_days = days_to_closest_past + days_to_closest_future
+        new_commodity_price = (
+            closest_past_price * days_to_closest_past / total_days +
+            closest_future_price * days_to_closest_future / total_days
+        )
+    elif closest_past:
+        # If only past prices are available
+        new_commodity_price = closest_past_price
+    elif closest_future:
+        # If only future prices are available
+        new_commodity_price = closest_future_price
+    else:
+        return None  # Fallback in case something went wrong
+
+    return new_commodity_price
+
+def get_closest_product_price(product_id, target_date):
+    # Fetch all material proportions for the product
+    materials_proportions = MaterialProportion.objects.filter(product_id=product_id).select_related('commodity')
+
+    if not materials_proportions.exists():
+        return None  # No materials found for the product
+
+    total_product_price = 0.0
+
+    for materialproportion in materials_proportions:
+        commodity = materialproportion.commodity
+
+        # Get the closest commodity price for the given date
+        closest_commodity_price = get_closest_commodity_price(commodity.id, target_date)
+
+        if closest_commodity_price is None:
+            continue  # Skip if no price found for the commodity
+
+        # Calculate the price contribution for this material
+        rate_for_price_kg = commodity.rate_for_price_kg
+        currency_rate = commodity.currency.rate
+
+        material_price = (
+            closest_commodity_price * materialproportion.proportion * rate_for_price_kg / currency_rate
+        )
+
+        # Accumulate the total product price
+        total_product_price += material_price
+
+    return total_product_price if total_product_price > 0 else None  # Return total price or None if no price found
+
+def get_closest_project_price(project_id, target_date):
+    # Fetch the project
+    project = Project.objects.prefetch_related('products').get(id=project_id)
+
+    # Fetch all products associated with the project
+    products = project.products.all()
+
+    if not products.exists():
+        return None  # No products found in the project
+
+    total_price = 0.0
+    product_count = 0
+
+    for product in products:
+        # Get the closest product price for the given date
+        closest_product_price = get_closest_product_price(product.id, target_date)
+
+        if closest_product_price is None:
+            continue  # Skip if no price found for the product
+
+        # Accumulate the total price and count of valid products
+        total_price += closest_product_price
+        product_count += 1
+
+    # Calculate the average price across all products
+    if product_count == 0:
+        return None  # No valid prices found
+
+    average_price = total_price / product_count
+
+    return average_price    
+
 
 def check_notification_and_send_email(notification_id):
     updated = False
     sent = False
     notification_to_check = Notification.objects.get(id=notification_id, user__isnull=False, activated=False)
 
-    def get_closest_commodity_price(commodity_id, target_date):
-        # First, check if there's an exact match for the given date
-        exact_price = CommodityPrice.objects.filter(commodity_id=commodity_id, date=target_date).first()
-
-        if exact_price:
-            # If price exists, use it; if not, use projected_price
-            if exact_price.price:
-                return exact_price.price
-            elif exact_price.projected_price:
-                return exact_price.projected_price
-
-        # Define a range for the search
-        date_range_start = target_date - timedelta(days=365*2)
-        date_range_end = target_date + timedelta(days=365*2)
-
-        # Retrieve all prices within the date range
-        possible_past_prices = CommodityPrice.objects.filter(
-            commodity_id=commodity_id,
-            price__isnull=False,
-            date__range=(date_range_start, target_date),
-        ).order_by('date')
-
-        possible_future_prices = CommodityPrice.objects.filter(
-            commodity_id=commodity_id,
-            projected_price__isnull=False,
-            date__range=(date_range_start, date_range_end),
-        ).order_by('date')
-
-        if not possible_past_prices.exists() and not possible_future_prices.exists():
-            return None  # No prices found in the date range
-
-        # Find the closest date in the possible prices
-        closest_past = possible_past_prices.filter(date__lte=target_date).order_by('-date').first()
-        closest_future = possible_future_prices.filter(date__gte=target_date).order_by('date').first()
-
-        if closest_past:
-            days_to_closest_past = (target_date - closest_past.date).days
-            if closest_past.price:
-                closest_past_price = closest_past.price
-            elif closest_past.projected_price:
-                closest_past_price = closest_past.projected_price
-        
-        if closest_future:
-            days_to_closest_future = (closest_future.date - target_date).days
-            if closest_future.price:
-                closest_future_price = closest_future.price
-            elif closest_future.projected_price:
-                closest_future_price = closest_future.projected_price
-
-        total_days = days_to_closest_past + days_to_closest_future
-        new_commodity_price = closest_past_price * days_to_closest_past / total_days + closest_future_price * days_to_closest_future / total_days
-        
-        if not closest_past:
-            new_commodity_price = closest_future
-        
-        if not closest_future:
-            new_commodity_price = closest_past
-
-        return new_commodity_price
-
-    def get_closest_product_price(product_id, target_date):
-        # Fetch all material proportions for the product
-        materials_proportions = MaterialProportion.objects.filter(product_id=product_id).select_related('commodity')
-
-        if not materials_proportions.exists():
-            return None  # No materials found for the product
-
-        total_product_price = 0.0
-
-        for materialproportion in materials_proportions:
-            commodity = materialproportion.commodity
-
-            # Get the closest commodity price for the given date
-            closest_commodity_price = get_closest_commodity_price(commodity.id, target_date)
-
-            if closest_commodity_price is None:
-                continue  # Skip if no price found for the commodity
-
-            # Calculate the price contribution for this material
-            rate_for_price_kg = commodity.rate_for_price_kg
-            currency_rate = commodity.currency.rate
-
-            material_price = (
-                closest_commodity_price * materialproportion.proportion * rate_for_price_kg / currency_rate
-            )
-
-            # Accumulate the total product price
-            total_product_price += material_price
-
-        return total_product_price if total_product_price > 0 else None  # Return total price or None if no price found
-
-    def get_closest_project_price(project_id, target_date):
-        # Fetch the project
-        project = Project.objects.prefetch_related('products').get(id=project_id)
-
-        # Fetch all products associated with the project
-        products = project.products.all()
-
-        if not products.exists():
-            return None  # No products found in the project
-
-        total_price = 0.0
-        product_count = 0
-
-        for product in products:
-            # Get the closest product price for the given date
-            closest_product_price = get_closest_product_price(product.id, target_date)
-
-            if closest_product_price is None:
-                continue  # Skip if no price found for the product
-
-            # Accumulate the total price and count of valid products
-            total_price += closest_product_price
-            product_count += 1
-
-        # Calculate the average price across all products
-        if product_count == 0:
-            return None  # No valid prices found
-
-        average_price = total_price / product_count
-
-        return average_price
-
+    
     def update_notification_db(notification_id, new_activated_value):
         try:
             # Use get() to fetch the notification instance or raise an exception if it doesn't exist
@@ -913,7 +920,6 @@ def check_notification_and_send_email(notification_id):
             return False
 
     def send_notification_email(notification_id):
-        # TODO sending proper email from template
         try:
             # Use get() to fetch the notification instance or raise an exception if it doesn't exist
             notification = Notification.objects.get(id=notification_id)

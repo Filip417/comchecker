@@ -9,7 +9,6 @@ from django.shortcuts import get_object_or_404
 
 def show_new_notifications(view_func):
     @wraps(view_func)
-    @login_required 
     def wrapper(request, *args, **kwargs):
         if request.user.is_authenticated:
             # Fetch activated and new notifications for the current user
@@ -19,7 +18,6 @@ def show_new_notifications(view_func):
             request.new_notifications = activated_new_notifications
         else:
             request.new_notifications = []  # If the user is not authenticated, set it as empty
-        
         # Call the view function
         return view_func(request, *args, **kwargs)
     return wrapper

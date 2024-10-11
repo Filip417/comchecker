@@ -28,7 +28,7 @@
             <div x-data="{ openSort: false }" class="flex">
                 <div class="relative inline-block text-left">
                   <div>
-                    <button @click="openSort = !openSort" @click.away="openSort = false" type="button" class="group inline-flex justify-center text-sm font-medium text-gray-700 hover:text-gray-900 dark:text-gray-300 dark:hover:text-gray-400" id="menu-button" aria-expanded="false" aria-haspopup="true">
+                    <button @click="openSort = !openSort" @click.away="openSort = false" type="button" class="group inline-flex justify-center text-sm font-medium text-gray-700 dark:text-gray-300 dark:hover:text-gray-400 hover:text-gray-900" id="menu-button" aria-expanded="false" aria-haspopup="true">
                       Sort
                       <svg class="-mr-1 ml-1 h-5 w-5 flex-shrink-0 text-gray-400 group-hover:text-gray-500" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                         <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
@@ -58,19 +58,19 @@
                       -->
 
                       <a href="{% url 'profile' %}?sort=default" 
-                           class="block px-4 py-2 text-sm {% if sort == None or sort == 'default' %}font-medium text-gray-900 bg-gray-100 dark:text-gray-400 dark:bg-gray-800{% else %}text-gray-500{% endif %}" 
+                           class="dark:text-gray-200 hover:text-gray-600 dark:hover:text-gray-300 dark:hover:bg-gray-700 block px-4 py-2 text-sm {% if sort == None or sort == 'default' %}font-medium text-gray-900 bg-gray-100 dark:text-gray-300 dark:bg-gray-800{% else %}text-gray-500{% endif %}" 
                            role="menuitem" tabindex="-1" id="menu-item-0">Default</a>
                       <a href="{% url 'profile' %}?sort=az" 
-                           class="block px-4 py-2 text-sm {% if sort == 'az' %}font-medium text-gray-900 bg-gray-100 dark:text-gray-400 dark:bg-gray-800{% else %}text-gray-500{% endif %}" 
+                           class="dark:text-gray-200 hover:text-gray-600 dark:hover:text-gray-300 dark:hover:bg-gray-700 block px-4 py-2 text-sm {% if sort == 'az' %}font-medium text-gray-900 bg-gray-100 dark:text-gray-300 dark:bg-gray-700{% else %}text-gray-500{% endif %}" 
                            role="menuitem" tabindex="-1" id="menu-item-1">A to Z</a>
                       <a href="{% url 'profile' %}?sort=za" 
-                           class="block px-4 py-2 text-sm {% if sort == 'za' %}font-medium text-gray-900 bg-gray-100 dark:text-gray-400 dark:bg-gray-800{% else %}text-gray-500{% endif %}" 
+                           class="dark:text-gray-200 hover:text-gray-600 dark:hover:text-gray-300 dark:hover:bg-gray-700 block px-4 py-2 text-sm {% if sort == 'za' %}font-medium text-gray-900 bg-gray-100 dark:text-gray-300 dark:bg-gray-700{% else %}text-gray-500{% endif %}" 
                            role="menuitem" tabindex="-1" id="menu-item-2">Z to A</a>
                       <a href="{% url 'profile' %}?sort=price_desc" 
-                           class="block px-4 py-2 text-sm {% if sort == 'price_desc' %}font-medium text-gray-900 bg-gray-100 dark:text-gray-400 dark:bg-gray-800{% else %}text-gray-500{% endif %}" 
+                           class="dark:text-gray-200 hover:text-gray-600 dark:hover:text-gray-300 dark:hover:bg-gray-700 block px-4 py-2 text-sm {% if sort == 'price_desc' %}font-medium text-gray-900 bg-gray-100 dark:text-gray-300 dark:bg-gray-700{% else %}text-gray-500{% endif %}" 
                            role="menuitem" tabindex="-1" id="menu-item-3">Price %: ↑ to ↓</a>
                       <a href="{% url 'profile' %}?sort=price_asc" 
-                           class="block px-4 py-2 text-sm {% if sort == 'price_asc' %}font-medium text-gray-900 bg-gray-100 dark:text-gray-400 dark:bg-gray-800{% else %}text-gray-500{% endif %}" 
+                           class="dark:text-gray-200 hover:text-gray-600 dark:hover:text-gray-300 dark:hover:bg-gray-700 block px-4 py-2 text-sm {% if sort == 'price_asc' %}font-medium text-gray-900 bg-gray-100 dark:text-gray-300 dark:bg-gray-700{% else %}text-gray-500{% endif %}" 
                            role="menuitem" tabindex="-1" id="menu-item-4">Price %: ↓ to ↑</a>
                     </div>
                   </div>
@@ -87,7 +87,7 @@
             <!-- Projects items -->
             <div class="group relative">
               <div class="flex flex-row aspect-square overflow-hidden rounded-md bg-gray-200 relative">
-                  <img src="{% get_product_image_url product.epd_id product.first_prod_image_format %}" alt="{{product.name}} image" class="h-full w-full object-fill object-center">
+                  <img src="{% get_product_image_url product %}" alt="{{product.name}} image" class="h-full w-full object-fill object-center">
                 
                   <!-- Hidden content that appears on hover -->
                   <div class="absolute inset-0 flex justify-between items-start opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-gray-800 bg-opacity-75">
@@ -150,16 +150,16 @@
             <div class="group relative">
                 <div class="flex flex-row aspect-square overflow-hidden rounded-md bg-gray-200 relative">
                     {% if project.products.all|length > 0 %}
-                        <img src="{% get_product_image_url project.products.all.0.epd_id project.products.all.0.first_prod_image_format %}" alt="{{ project.products.all.0.name }} image" class="h-full w-[50%] object-cover object-center">
+                        <img src="{% get_product_image_url project.products.all.0 %}" alt="{{ project.products.all.0.name }} image" class="h-full w-[50%] object-cover object-center">
                     {% endif %}
 
                     <div class="flex flex-col">
                         {% if project.products.all|length > 1 %}
-                            <img src="{% get_product_image_url project.products.all.1.epd_id project.products.all.1.first_prod_image_format %}" alt="{{ project.products.all.1.name }} image" class="h-[50%] w-full object-cover object-center">
+                            <img src="{% get_product_image_url project.products.all.1 %}" alt="{{ project.products.all.1.name }} image" class="h-[50%] w-full object-cover object-center">
                         {% endif %}
                         
                         {% if project.products.all|length > 2 %}
-                            <img src="{% get_product_image_url project.products.all.2.epd_id project.products.all.2.first_prod_image_format %}" alt="{{ project.products.all.2.name }} image" class="h-[50%] w-full object-cover object-center">
+                            <img src="{% get_product_image_url project.products.all.2 %}" alt="{{ project.products.all.2.name }} image" class="h-[50%] w-full object-cover object-center">
                         {% endif %}
                     </div>
                     <!-- Hidden content that appears on hover -->

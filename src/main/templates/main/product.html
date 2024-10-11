@@ -15,7 +15,7 @@
       <div>
         <!-- Can change object-cover to cover-fill tbd -->
         <div class="relative shadow-xl sm:mr-5 lg:mr-10 max-lg:mb-5">
-        <img src="{% get_product_image_url product.epd_id product.first_prod_image_format %}" alt="Product_name"
+        <img src="{% get_product_image_url product %}" alt="Product_name"
         class="pb-9 min-w-64 max-h-64 max-w-64 object-contain rounded-md">
         <div class="absolute bottom-0 w-full">
             <div class="rounded-b-md flex items-center justify-between px-3 py-2 bg-gray-200 dark:bg-gray-700">   
@@ -33,7 +33,7 @@
         <h1 class="text-xl lg:text-3xl font-bold tracking-wide text-gray-800 dark:text-white">{{ product.name }}</h1>
         <div>
             {% if product.manufacturer_img_url != 'nan' and product.manufacturer_img_url %}
-            <img src="{% get_manufacturer_image product.epd_id product.first_man_image_format %}" alt="{{product.manufacturer_name}}_manufacturer_logo"
+            <img src="{% get_manufacturer_image product %}" alt="{{product.manufacturer_name}}_manufacturer_logo"
                 class="my-2 max-h-10 object-contain">
             {% endif %}
             <h2 class="text-sm lg:text-base font-semibold text-gray-600 dark:text-gray-100">
@@ -60,9 +60,9 @@
                     <option value="new">New project</option>
             </select>
 
-            <input type="text" name="new_project_name" placeholder="" class="new-project-name border-2 border-gray-200 hidden mt-2 px-2 py-2 text-sm bg-white text-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
+            <input type="text" name="new_project_name" placeholder="" class="new-project-name border-2 border-gray-200 dark:border-none  hidden mt-2 px-2 py-2 text-sm bg-white dark:bg-gray-900 dark:text-gray-300 text-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
 
-            <button type="submit" class="rounded-lg my-2 product-button w-max border-2 border-gray-200 px-4 py-2 font-medium tracking-wide capitalize transition-colors duration-300 transform
+            <button type="submit" class="rounded-lg my-2 product-button w-max border-2 border-gray-200 dark:border-none px-4 py-2 font-medium tracking-wide capitalize transition-colors duration-300 transform
              text-white bg-blue-700 hover:bg-blue-800 
              focus:outline-none focus:ring focus:ring-opacity-80"
             data-product-id="{{ product.id }}">       
@@ -150,7 +150,7 @@
                 <div x-data="{ isOpen: false }" class="relative flex" id="notification-modal">
                     <button @click="isOpen = true"  class="flex items-center px-4 py-2 font-medium tracking-wide text-white capitalize transition-colors duration-300 transform bg-blue-900 rounded-lg hover:bg-blue-800 focus:outline-none focus:ring focus:ring-blue-600 focus:ring-opacity-80">
                         <svg class="w-5 h-5 mx-1" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M12 22C10.8954 22 10 21.1046 10 20H14C14 21.1046 13.1046 22 12 22ZM20 19H4V17L6 16V10.5C6 7.038 7.421 4.793 10 4.18V2H13C12.3479 2.86394 11.9967 3.91762 12 5C12 5.25138 12.0187 5.50241 12.056 5.751H12C10.7799 5.67197 9.60301 6.21765 8.875 7.2C8.25255 8.18456 7.94714 9.33638 8 10.5V17H16V10.5C16 10.289 15.993 10.086 15.979 9.9C16.6405 10.0366 17.3226 10.039 17.985 9.907C17.996 10.118 18 10.319 18 10.507V16L20 17V19ZM17 8C16.3958 8.00073 15.8055 7.81839 15.307 7.477C14.1288 6.67158 13.6811 5.14761 14.2365 3.8329C14.7919 2.5182 16.1966 1.77678 17.5954 2.06004C18.9942 2.34329 19.9998 3.5728 20 5C20 6.65685 18.6569 8 17 8Z" fill="currentColor"></path>
+                            <path d="M12 22C10.8954 22 10 21.1046 10 20H14C14 21.1046 13.1046 22 12 22ZM20 19H4V17L6 16V10.5C6 7.038 7.421 4.793 10 4.18V2H13C12.3479 2.86394 11.9967 3.91762 12 5C12 5.25138 12.0187 5.50241 12.056 5.751H12C10.7799 5.67197 9.60301 6.21765 8.875 7.2C8.25255 8.18456 7.94714 9.33638 8 10.5V17H16V10.5C16 10.289 15.993 10.086 15.979 9.9C16.6405 10.0366 17.3226 10.039 17.985 9.907C17.996 10.118 18 10.319 18 10.507V16L20 17V19ZM17 8C16.3958 8.00073 15.8055 7.81839 15.307 8.0L16 8L17 8Z" fill="currentColor"></path>
                         </svg>
                     
                         <span class="mx-1 max-lg:hidden">Notification</span>
@@ -245,7 +245,38 @@
         </div>
     </section>
 
-
+    <!-- Product calculator -->
+    {% if perms.main.standard %}
+    <section class="container mx-auto">
+        <style>
+            [x-cloak] { display: none; }
+        </style>
+        <div class="my-5 flex flex-col" x-data="{ sectionOpen: { description: false } }" >
+        <!-- Expand/collapse section button -->
+        <button @click="sectionOpen.description = !sectionOpen.description" type="button" class="flex w-full items-center justify-between bg-white dark:bg-gray-800 text-gray-400 hover:underline hover:text-gray-500" aria-controls="description-section-0" :aria-expanded="sectionOpen.description.toString()">
+            <span class="text-lg font-medium text-gray-800 dark:text-white">Product Calculator</span>
+            <span class="ml-6 flex items-center">
+                <!-- Expand icon, show/hide based on section open state. -->
+                <svg x-show="!sectionOpen.description" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" x-cloak>
+                <path d="M10.75 4.75a.75.75 0 00-1.5 0v4.5h-4.5a.75.75 0 000 1.5h4.5v4.5a.75.75 0 001.5 0v-4.5h4.5a.75.75 0 000-1.5h-4.5v-4.5z" />
+                </svg>
+                <!-- Collapse icon, show/hide based on section open state. -->
+                <svg x-show="sectionOpen.description"
+                x-init="$el.classList.remove('hidden')"
+                class="hidden h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" x-cloak>
+                <path fill-rule="evenodd" d="M4 10a.75.75 0 01.75-.75h10.5a.75.75 0 010 1.5H4.75A.75.75 0 014 10z" clip-rule="evenodd" />
+                </svg>
+            </span>
+            </button>
+        
+        <div x-show="sectionOpen.description" x-init="$el.classList.remove('hidden')" class="hidden" id="description-section-0" x-cloak>
+            <div class="flex flex-col justify-center items-center mt-2">
+            {% include 'main/product_calculator.html' with product=product %}
+            </div>
+        </div>
+        </div>
+    </section>
+    {% endif %}
 
 
     <!-- Chart -->
@@ -256,7 +287,7 @@
         <p class="text-sm text-gray-500 dark:text-gray-300">Raw materials prices • source: manufacturer declaration • today=100</p>
     
         <div class="flex flex-col justify-center items-center mt-2">
-            <canvas id='productChart'></canvas>
+            <canvas class="dark:dark" id='productChart'></canvas>
         </div>
         </div>
     </section>
@@ -692,14 +723,17 @@
   <!-- Other products -->
    {% if product.manufacturer_name %}
   <section class="my-5 container mx-auto">
+    <div class="flex items-center gap-x-3">
     <h2 class="text-lg font-medium text-gray-800 dark:text-white">
         {% if from_same_manufacturer.count == 0 %}
-        No more products from {{product.manufacturer_name}}
+        No more products from {{product.manufacturer_name}}</h2>
         {% else %}
-        Other from {{product.manufacturer_name}}
-        {% endif %}</h2>
-
-    <p class="text-sm text-gray-500 dark:text-gray-300">{% if from_same_manufacturer.count != 0 %} {{from_same_manufacturer.count}} products {% endif %}</p>
+        Other from {{product.manufacturer_name}}</h2>
+        <span class="px-3 py-1 text-xs text-blue-600 bg-blue-100 rounded-full dark:bg-gray-800 dark:text-blue-400">
+            {% if from_same_manufacturer.count >= 50 %}50+ {% else %}{{from_same_manufacturer.count}}{% endif %}
+             product{{ from_same_manufacturer.count|pluralize:"s" }}</span>
+        {% endif %}
+    </div>
 
     <div class="flex flex-col mt-2">
 
@@ -762,144 +796,189 @@
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@1.0.2"></script>
 
 <script>
-        const ctx = document.getElementById('productChart').getContext('2d');
+    const ctx = document.getElementById('productChart').getContext('2d');
 
-        // Use the passed context to populate the Chart.js data
-        const chartData = JSON.parse('{{ cumulative_line_chart_data|escapejs }}');
-        
-        var myChart = new Chart(ctx, { 
-    type: 'line', 
-    data: chartData,
-    options: { 
-        scales: { 
-            y: { 
-                beginAtZero: true, 
-                stacked: true, 
-                title: { 
-                    display: false, 
-                    text: 'Cost',
-                    font: {
-                        size: 14,
-                        family: 'Arial',
-                        style: 'bold'
-                    }
-                },
-                grid: {
-                    color: 'rgba(200, 200, 200, 0.3)',
-                    borderDash: function(context) {
-                        if (context.tick.value === 100) {
-                            return [];
-                        }
-                        return [5, 5];
+    // Check if dark mode is enabled
+    const isDarkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+    // Define light and dark mode colors
+    const colors = {
+        light: {
+            gridColor: 'rgba(200, 200, 200, 0.3)', // Grid lines color
+            axisColor: '#000', // Axis labels color (x and y)
+            tickColor: '#000', // Axis ticks color (x and y)
+            legendTextColor: '#000', // Legend text color
+            todayLineBorderColor: 'rgba(29, 78, 216, 0.3)', // Today line color
+            todayLineLabelBgColor: 'rgba(29, 78, 216, 0.95)', // Today label background
+            todayLabelColor: '#fff' // "Now" label text color (light mode)
+        },
+        dark: {
+            gridColor: 'rgba(75, 85, 99, 0.3)', // Tailwind's slate-500 for grid lines
+            axisColor: '#fff', // White for dark mode axis labels (x and y)
+            tickColor: '#fff', // White for dark mode axis ticks (x and y)
+            legendTextColor: '#fff', // Legend text in white for dark mode
+            todayLineBorderColor: 'rgba(147, 197, 253, 0.3)', // Tailwind's sky-300
+            todayLineLabelBgColor: 'rgba(147, 197, 253, 0.95)', // Label background in sky-300
+            todayLabelColor: '#000' // "Now" label text color (dark mode)
+        }
+    };
+
+    // Use the correct color set based on the current theme
+    const themeColors = isDarkMode ? colors.dark : colors.light;
+
+    // Use the passed context to populate the Chart.js data
+    const chartData = JSON.parse('{{ cumulative_line_chart_data|escapejs }}');
+    
+    var myChart = new Chart(ctx, { 
+        type: 'line', 
+        data: chartData,
+        options: { 
+            scales: { 
+                y: { 
+                    beginAtZero: true, 
+                    stacked: true, 
+                    title: { 
+                        display: true, 
+                        text: 'Cost',
+                        font: {
+                            size: 14,
+                            family: 'Arial',
+                    
+                        },
+                        color: themeColors.axisColor // Y-axis label color
                     },
-                    borderWidth: function(context) {
-                        if (context.tick.value === 100) {
-                            return 3;
+                    ticks: {
+                        color: themeColors.tickColor // Y-axis ticks color
+                    },
+                    grid: {
+                        color: themeColors.gridColor,
+                        borderDash: function(context) {
+                            if (context.tick.value === 100) {
+                                return [];
+                            }
+                            return [5, 5];
+                        },
+                        borderWidth: function(context) {
+                            if (context.tick.value === 100) {
+                                return 3;
+                            }
+                            return 1;
                         }
-                        return 1;
+                    }
+                }, 
+                x: {
+                    type: 'time',
+                    time: {
+                        unit: 'quarter', 
+                        tooltipFormat: 'MMM YYYY', 
+                        displayFormats: {
+                            quarter: '[Q]Q YY',
+                        }
+                    },
+                    ticks: {
+                        autoSkip: true,
+                        maxTicksLimit: 10,
+                        color: themeColors.tickColor // X-axis ticks color
+                    },
+                    stacked: true,
+                    title: {
+                        display: true,
+                        text: 'Quarter',
+                        font: {
+                            size: 14,
+                            family: 'Arial',
+                        },
+                        color: themeColors.axisColor // X-axis label color
+                    },
+                    grid: {
+                        display: false
                     }
                 }
             }, 
-            x: {
-                type: 'time',
-                time: {
-                        unit: 'quarter', // Set the unit to quarters
-                        tooltipFormat: 'MMM YYYY', // Tooltip shows 'MMM YYYY'
-                        displayFormats: {
-                            quarter: '[Q]Q YY', // Format labels as 'Q1 22', 'Q2 22', etc.
-                        }
-                    },
-                ticks: {
-                        autoSkip: true,
-                        maxTicksLimit: 10
-                    },
-                stacked: true,
-                grid: {
-                    display: false
-                }
-            } 
-        }, 
-        layout: { 
-            padding: { 
-            } 
-        }, 
-        plugins: { 
-            legend: { 
-                position: 'right',
-                labels: {
-                    font: {
-                        size: 12,
-                        family: 'Arial',
-                        style: 'normal'
+            layout: { 
+                padding: {} 
+            }, 
+            plugins: { 
+                legend: { 
+                    position: 'right',
+                    labels: {
+                        font: {
+                            size: 12,
+                            family: 'Arial',
+                            style: 'normal'
+                        },
+                        color: themeColors.legendTextColor // Legend text color
                     }
-                }
-            },
-            annotation: {
-                annotations: {
-                    /*line1: {
-                        type: 'line',
-                        yMin: 100,
-                        yMax: 100,
-                        borderColor: 'rgba(200, 200, 200, 0.8)',
-                        borderWidth: 2,
-                        borderDash: [6, 6], // Dashed line
-                        label: {
-                            content: '',
-                            enabled: true,
-                            position: 'end',
-                            backgroundColor: 'rgba(200, 200, 200, 0.3)',
-                            font: {
-                                size: 12
+                },
+                annotation: {
+                    annotations: {
+                        todayLine: {
+                            type: 'line',
+                            scaleID: 'x',
+                            value: new Date().toISOString().split('T')[0],
+                            borderColor: themeColors.todayLineBorderColor,
+                            borderWidth: 2,
+                            label: {
+                                content: 'Now',
+                                enabled: true,
+                                position: 'start',
+                                backgroundColor: themeColors.todayLineLabelBgColor,
+                                color: themeColors.todayLabelColor, // Text color for the label
+                                font: {
+                                    size: 14,
+                                    family: 'Arial',
+                                },
+                                xAdjust: -0,
+                                yAdjust: -0
                             }
                         }
-                    },*/
-                    todayLine: {
-                        type: 'line',
-                        scaleID: 'x', // This line refers to the x-axis
-                        value: new Date().toISOString().split('T')[0], // Set the value to today's date
-                        borderColor: 'rgba(29, 78, 216, 0.3)',
-                        borderWidth: 2,
-                        label: {
-                            content: 'Now', // The label text
-                            enabled: true,
-                            position: 'start',
-                            backgroundColor: 'rgba(29, 78, 216, 0.95)',
-                            color: '#fff',
-                            font: {
-                                size: 14,
-                                family: 'Arial',
-                                style: 'bold'
-                            },
-                            xAdjust: -0, // Adjust the label position horizontally
-                            yAdjust: -0 // Adjust the label position vertically
+                    }
+                },
+                tooltip: {
+                    enabled: true,
+                    mode: 'index',
+                    intersect: false,
+                    callbacks: {
+                        label: function(context) {
+                            return context.dataset.label + ': ' + context.raw;
+                        },
+                        afterBody: function(tooltipItems) {
+                            let total = 0;
+                            tooltipItems.forEach(function(tooltipItem) {
+                                total += tooltipItem.raw;
+                            });
+                            return 'Total: ' + total.toFixed(1);
                         }
                     }
                 }
             },
-            tooltip: {
-                enabled: true,
-                mode: 'index',
-                intersect: false,
-                callbacks: {
-                    label: function(context) {
-                        return context.dataset.label + ': ' + context.raw;
-                    },
-                    afterBody: function(tooltipItems) {
-                        let total = 0;
-                        tooltipItems.forEach(function(tooltipItem) {
-                            total += tooltipItem.raw;
-                        });
-                        return 'Total: ' + total.toFixed(1);
-                    }
-                }
+            animation: {
+                duration: 1000,
+                easing: 'easeOutQuart'
             }
-        },
-        animation: {
-            duration: 1000,
-            easing: 'easeOutQuart'
-        }
-    } 
-});
+        } 
+    });
+    
+    // Optional: Listen for theme changes and update chart colors dynamically (if using a theme toggle button)
+    const observer = new MutationObserver(() => {
+        const isDarkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+        const themeColors = isDarkMode ? colors.dark : colors.light;
+
+        // Update grid, ticks, labels, and legend colors dynamically
+        myChart.options.scales.y.grid.color = themeColors.gridColor;
+        myChart.options.scales.y.ticks.color = themeColors.tickColor;
+        myChart.options.scales.y.title.color = themeColors.axisColor;
+        myChart.options.scales.x.ticks.color = themeColors.tickColor;
+        myChart.options.scales.x.title.color = themeColors.axisColor;
+        myChart.options.plugins.legend.labels.color = themeColors.legendTextColor;
+        myChart.options.plugins.annotation.annotations.todayLine.borderColor = themeColors.todayLineBorderColor;
+        myChart.options.plugins.annotation.annotations.todayLine.label.backgroundColor = themeColors.todayLineLabelBgColor;
+        myChart.options.plugins.annotation.annotations.todayLine.label.color = themeColors.todayLabelColor;
+
+        myChart.update();
+    });
+    
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
 </script> 
 
 <!-- Map script chart -->
@@ -918,12 +997,34 @@
             {% endfor %}
         ]);
 
+        // Check if dark mode is enabled
+        const isDarkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+        // Define color schemes for light and dark modes
+        const colors = {
+        light: {
+            colorAxisColors: ['#F1F6F5', '#6EACDA', '#03346E', '#021526'], // Gradient for color axis
+            backgroundColor: '#ffffff', // Light background
+            datalessRegionColor: '#e9e9e9', // Default color for regions with no data
+            defaultColor: '#e9e9e9' // Color for default map regions
+        },
+        dark: {
+            colorAxisColors: ['#d1d5db', '#3b82f6',], // Darker gradient for dark mode
+            backgroundColor: '#1f2937', // Dark background
+            datalessRegionColor: '#383838', // Darker gray for no data regions
+            defaultColor: '#383838' // Darker default color
+        }
+        };
+
+        // Use the correct color scheme based on the theme
+        const themeColors = isDarkMode ? colors.dark : colors.light;
+
         var options = {
-            colorAxis: {colors: ['#F1F6F5', '#6EACDA', '#03346E', '#021526']},
-            backgroundColor: '#ffffff',
-            datalessRegionColor: '#e9e9e9',
-            defaultColor: '#e9e9e9',
-          };
+        colorAxis: { colors: themeColors.colorAxisColors },
+        backgroundColor: themeColors.backgroundColor,
+        datalessRegionColor: themeColors.datalessRegionColor,
+        defaultColor: themeColors.defaultColor,
+        };
 
         var chart = new google.visualization.GeoChart(document.getElementById('commoditymap'));
 

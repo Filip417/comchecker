@@ -1,7 +1,7 @@
 {% load custom_tags %}
 <div class="product-container group relative flex-none snap-center snap-always w-40">
     <div class="aspect-square overflow-hidden rounded-md bg-gray-200 relative">
-        <img src="{% get_product_image_url product.epd_id product.first_prod_image_format %}" alt="{{ product.name }}" class="w-40 h-40 object-fill object-center">
+        <img src="{% get_product_image_url product %}" alt="{{ product.name }}" class="w-40 h-40 object-fill object-center">
         
         <!-- Hidden content that appears on hover -->
         <form method="POST" action="{% url 'change_product_to_project' product.id %}">

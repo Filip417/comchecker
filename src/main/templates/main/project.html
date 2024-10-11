@@ -14,18 +14,18 @@
       <!-- Can change object-cover to cover-fill tbd -->
        {% load custom_tags %}
       {% if project.products.all|length > 0 %}
-          <img src="{% get_product_image_url project.products.all.0.epd_id project.products.all.0.first_prod_image_format %}" alt="{{ project.products.all.0.name }} image"
+          <img src="{% get_product_image_url project.products.all.0 %}" alt="{{ project.products.all.0.name }} image"
           class="h-full w-[50%] object-cover object-center">
       {% endif %}
 
       <div class="flex flex-col">
           {% if project.products.all|length > 1 %}
-              <img src="{% get_product_image_url project.products.all.1.epd_id project.products.all.1.first_prod_image_format %}" alt="{{ project.products.all.1.name }} image"
+              <img src="{% get_product_image_url project.products.all.1 %}" alt="{{ project.products.all.1.name }} image"
               class="h-[50%] w-full object-cover object-center">
           {% endif %}
           
           {% if project.products.all|length > 2 %}
-              <img src="{% get_product_image_url project.products.all.2.epd_id project.products.all.2.first_prod_image_format %}" alt="{{ project.products.all.2.name }} image"
+              <img src="{% get_product_image_url project.products.all.2 %}" alt="{{ project.products.all.2.name }} image"
               class="h-[50%] w-full object-cover object-center">
           {% endif %}
       </div>
@@ -260,6 +260,39 @@
 
                   </div>
               </div>
+  </section>
+  {% endif %}
+
+  <!-- Project calculator -->
+  {% if perms.main.standard %}
+  <section class="container mx-auto">
+      <style>
+          [x-cloak] { display: none; }
+      </style>
+      <div class="my-5 flex flex-col" x-data="{ sectionOpen: { description: false } }" >
+      <!-- Expand/collapse section button -->
+      <button @click="sectionOpen.description = !sectionOpen.description" type="button" class="flex w-full items-center justify-between bg-white dark:bg-gray-800 text-gray-400 hover:underline hover:text-gray-500" aria-controls="description-section-0" :aria-expanded="sectionOpen.description.toString()">
+          <span class="text-lg font-medium text-gray-800 dark:text-white">Project calculator</span>
+          <span class="ml-6 flex items-center">
+              <!-- Expand icon, show/hide based on section open state. -->
+              <svg x-show="!sectionOpen.description" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" x-cloak>
+              <path d="M10.75 4.75a.75.75 0 00-1.5 0v4.5h-4.5a.75.75 0 000 1.5h4.5v4.5a.75.75 0 001.5 0v-4.5h4.5a.75.75 0 000-1.5h-4.5v-4.5z" />
+              </svg>
+              <!-- Collapse icon, show/hide based on section open state. -->
+              <svg x-show="sectionOpen.description"
+              x-init="$el.classList.remove('hidden')"
+              class="hidden h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" x-cloak>
+              <path fill-rule="evenodd" d="M4 10a.75.75 0 01.75-.75h10.5a.75.75 0 010 1.5H4.75A.75.75 0 014 10z" clip-rule="evenodd" />
+              </svg>
+          </span>
+          </button>
+      
+      <div x-show="sectionOpen.description" x-init="$el.classList.remove('hidden')" class="hidden" id="description-section-0" x-cloak>
+          <div class="flex flex-col justify-center items-center mt-2">
+          {% include 'main/project_calculator.html' with project=project %}
+          </div>
+      </div>
+      </div>
   </section>
   {% endif %}
 
@@ -510,9 +543,14 @@
     <!-- Project products -->
     {% if project.products.all.count != 0 %}
     <section class="my-5 container mx-auto">
-        <h2 class="text-lg font-medium text-gray-800 dark:text-white">{{project.name}} product{{ project.products.all.count|pluralize:"s" }}</h2>
+        <div class="flex items-center gap-x-3">
+        <h2 class="text-lg font-medium text-gray-800 dark:text-white">
+            {{project.name}}
+        </h2>
+        <span class="px-3 py-1 text-xs text-blue-600 bg-blue-100 rounded-full dark:bg-gray-800 dark:text-blue-400">
+            {{project.products.count}} product{{ project.products.count|pluralize:"s" }}</span>
+        </div>
     
-        <p class="text-sm text-gray-500 dark:text-gray-300">{{ project.products.all.count }} product{{ project.products.all.count|pluralize:"s" }}</p>
     
         <div class="flex flex-col mt-2">
     

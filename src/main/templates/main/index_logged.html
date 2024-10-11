@@ -8,11 +8,162 @@
 
 <div class="bg-white mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 dark:bg-slate-800">
 
-  <!-- Section 1 -->
+  <!-- Section Most popular products -->
+  <section class="py-5 container mx-auto">
+    <h2 class="text-lg font-medium text-gray-800 dark:text-white">Most popular products</h2>
+
+    <p class="text-sm text-gray-500 dark:text-gray-300">This week</p>
+
+    <div class="flex flex-col mt-2">
+
+    <section class="relative">
+        <!-- Arrow left -->
+        <div x-init="$el.classList.remove('hidden')" class="hidden absolute left-0 inset-y-0 cursor-pointer z-10 arrow-left">
+            <div class="px-2 sm:px-6 h-full items-center flex bg-gradient-to-l from-white/60 to-white/80 dark:from-gray-800/60 dark:to-gray-800/80 relative">
+                <!-- Background container with opacity -->
+            </div>
+            <div class="w-[32px] flex justify-center absolute top-1/2 transform -translate-y-1/2 left-2">
+                <!-- SVG icon without opacity -->
+                <svg class="arrow-icon rotate-180 duration-300 ease-in-out hidden sm:block" xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 35 35" fill="none">
+                    <path d="M17.0749 17.4296C17.0748 9.65152 0.457965 4.34819 0.457917 0.812575C0.457869 -2.72304 34.8993 9.2351 34.8993 17.7204C34.8994 26.2056 0.811422 37.2285 0.811418 33.6931C0.811414 30.1576 17.075 25.2076 17.0749 17.4296Z" fill="#2563EB"/>
+                </svg>
+            </div>
+        </div>
+
+        <!-- Arrow right -->
+        <div x-init="$el.classList.remove('hidden')" class="hidden absolute inset-y-0 right-0 cursor-pointer z-10 arrow-right">
+            <div class="px-2 sm:px-6 h-full items-center flex bg-gradient-to-r from-white/60 to-white/80 dark:from-gray-800/60 dark:to-gray-800/80 relative">
+                <!-- Background container with opacity -->
+            </div>
+            <div class="w-[32px] flex justify-center absolute top-1/2 transform -translate-y-1/2 right-2">
+                <!-- SVG icon without opacity -->
+                <svg class="arrow-icon duration-300 ease-in-out hidden sm:block" xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 35 35" fill="none">
+                    <path d="M17.0749 17.4296C17.0748 9.65152 0.457965 4.34819 0.457917 0.812575C0.457869 -2.72304 34.8993 9.2351 34.8993 17.7204C34.8994 26.2056 0.811422 37.2285 0.811418 33.6931C0.811414 30.1576 17.075 25.2076 17.0749 17.4296Z" fill="#2563EB"/>
+                </svg>
+            </div>
+        </div>
+
+        
+        <div class="flex space-x-2 snap-x snap-mandatory flex-nowrap overflow-x-auto overflow-visible no-scrollbar scroll-container">
+
+          {% for product in popular_products %}
+            {% include 'main/product_card.html' with product=product %}
+          {% endfor %}
+
+
+    </section>
+    </div>
+  </section>
+
+  <!-- Section Most popular commodities -->
+  <section class="pb-5 container mx-auto">
+    <h2 class="text-lg font-medium text-gray-800 dark:text-white">Most popular commodities</h2>
+
+    <p class="text-sm text-gray-500 dark:text-gray-300">This month</p>
+
+    <div class="flex flex-col mt-2">
+
+    <section class="relative">
+        <!-- Arrow left -->
+        <div x-init="$el.classList.remove('hidden')" class="hidden absolute left-0 inset-y-0 cursor-pointer z-10 arrow-left">
+            <div class="px-2 sm:px-6 h-full items-center flex bg-gradient-to-l from-white/60 to-white/80 dark:from-gray-800/60 dark:to-gray-800/80 relative">
+                <!-- Background container with opacity -->
+            </div>
+            <div class="w-[32px] flex justify-center absolute top-1/2 transform -translate-y-1/2 left-2">
+                <!-- SVG icon without opacity -->
+                <svg class="arrow-icon rotate-180 duration-300 ease-in-out hidden sm:block" xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 35 35" fill="none">
+                    <path d="M17.0749 17.4296C17.0748 9.65152 0.457965 4.34819 0.457917 0.812575C0.457869 -2.72304 34.8993 9.2351 34.8993 17.7204C34.8994 26.2056 0.811422 37.2285 0.811418 33.6931C0.811414 30.1576 17.075 25.2076 17.0749 17.4296Z" fill="#2563EB"/>
+                </svg>
+            </div>
+        </div>
+
+        <!-- Arrow right -->
+        <div x-init="$el.classList.remove('hidden')" class="hidden absolute inset-y-0 right-0 cursor-pointer z-10 arrow-right">
+            <div class="px-2 sm:px-6 h-full items-center flex bg-gradient-to-r from-white/60 to-white/80 dark:from-gray-800/60 dark:to-gray-800/80 relative">
+                <!-- Background container with opacity -->
+            </div>
+            <div class="w-[32px] flex justify-center absolute top-1/2 transform -translate-y-1/2 right-2">
+                <!-- SVG icon without opacity -->
+                <svg class="arrow-icon duration-300 ease-in-out hidden sm:block" xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 35 35" fill="none">
+                    <path d="M17.0749 17.4296C17.0748 9.65152 0.457965 4.34819 0.457917 0.812575C0.457869 -2.72304 34.8993 9.2351 34.8993 17.7204C34.8994 26.2056 0.811422 37.2285 0.811418 33.6931C0.811414 30.1576 17.075 25.2076 17.0749 17.4296Z" fill="#2563EB"/>
+                </svg>
+            </div>
+        </div>
+
+        
+        <div class="flex space-x-2 snap-x snap-mandatory flex-nowrap overflow-x-auto overflow-visible no-scrollbar scroll-container">
+
+          {% for commodity in popular_commodities %}
+            {% include 'main/commodity_card.html' with commodity=commodity %}
+          {% endfor %}
+
+
+    </section>
+    </div>
+  </section>
+
+    <!-- Section Your products -->
+    <section class="my-5 container mx-auto">
+    <div class="flex items-center gap-x-3">
+        <h2 class="text-lg font-medium text-gray-800 dark:text-white">
+            {% if your_products.count == 0 %} <a href="{% url 'create' %}" class="text-base px-2.5 py-2 text-white bg-blue-600 transition-colors duration-300 transform rounded-lg dark:text-gray-200 hover:bg-blue-700 dark:hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+            Create</a>
+            your custom product
+            
+            {% else %} Your products {% endif %}</h2>
+        
+            {% if your_products.count != 0 %}
+            <span class="px-3 py-1 text-xs text-blue-600 bg-blue-100 rounded-full dark:bg-gray-800 dark:text-blue-400">
+            {{your_products.count}} product{{ your_products.count|pluralize:"s" }} </span>
+            {% endif %}
+    </div>
+
+    <div class="flex flex-col mt-2">
+
+    <section class="relative">
+        <!-- Arrow left -->
+        <div x-init="$el.classList.remove('hidden')" class="hidden absolute left-0 inset-y-0 cursor-pointer z-10 arrow-left">
+            <div class="px-2 sm:px-6 h-full items-center flex bg-gradient-to-l from-white/60 to-white/80 dark:from-gray-800/60 dark:to-gray-800/80 relative">
+                <!-- Background container with opacity -->
+            </div>
+            <div class="w-[32px] flex justify-center absolute top-1/2 transform -translate-y-1/2 left-2">
+                <!-- SVG icon without opacity -->
+                <svg class="arrow-icon rotate-180 duration-300 ease-in-out hidden sm:block" xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 35 35" fill="none">
+                    <path d="M17.0749 17.4296C17.0748 9.65152 0.457965 4.34819 0.457917 0.812575C0.457869 -2.72304 34.8993 9.2351 34.8993 17.7204C34.8994 26.2056 0.811422 37.2285 0.811418 33.6931C0.811414 30.1576 17.075 25.2076 17.0749 17.4296Z" fill="#2563EB"/>
+                </svg>
+            </div>
+        </div>
+
+        <!-- Arrow right -->
+        <div x-init="$el.classList.remove('hidden')" class="hidden absolute inset-y-0 right-0 cursor-pointer z-10 arrow-right">
+            <div class="px-2 sm:px-6 h-full items-center flex bg-gradient-to-r from-white/60 to-white/80 dark:from-gray-800/60 dark:to-gray-800/80 relative">
+                <!-- Background container with opacity -->
+            </div>
+            <div class="w-[32px] flex justify-center absolute top-1/2 transform -translate-y-1/2 right-2">
+                <!-- SVG icon without opacity -->
+                <svg class="arrow-icon duration-300 ease-in-out hidden sm:block" xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 35 35" fill="none">
+                    <path d="M17.0749 17.4296C17.0748 9.65152 0.457965 4.34819 0.457917 0.812575C0.457869 -2.72304 34.8993 9.2351 34.8993 17.7204C34.8994 26.2056 0.811422 37.2285 0.811418 33.6931C0.811414 30.1576 17.075 25.2076 17.0749 17.4296Z" fill="#2563EB"/>
+                </svg>
+            </div>
+        </div>
+
+        
+        <div class="flex space-x-2 snap-x snap-mandatory flex-nowrap overflow-x-auto overflow-visible no-scrollbar scroll-container">
+
+            {% for product in your_products %}
+            {% include 'main/product_card.html' with product=product %}
+            {% endfor %}
+
+
+    </section>
+    </div>
+    </section>
+
+  <!-- Section Top increase products -->
   <section class="py-5 container mx-auto">
     <h2 class="text-lg font-medium text-gray-800 dark:text-white">Top increase products</h2>
 
-    <p class="text-sm text-gray-500 dark:text-gray-300">Since last year • with 3+ commodities</p>
+    <p class="text-sm text-gray-500 dark:text-gray-300">Since last year</p>
 
     <div class="flex flex-col mt-2">
 
@@ -55,11 +206,11 @@
     </div>
   </section>
 
-  <!-- Section 2 -->
+  <!-- Section Top decrease products -->
   <section class="my-5 container mx-auto">
     <h2 class="text-lg font-medium text-gray-800 dark:text-white">Top decrease products</h2>
 
-    <p class="text-sm text-gray-500 dark:text-gray-300">Since last year • with 3+ commodities</p>
+    <p class="text-sm text-gray-500 dark:text-gray-300">Since last year</p>
 
     <div class="flex flex-col mt-2">
 
@@ -100,65 +251,8 @@
     </section>
     </div>
   </section>
-  
-  <!-- Section 3 -->
-  <section class="my-5 container mx-auto">
-    <div class="flex items-center gap-x-3">
-        <h2 class="text-lg font-medium text-gray-800 dark:text-white">
-          {% if your_products.count == 0 %} <a href="{% url 'create' %}" class="text-base px-2.5 py-2 text-white bg-blue-600 transition-colors duration-300 transform rounded-lg dark:text-gray-200 hover:bg-blue-700 dark:hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
-            Create</a>
-            your custom product
-          
-          {% else %} Your products {% endif %}</h2>
-      
-          {% if your_products.count != 0 %}
-          <span class="px-3 py-1 text-xs text-blue-600 bg-blue-100 rounded-full dark:bg-gray-800 dark:text-blue-400">
-          {{your_products.count}} product{{ your_products.count|pluralize:"s" }} </span>
-          {% endif %}
-    </div>
 
-    <div class="flex flex-col mt-2">
-
-    <section class="relative">
-        <!-- Arrow left -->
-        <div x-init="$el.classList.remove('hidden')" class="hidden absolute left-0 inset-y-0 cursor-pointer z-10 arrow-left">
-            <div class="px-2 sm:px-6 h-full items-center flex bg-gradient-to-l from-white/60 to-white/80 dark:from-gray-800/60 dark:to-gray-800/80 relative">
-                <!-- Background container with opacity -->
-            </div>
-            <div class="w-[32px] flex justify-center absolute top-1/2 transform -translate-y-1/2 left-2">
-                <!-- SVG icon without opacity -->
-                <svg class="arrow-icon rotate-180 duration-300 ease-in-out hidden sm:block" xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 35 35" fill="none">
-                    <path d="M17.0749 17.4296C17.0748 9.65152 0.457965 4.34819 0.457917 0.812575C0.457869 -2.72304 34.8993 9.2351 34.8993 17.7204C34.8994 26.2056 0.811422 37.2285 0.811418 33.6931C0.811414 30.1576 17.075 25.2076 17.0749 17.4296Z" fill="#2563EB"/>
-                </svg>
-            </div>
-        </div>
-
-        <!-- Arrow right -->
-        <div x-init="$el.classList.remove('hidden')" class="hidden absolute inset-y-0 right-0 cursor-pointer z-10 arrow-right">
-            <div class="px-2 sm:px-6 h-full items-center flex bg-gradient-to-r from-white/60 to-white/80 dark:from-gray-800/60 dark:to-gray-800/80 relative">
-                <!-- Background container with opacity -->
-            </div>
-            <div class="w-[32px] flex justify-center absolute top-1/2 transform -translate-y-1/2 right-2">
-                <!-- SVG icon without opacity -->
-                <svg class="arrow-icon duration-300 ease-in-out hidden sm:block" xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 35 35" fill="none">
-                    <path d="M17.0749 17.4296C17.0748 9.65152 0.457965 4.34819 0.457917 0.812575C0.457869 -2.72304 34.8993 9.2351 34.8993 17.7204C34.8994 26.2056 0.811422 37.2285 0.811418 33.6931C0.811414 30.1576 17.075 25.2076 17.0749 17.4296Z" fill="#2563EB"/>
-                </svg>
-            </div>
-        </div>
-
-        
-        <div class="flex space-x-2 snap-x snap-mandatory flex-nowrap overflow-x-auto overflow-visible no-scrollbar scroll-container">
-
-          {% for product in your_products %}
-            {% include 'main/product_card.html' with product=product %}
-          {% endfor %}
-
-
-    </section>
-    </div>
-  </section>
-
-  <!-- Section 4 -->
+  <!-- Section Top increase commodities -->
   <section class="my-5 container mx-auto">
     <h2 class="text-lg font-medium text-gray-800 dark:text-white">Top increase commodities</h2>
 
@@ -205,8 +299,8 @@
     </div>
   </section>
 
-  <!-- Section 5 -->
-  <section class="my-5 container mx-auto">
+  <!-- Section Top decrease commodities -->
+  <section class="py-5 container mx-auto">
     <h2 class="text-lg font-medium text-gray-800 dark:text-white">Top decrease commodities</h2>
 
     <p class="text-sm text-gray-500 dark:text-gray-300">Since last year</p>
@@ -244,100 +338,6 @@
         <div class="flex space-x-2 snap-x snap-mandatory flex-nowrap overflow-x-auto overflow-visible no-scrollbar scroll-container">
 
           {% for commodity in lowest_commodities %}
-            {% include 'main/commodity_card.html' with commodity=commodity %}
-          {% endfor %}
-
-
-    </section>
-    </div>
-  </section>
-
-  <!-- Section 6 -->
-  <section class="my-5 container mx-auto">
-    <h2 class="text-lg font-medium text-gray-800 dark:text-white">Most popular products</h2>
-
-    <p class="text-sm text-gray-500 dark:text-gray-300">This week</p>
-
-    <div class="flex flex-col mt-2">
-
-    <section class="relative">
-        <!-- Arrow left -->
-        <div x-init="$el.classList.remove('hidden')" class="hidden absolute left-0 inset-y-0 cursor-pointer z-10 arrow-left">
-            <div class="px-2 sm:px-6 h-full items-center flex bg-gradient-to-l from-white/60 to-white/80 dark:from-gray-800/60 dark:to-gray-800/80 relative">
-                <!-- Background container with opacity -->
-            </div>
-            <div class="w-[32px] flex justify-center absolute top-1/2 transform -translate-y-1/2 left-2">
-                <!-- SVG icon without opacity -->
-                <svg class="arrow-icon rotate-180 duration-300 ease-in-out hidden sm:block" xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 35 35" fill="none">
-                    <path d="M17.0749 17.4296C17.0748 9.65152 0.457965 4.34819 0.457917 0.812575C0.457869 -2.72304 34.8993 9.2351 34.8993 17.7204C34.8994 26.2056 0.811422 37.2285 0.811418 33.6931C0.811414 30.1576 17.075 25.2076 17.0749 17.4296Z" fill="#2563EB"/>
-                </svg>
-            </div>
-        </div>
-
-        <!-- Arrow right -->
-        <div x-init="$el.classList.remove('hidden')" class="hidden absolute inset-y-0 right-0 cursor-pointer z-10 arrow-right">
-            <div class="px-2 sm:px-6 h-full items-center flex bg-gradient-to-r from-white/60 to-white/80 dark:from-gray-800/60 dark:to-gray-800/80 relative">
-                <!-- Background container with opacity -->
-            </div>
-            <div class="w-[32px] flex justify-center absolute top-1/2 transform -translate-y-1/2 right-2">
-                <!-- SVG icon without opacity -->
-                <svg class="arrow-icon duration-300 ease-in-out hidden sm:block" xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 35 35" fill="none">
-                    <path d="M17.0749 17.4296C17.0748 9.65152 0.457965 4.34819 0.457917 0.812575C0.457869 -2.72304 34.8993 9.2351 34.8993 17.7204C34.8994 26.2056 0.811422 37.2285 0.811418 33.6931C0.811414 30.1576 17.075 25.2076 17.0749 17.4296Z" fill="#2563EB"/>
-                </svg>
-            </div>
-        </div>
-
-        
-        <div class="flex space-x-2 snap-x snap-mandatory flex-nowrap overflow-x-auto overflow-visible no-scrollbar scroll-container">
-
-          {% for product in popular_products %}
-            {% include 'main/product_card.html' with product=product %}
-          {% endfor %}
-
-
-    </section>
-    </div>
-  </section>
-
-  <!-- Section 7 -->
-  <section class="pb-5 container mx-auto">
-    <h2 class="text-lg font-medium text-gray-800 dark:text-white">Most popular commodities</h2>
-
-    <p class="text-sm text-gray-500 dark:text-gray-300">This month</p>
-
-    <div class="flex flex-col mt-2">
-
-    <section class="relative">
-        <!-- Arrow left -->
-        <div x-init="$el.classList.remove('hidden')" class="hidden absolute left-0 inset-y-0 cursor-pointer z-10 arrow-left">
-            <div class="px-2 sm:px-6 h-full items-center flex bg-gradient-to-l from-white/60 to-white/80 dark:from-gray-800/60 dark:to-gray-800/80 relative">
-                <!-- Background container with opacity -->
-            </div>
-            <div class="w-[32px] flex justify-center absolute top-1/2 transform -translate-y-1/2 left-2">
-                <!-- SVG icon without opacity -->
-                <svg class="arrow-icon rotate-180 duration-300 ease-in-out hidden sm:block" xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 35 35" fill="none">
-                    <path d="M17.0749 17.4296C17.0748 9.65152 0.457965 4.34819 0.457917 0.812575C0.457869 -2.72304 34.8993 9.2351 34.8993 17.7204C34.8994 26.2056 0.811422 37.2285 0.811418 33.6931C0.811414 30.1576 17.075 25.2076 17.0749 17.4296Z" fill="#2563EB"/>
-                </svg>
-            </div>
-        </div>
-
-        <!-- Arrow right -->
-        <div x-init="$el.classList.remove('hidden')" class="hidden absolute inset-y-0 right-0 cursor-pointer z-10 arrow-right">
-            <div class="px-2 sm:px-6 h-full items-center flex bg-gradient-to-r from-white/60 to-white/80 dark:from-gray-800/60 dark:to-gray-800/80 relative">
-                <!-- Background container with opacity -->
-            </div>
-            <div class="w-[32px] flex justify-center absolute top-1/2 transform -translate-y-1/2 right-2">
-                <!-- SVG icon without opacity -->
-                <svg class="arrow-icon duration-300 ease-in-out hidden sm:block" xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 35 35" fill="none">
-                    <path d="M17.0749 17.4296C17.0748 9.65152 0.457965 4.34819 0.457917 0.812575C0.457869 -2.72304 34.8993 9.2351 34.8993 17.7204C34.8994 26.2056 0.811422 37.2285 0.811418 33.6931C0.811414 30.1576 17.075 25.2076 17.0749 17.4296Z" fill="#2563EB"/>
-                </svg>
-            </div>
-        </div>
-
-        
-        <div class="flex space-x-2 snap-x snap-mandatory flex-nowrap overflow-x-auto overflow-visible no-scrollbar scroll-container">
-
-          {% for commodity in popular_commodities %}
             {% include 'main/commodity_card.html' with commodity=commodity %}
           {% endfor %}
 

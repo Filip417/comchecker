@@ -16,7 +16,7 @@ from collections import OrderedDict
 import pandas as pd
 from itertools import chain
 from django.db.models import Count
-
+from .update_prices import get_closest_product_price, get_closest_commodity_price, get_closest_project_price
 
 
 
@@ -71,6 +71,8 @@ def get_cumulative_line_chart_and_table_data_product(product_id):
 
     # Process each material proportion
     for material_proportion in materials_proportions:
+        if material_proportion.proportion == 0 or material_proportion.proportion == None:
+           continue
         commodity = commodity_lookup[material_proportion.commodity_id]
         rate_for_price_kg = commodity.rate_for_price_kg
         currency_rate = commodity.currency.rate
@@ -82,6 +84,8 @@ def get_cumulative_line_chart_and_table_data_product(product_id):
         prices = CommodityPrice.objects.filter(
             commodity_id=material_proportion.commodity_id,
             date__range=[start_date, end_date]
+        ).filter(
+            Q(price__isnull=False) | Q(projected_price__isnull=False)
         ).order_by('date')
 
         for price in prices:
@@ -161,7 +165,7 @@ def get_cumulative_line_chart_and_table_data_commodity(commodity_id):
     end_date = today + timedelta(days=5*365)  # Approximation for 1 year ahead
 
     ordered_colors = [
-        'rgba(13, 71, 161, 0.01)',  # Forecast not shown
+        'rgba(13, 71, 161, 0.01)',  # Forecast
         'rgba(187, 222, 251, 0.02)',  # 90%
         'rgba(187, 222, 251, 0.02)',  # 90%
         'rgba(100, 181, 246, 0.03)',  # 75%
@@ -298,8 +302,8 @@ def get_cumulative_line_chart_and_table_data_commodity(commodity_id):
                 'data': [data.get(date, None) for date in all_dates_str],  # Use None for missing data
                 'backgroundColor': ordered_colors[round(color_index) % len(ordered_colors)],
                 'borderColor': border_colors[round(color_index) % len(border_colors)],
-                'borderWidth': 2 if label == 'Price' else 1,
-                'borderDash': [5, 5],
+                'borderWidth': 3 if label == 'Price' else 1,
+                'borderDash': [] if label == 'Price' else [5, 5],
                 'fill': fill_options.get(label, False),
                 'pointRadius': 0,
             })
@@ -475,63 +479,6 @@ def download_table_csv_product(product_name, table_data):
     return response
 
 
-def get_closest_commodity_price(commodity_id, target_date):
-    # First, check if there's an exact match for the given date
-    exact_price = CommodityPrice.objects.filter(commodity_id=commodity_id, date=target_date).first()
-
-    if exact_price:
-        # If price exists, use it; if not, use projected_price
-        if exact_price.price:
-            return exact_price.price
-        elif exact_price.projected_price:
-            return exact_price.projected_price
-
-    # Define a range for the search
-    date_range_start = target_date - timedelta(days=365)
-    date_range_end = target_date + timedelta(days=365)
-
-    # Retrieve all prices within the date range
-    possible_prices = CommodityPrice.objects.filter(
-        commodity_id=commodity_id,
-        date__range=(date_range_start, date_range_end),
-    ).order_by('date')
-
-    if not possible_prices.exists():
-        return None  # No prices found in the date range
-
-    # Find the closest date in the possible prices
-    closest_price = min(possible_prices, key=lambda x: abs(x.date - target_date))
-    closest_past = possible_prices.filter(date__lte=target_date).order_by('-date').first()
-    closest_future = possible_prices.filter(date__gte=target_date).order_by('date').first()
-
-    closest_past_price = None
-    if closest_past:
-        days_to_closest_past = (target_date - closest_past.date).days
-        if closest_past.price:
-            closest_past_price = closest_past.price
-        elif closest_past.projected_price:
-            closest_past_price = closest_past.projected_price
-    
-    closest_future_price = None
-    if closest_future:
-        days_to_closest_future = (closest_future.date - target_date).days
-        if closest_future.price:
-            closest_future_price = closest_future.price
-        elif closest_future.projected_price:
-            closest_future_price = closest_future.projected_price
-
-    total_days = days_to_closest_past + days_to_closest_future
-    if closest_past_price and closest_future_price:
-        new_commodity_price = closest_past_price * days_to_closest_past / total_days + closest_future_price * days_to_closest_future / total_days
-    
-    if not closest_past_price:
-        new_commodity_price = closest_future_price
-    
-    if not closest_future_price:
-        new_commodity_price = closest_past_price
-
-    return new_commodity_price
-
 def get_map_data_product(product_id):
     today = datetime.now().date()
 
@@ -643,7 +590,7 @@ def get_futures_chart_and_table_data_commodity(commodity_id):
             'label': 'Futures',
             'data': [graph_data.get(date_str, None) for date_str in all_dates_str],  # Use None for missing data
             'backgroundColor':border_color,
-            'pointRadius': 2,
+            'pointRadius': 3,
         })
 
     return chart_data, processed_table_data
@@ -1080,3 +1027,99 @@ def get_product_project_variables(request):
                 products_in_projects[product.id].append(project.id)
     return owned_projects, shared_projects, your_projects, products_in_projects
 
+def calculate_price2_for_product(calc_data):
+    proportion_1to2 = 0
+    total_weight = 0
+    product_id = calc_data['product_id']
+    price1 = calc_data['price1']
+    date1_str = calc_data['date1']
+    date2_str = calc_data['date2']
+    date1_obj = datetime.strptime(date1_str, "%Y-%m-%d").date()
+    date2_obj = datetime.strptime(date2_str, "%Y-%m-%d").date()
+    product_weight = calc_data['product_weight']
+
+    # get price for product in date 1 and date 2    
+    date_1_prod_price = get_closest_product_price(product_id, date1_obj)
+    date_2_prod_price = get_closest_product_price(product_id, date2_obj) 
+    proportion_1to2 += date_1_prod_price / date_2_prod_price * product_weight
+    total_weight += product_weight    
+
+    # get price for each commodity in date 1 and 2
+    com_results = {}
+    for commodity in calc_data['commodities']:
+        # Special rule for inflation
+        com_weight = commodity['weight']
+        com_price1 = get_closest_commodity_price(commodity['commodity_id'], date1_obj, 365*3)
+        com_price2 = get_closest_commodity_price(commodity['commodity_id'], date2_obj, 365*3)
+        if commodity['name'] == 'Inflation UK' and com_price1 and com_price2:
+            date_1_com_price = (100 + com_price1)
+            date_2_com_price = (100 + com_price2)
+        else:
+            date_1_com_price = com_price1
+            date_2_com_price = com_price2
+        
+        if date_1_com_price != 0 and date_2_com_price != 0 and date_1_com_price and date_2_com_price:
+            proportion_1to2 += date_1_com_price / date_2_com_price * com_weight
+            total_weight += com_weight
+    
+    # proportionally calculate final price 2 to return
+    try:
+        new_price2 = price1 / proportion_1to2 * total_weight
+        success = True
+    except:
+        new_price2 = 0
+        success = False
+
+    return round(new_price2, 2), success
+
+def calculate_price2_for_project(calc_data):
+    proportion_1to2 = 0
+    total_weight = 0
+    project_id = calc_data['project_id']
+    price1 = calc_data['price1']
+    date1_str = calc_data['date1']
+    date2_str = calc_data['date2']
+    date1_obj = datetime.strptime(date1_str, "%Y-%m-%d").date()
+    date2_obj = datetime.strptime(date2_str, "%Y-%m-%d").date()
+    products = calc_data['products']
+
+    for product in products:
+        product_id = product['product_id']
+        product_weight = product['weight']
+        date_1_prod_price = get_closest_product_price(product_id, date1_obj)
+        date_2_prod_price = get_closest_product_price(product_id, date2_obj) 
+        proportion_1to2 += date_1_prod_price / date_2_prod_price * product_weight
+        total_weight += product_weight
+
+    # proportionally calculate final price 2 to return
+    try:
+        new_price2 = price1 / proportion_1to2 * total_weight
+        success = True
+    except:
+        new_price2 = 0
+        success = False
+
+    return round(new_price2, 2), success
+
+def calculate_price2_for_commodity(calc_data):
+    proportion_1to2 = 0
+    commodity_id = calc_data['commodity_id']
+    price1 = calc_data['price1']
+    date1_str = calc_data['date1']
+    date2_str = calc_data['date2']
+    date1_obj = datetime.strptime(date1_str, "%Y-%m-%d").date()
+    date2_obj = datetime.strptime(date2_str, "%Y-%m-%d").date()
+
+    date_1_com_price = get_closest_commodity_price(commodity_id, date1_obj, 365*1)
+    date_2_com_price = get_closest_commodity_price(commodity_id, date2_obj, 365*1)
+    proportion_1to2 = date_1_com_price / date_2_com_price
+
+    # proportionally calculate final price 2 to return
+    try:
+        new_price2 = price1 / proportion_1to2
+        success = True
+    except:
+        new_price2 = 0
+        success = False
+
+    return round(new_price2, 2), success

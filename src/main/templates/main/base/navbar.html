@@ -4,7 +4,8 @@
     <div class="container px-6 py-3 mx-auto lg:flex">
         <div class="flex items-center justify-between">
             <a href="{% url 'index' %}">
-                <img class="w-auto h-6 sm:h-7" src="{% static 'main/images/logo.svg' %}" alt="">
+                <img class="w-auto h-6 block lg:hidden" src="{% static 'main/images/logo.svg' %}" alt="material wise logo icon">
+                <img class="w-auto h-12 hidden lg:block" src="{% static 'main/images/fulllogo2.svg' %}" alt="material wise logo icon">
             </a>
             
             <form action="{% url 'search' %}" method="GET" class="relative mx-3 xl:mx-6">
@@ -13,8 +14,8 @@
                         <path d="M21 21L15 15M17 10C17 13.866 13.866 17 10 17C6.13401 17 3 13.866 3 10C3 6.13401 6.13401 3 10 3C13.866 3 17 6.13401 17 10Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
                     </svg>
                 </span>
-                <input type="text" name="q" class="w-full py-2 pl-12 pr-4 text-gray-700 bg-white border rounded-lg dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 focus:border-blue-400 dark:focus:border-blue-300 focus:outline-none focus:ring focus:ring-opacity-40 focus:ring-blue-300"
-                placeholder={% if user.is_authenticated %}"Search"{% else %}"Find anything"{% endif %} value="{{ request.GET.q }}">
+                <input type="text" name="q" class="w-full py-2 pl-10 pr-2 text-gray-700 bg-white border rounded-lg dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 focus:border-blue-400 dark:focus:border-blue-300 focus:outline-none focus:ring focus:ring-opacity-40 focus:ring-blue-300"
+                placeholder="Search product" value="{{ request.GET.q }}">
             </form>
             
 
@@ -123,7 +124,7 @@
             <div class="flex items-center mt-4 lg:mt-0 max-lg:justify-between">
                 <div x-data="{ isOpen: false }" class="relative hidden mx-4 text-gray-600 transition-colors duration-300 transform lg:block dark:text-gray-200 hover:text-gray-700 dark:hover:text-gray-400 focus:text-gray-700 dark:focus:text-gray-400 focus:outline-none" aria-label="show notifications">
                     <!-- Dropdown toggle button -->
-                    <button @click="isOpen = !isOpen" class="relative z-10 block p-2 text-gray-700 bg-white border border-transparent rounded-md dark:text-white focus:border-blue-500 focus:ring-opacity-40 dark:focus:ring-opacity-40 focus:ring-blue-300 dark:focus:ring-blue-400 focus:ring dark:bg-gray-800 focus:outline-none">
+                    <button @click="isOpen = !isOpen" class="hover:bg-gray-100 dark:hover:bg-gray-700 relative z-10 block p-2 text-gray-700 bg-white border border-transparent rounded-md dark:text-white focus:border-blue-500 focus:ring-opacity-40 dark:focus:ring-opacity-40 focus:ring-blue-300 dark:focus:ring-blue-400 focus:ring dark:bg-gray-800 focus:outline-none">
                         {% if request.new_notifications %}
                         <svg class="w-5 h-5 text-black dark:text-white" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M12 22C10.8954 22 10 21.1046 10 20H14C14 21.1046 13.1046 22 12 22ZM20 19H4V17L6 16V10.5C6 7.038 7.421 4.793 10 4.18V2H13C12.3479 2.86394 11.9967 3.91762 12 5C12 5.25138 12.0187 5.50241 12.056 5.751H12C10.7799 5.67197 9.60301 6.21765 8.875 7.2C8.25255 8.18456 7.94714 9.33638 8 10.5V17H16V10.5C16 10.289 15.993 10.086 15.979 9.9C16.6405 10.0366 17.3226 10.039 17.985 9.907C17.996 10.118 18 10.319 18 10.507V16L20 17V19ZM17 8C16.3958 8.00073 15.8055 7.81839 15.307 7.477C14.1288 6.67158 13.6811 5.14761 14.2365 3.8329C14.7919 2.5182 16.1966 1.77678 17.5954 2.06004C18.9942 2.34329 19.9998 3.5728 20 5C20 6.65685 18.6569 8 17 8Z" fill="currentColor"></path>
@@ -152,7 +153,7 @@
                             {% for notification in request.new_notifications %}
                                 {% if notification.product %}
                             <a href="{% url 'product' notification.product.slug %}" class="flex items-center px-4 py-3 -mx-2 transition-colors duration-300 transform border-b border-gray-100 hover:bg-gray-50 dark:hover:bg-gray-700 dark:border-gray-700">
-                                <img src="{% get_product_image_url notification.product.epd_id notification.product.first_prod_image_format %}" alt="{{ notification.product.name }}" class="flex-shrink-0 object-cover w-8 h-8 mx-1 rounded-full" />
+                                <img src="{% get_product_image_url notification.product %}" alt="{{ notification.product.name }}" class="flex-shrink-0 object-cover w-8 h-8 mx-1 rounded-full" />
                                 <p class="mx-2 text-sm text-gray-600 dark:text-white">
                                     <span class="font-bold">
                                         
@@ -162,7 +163,7 @@
                             </a>
                                 {% elif notification.project %}
                             <a href="{% url 'project' notification.project.slug %}" class="flex items-center px-4 py-3 -mx-2 transition-colors duration-300 transform border-b border-gray-100 hover:bg-gray-50 dark:hover:bg-gray-700 dark:border-gray-700">
-                                <img src="{% get_product_image_url notification.project.products.all.0.epd_id notification.project.products.all.0.first_prod_image_format %}" alt="{{ notification.project.products.all.0.name }}" class="flex-shrink-0 object-cover w-8 h-8 mx-1 rounded-full" />
+                                <img src="{% get_product_image_url notification.project.products.all.0 %}" alt="{{ notification.project.products.all.0.name }}" class="flex-shrink-0 object-cover w-8 h-8 mx-1 rounded-full" />
                                 <p class="mx-2 text-sm text-gray-600 dark:text-white">
                                     <span class="font-bold">
                                         
@@ -172,7 +173,7 @@
                             </a>
                                 {% elif notification.commodity %}
                             <a href="{% url 'commodity' notification.commodity.name %}" class="flex items-center px-4 py-3 -mx-2 transition-colors duration-300 transform border-b border-gray-100 hover:bg-gray-50 dark:hover:bg-gray-700 dark:border-gray-700">
-                                <img src="{% get_commodity_image_url notification.commodity.name notification.commodity.image_format %}" alt="{{notification.commodity.name}}" class="flex-shrink-0 object-cover w-8 h-8 mx-1 rounded-full" />
+                                <img src="{% get_commodity_image_url notification.commodity %}" alt="{{notification.commodity.name}}" class="flex-shrink-0 object-cover w-8 h-8 mx-1 rounded-full" />
                                 <p class="mx-2 text-sm text-gray-600 dark:text-white">
                                     <span class="font-bold">
                                         
@@ -203,7 +204,7 @@
 
                 <div x-data="{ isOpen: false }" class="relative inline-block mx-4">
                     <!-- Dropdown toggle button -->
-                    <button @click="isOpen = !isOpen" class="relative z-10 block p-2 text-gray-700 bg-white border border-transparent rounded-md dark:text-white focus:border-blue-500 focus:ring-opacity-40 dark:focus:ring-opacity-40 focus:ring-blue-300 dark:focus:ring-blue-400 focus:ring dark:bg-gray-800 focus:outline-none">
+                    <button @click="isOpen = !isOpen" class="hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-white relative z-10 block p-2 text-gray-700 bg-white border border-transparent rounded-md dark:text-white focus:border-blue-500 focus:ring-opacity-40 dark:focus:ring-opacity-40 focus:ring-blue-300 dark:focus:ring-blue-400 focus:ring dark:bg-gray-800 focus:outline-none">
                         <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 20 20" fill="currentColor">
                             <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
                         </svg>
@@ -276,7 +277,54 @@
                     Sign up
                 </a>
 
+                <div x-data="{ isOpen: false }" class="relative inline-block mx-4">
+                    <!-- Dropdown toggle button -->
+                    <button @click="isOpen = !isOpen" class="hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-white relative z-10 block p-2 text-gray-700 bg-white border border-transparent rounded-md dark:text-white focus:border-blue-500 focus:ring-opacity-40 dark:focus:ring-opacity-40 focus:ring-blue-300 dark:focus:ring-blue-400 focus:ring dark:bg-gray-800 focus:outline-none">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 20 20" fill="currentColor">
+                            <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
+                        </svg>
+                    </button>
+                
+                    <!-- Dropdown menu -->
+                    <div x-show="isOpen"
+                        x-init="$el.classList.remove('hidden')" 
+                        @click.away="isOpen = false"
+                        x-transition:enter="transition ease-out duration-100"
+                        x-transition:enter-start="opacity-0 scale-90"
+                        x-transition:enter-end="opacity-100 scale-100"
+                        x-transition:leave="transition ease-in duration-100"
+                        x-transition:leave-start="opacity-100 scale-100"
+                        x-transition:leave-end="opacity-0 scale-90"
+                        class="hidden absolute right-0 z-20 w-48 py-2 mt-2 origin-top-right bg-white rounded-md shadow-xl dark:bg-gray-800"
+                    >
+                
+    
+                        <a href="{% url 'help' %}" class="flex items-center p-3 text-sm text-gray-600 capitalize transition-colors duration-300 transform dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-white">
+                            <svg class="w-5 h-5 mx-1" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M12 22C6.47967 21.9939 2.00606 17.5203 2 12V11.8C2.10993 6.30452 6.63459 1.92794 12.1307 2.00087C17.6268 2.07379 22.0337 6.56887 21.9978 12.0653C21.9619 17.5618 17.4966 21.9989 12 22ZM11.984 20H12C16.4167 19.9956 19.9942 16.4127 19.992 11.996C19.9898 7.57928 16.4087 3.99999 11.992 3.99999C7.57528 3.99999 3.99421 7.57928 3.992 11.996C3.98979 16.4127 7.56729 19.9956 11.984 20ZM13 18H11V16H13V18ZM13 15H11C10.9684 13.6977 11.6461 12.4808 12.77 11.822C13.43 11.316 14 10.88 14 9.99999C14 8.89542 13.1046 7.99999 12 7.99999C10.8954 7.99999 10 8.89542 10 9.99999H8V9.90999C8.01608 8.48093 8.79333 7.16899 10.039 6.46839C11.2846 5.76778 12.8094 5.78493 14.039 6.51339C15.2685 7.24184 16.0161 8.57093 16 9.99999C15.9284 11.079 15.3497 12.0602 14.44 12.645C13.6177 13.1612 13.0847 14.0328 13 15Z" fill="currentColor"></path>
+                            </svg>
+                
+                            <span class="mx-1">
+                                Help
+                            </span>
+                        </a>
+    
+                        <a href="{% url 'pricing-view' %}" class="flex items-center p-3 text-sm text-gray-600 capitalize transition-colors duration-300 transform dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-white">
+                            <svg class="w-5 h-5 mx-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                <path xmlns="http://www.w3.org/2000/svg" d="M6 9.5V14.5M18 9.5V14.5M3.11111 6H20.8889C21.5025 6 22 6.53726 22 7.2V16.8C22 17.4627 21.5025 18 20.8889 18H3.11111C2.49746 18 2 17.4627 2 16.8V7.2C2 6.53726 2.49746 6 3.11111 6ZM14.5 12C14.5 13.3807 13.3807 14.5 12 14.5C10.6193 14.5 9.5 13.3807 9.5 12C9.5 10.6193 10.6193 9.5 12 9.5C13.3807 9.5 14.5 10.6193 14.5 12Z" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                
+                            <span class="mx-1">
+                                Pricing
+                            </span>
+                        </a>
+                    </div>
+                </div>
+
+
             </div>
+
+
             {% endif %}
         </div>
     </div>

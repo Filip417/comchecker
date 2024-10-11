@@ -14,31 +14,50 @@ from django.utils.timezone import now
 register = template.Library()
 
 @register.simple_tag
-def get_product_image_url(epd_id, format):
+def get_product_image_url(product):
     SIZE = 'medium'
-    if epd_id:
-        path = f'main/images_resized/{epd_id}_prod_1_{SIZE}.{format}'
-        return static(path)
-    # Return default image if no format is found
-    return static('main/images/product/default.png')
+    default_image = 'main/images/product/default.png'
+    try:
+        epd_id = product.epd_id
+        format = product.first_prod_image_format
+        if epd_id and format:
+            path = f'main/images_resized/{epd_id}_prod_1_{SIZE}.{format}'
+            return static(path)
+    except AttributeError:
+        # Return default image if no format is found
+        return static(default_image)
+    return static(default_image)
 
 
 @register.simple_tag
-def get_manufacturer_image(epd_id, format):
+def get_manufacturer_image(product):
     SIZE = 'medium'
-    if epd_id:
-        path = f'main/images_resized/{epd_id}_man_1_{SIZE}.{format}'
-        return static(path)
-    return "data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs="
-
+    default_image = "data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs="
+    try:
+        epd_id = product.epd_id
+        format = product.first_man_image_format
+        if epd_id and format:
+            path = f'main/images_resized/{epd_id}_man_1_{SIZE}.{format}'
+            return static(path)
+    except AttributeError:
+        # Return default blank image if no format is found
+        return default_image
+    return default_image
 
 @register.simple_tag
-def get_commodity_image_url(name, format):
+def get_commodity_image_url(commodity):
     SIZE = 'large'
-    if name:
-        path = f'main/commodities_images_resized/{name}_{SIZE}.{format}'
-        return static(path)
-    return static('main/images/product/default.png')
+    default_image = 'main/images/product/default.png'
+    try:
+        name = commodity.name
+        format = commodity.image_format
+        if name and format:
+            path = f'main/commodities_images_resized/{name}_{SIZE}.{format}'
+            return static(path)
+    except AttributeError:
+        # Return default image if no format is found
+        return static(default_image)
+    return static(default_image)
         
 
 @register.simple_tag(takes_context=True)

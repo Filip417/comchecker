@@ -14,13 +14,16 @@ from pathlib import Path
 import os
 from decouple import config
 
-
+# Email settings for Office 365
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST = 'smtp.office365.com'  # Office 365 SMTP server
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'pricerdoc@gmail.com'
-EMAIL_HOST_PASSWORD = 'ncpv ucpn djup rkhm'
+EMAIL_USE_SSL = False
+
+# Office 365 email credentials
+EMAIL_HOST_USER = config('EMAIL_HOST_USER', cast=str)  # Your email address
+EMAIL_HOST_PASSWORD = config('EMAIL_APP_PASSWORD', cast=str)  # Your Office 365 app password
 
 BASE_URL = config("BASE_URL", default=None)
 
@@ -148,10 +151,15 @@ ACCOUNT_AUTHENTICATION_METHOD = "email"
 ACCOUNT_EMAIL_REQUIRED=True
 ACCOUNT_USERNAME_REQUIRED = False
 ACCOUNT_UNIQUE_EMAIL = True
+# When disabled (False), users can add one or more email addresses 
+# (up to a maximum of ACCOUNT_MAX_EMAIL_ADDRESSES) to their account and freely manage those email addresses.
+ACCOUNT_CHANGE_EMAIL = False
+ACCOUNT_MAX_EMAIL_ADDRESSES = 5
 ACCOUNT_EMAIL_VERIFICATION="mandatory"
-ACCOUNT_EMAIL_SUBJECT_PREFIX="[Material Wise] "
+ACCOUNT_EMAIL_SUBJECT_PREFIX="Material Wise | "
 ACCOUNT_LOGIN_ON_EMAIL_CONFIRMATION = True
 ACCOUNT_EMAIL_CONFIRMATION_EXPIRE_DAYS = 90
+DEFAULT_FROM_EMAIL = f'Material Wise <{EMAIL_HOST_USER}>'
 
 ROOT_URLCONF = 'comchecker.urls'
 

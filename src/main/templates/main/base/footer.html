@@ -3,17 +3,18 @@
     <div class="container px-6 py-8 mx-auto">
         <div class="flex flex-col items-center text-center">
             <a href="#">
-                <img class="w-auto h-7" src="{% static 'main/images/logo.svg' %}" alt="company-logo">
+                <img class="w-auto h-7" src="{% static 'main/images/fulllogo.svg' %}" alt="company-logo">
             </a>
 
             <div class="flex flex-wrap justify-center mt-6 -mx-4">
                 <a href="{% url 'index' %}" class="mx-4 text-sm text-gray-600 transition-colors duration-300 hover:text-blue-500 dark:text-gray-300 dark:hover:text-blue-400" aria-label="Home"> Home </a>
                 
                 <a href="{% url 'help' %}" class="mx-4 text-sm text-gray-600 transition-colors duration-300 hover:text-blue-500 dark:text-gray-300 dark:hover:text-blue-400" aria-label="Help"> Help </a>
+
+                <a href="{% url 'pricing-view' %}" class="mx-4 text-sm text-gray-600 transition-colors duration-300 hover:text-blue-500 dark:text-gray-300 dark:hover:text-blue-400" aria-label="Help"> Pricing </a>
+
                 <!-- TODO update href -->
-                <a href="#" class="mx-4 text-sm text-gray-600 transition-colors duration-300 hover:text-blue-500 dark:text-gray-300 dark:hover:text-blue-400" aria-label="Privacy"> Privacy </a>
-                <!-- TODO update href -->
-                <a href="#" class="mx-4 text-sm text-gray-600 transition-colors duration-300 hover:text-blue-500 dark:text-gray-300 dark:hover:text-blue-400" aria-label="Terms"> Terms </a>
+                <a href="#" class="mx-4 text-sm text-gray-600 transition-colors duration-300 hover:text-blue-500 dark:text-gray-300 dark:hover:text-blue-400" aria-label="Privacy"> Privacy, T&C </a>
             </div>
 
         </div>

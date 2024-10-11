@@ -28,6 +28,9 @@ urlpatterns = [
     path('update-settings/', views.update_settings, name='update_settings'),
     path('help/', views.help, name="help"),
     path('logged-contact-form/', views.logged_contact_form, name="logged_contact_form"),
+    path('product-calculate/', views.product_calculate_view, name='product_calculate_view'),
+    path('commodity-calculate/', views.commodity_calculate_view, name="commodity_calculate_view"),
+    path('project-calculate/', views.project_calculate_view, name="project_calculate_view"),
     # Account management
     path('accounts/', include('allauth.urls')),
     # Checkouts

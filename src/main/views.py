@@ -36,6 +36,7 @@ from django.http import HttpResponseForbidden
 from django.utils.http import urlsafe_base64_decode
 from django.utils.encoding import force_str
 from .tokens import email_notification_token
+from django.views.decorators.csrf import csrf_exempt
 
 
 
@@ -45,17 +46,20 @@ def pricing(request):
     month_qs = pricing_qs.filter(interval=SubscriptionPrice.IntervalChoices.MONTHLY)
     year_qs = pricing_qs.filter(interval=SubscriptionPrice.IntervalChoices.YEARLY)
 
-    user_sub_obj, created = UserSubscription.objects.get_or_create(user=request.user)
+    if request.user.is_authenticated:
+        user_sub_obj, created = UserSubscription.objects.get_or_create(user=request.user)
 
-    sub_data = user_sub_obj.serialize()
-    if request.method == 'POST':
-        finished = refresh_active_users_subscriptions(user_ids=[request.user.id],
-                                                      active_only=False)
-        if finished:
-            messages.success(request, "Membership data refreshed.")
-        else:
-            messages.error(request, "Membership data not refreshed. Please try again.")
-        return redirect(user_sub_obj.get_absolute_url())
+        sub_data = user_sub_obj.serialize()
+        if request.method == 'POST':
+            finished = refresh_active_users_subscriptions(user_ids=[request.user.id],
+                                                        active_only=False)
+            if finished:
+                messages.success(request, "Membership data refreshed.")
+            else:
+                messages.error(request, "Membership data not refreshed. Please try again.")
+            return redirect(user_sub_obj.get_absolute_url())
+    else:
+        sub_data = None
 
     context = {
         "month_qs":list(month_qs),
@@ -139,8 +143,8 @@ def index_logged(request):
     # Flatten the list to get the top product per manufacturer
     unique_manufacturer_products = [products[0] for products in products_by_manufacturer.values()]
 
-    # Limit the result to the top 20 products
-    LIMIT = 20
+    # Limit the result of products
+    LIMIT = 30
     highest_products = unique_manufacturer_products[:LIMIT]
     lowest_products = unique_manufacturer_products[-LIMIT:]
     lowest_products.reverse()
@@ -150,8 +154,8 @@ def index_logged(request):
     all_products = Product.objects.all()
 
     # Choices: 'week', 'month', 'year'
-    popular_products = get_popular_items('product', 'week', 20, user_id=request.user.id)
-    popular_commodities= get_popular_items('commodity', 'month', 20, user_id=request.user.id)
+    popular_products = get_popular_items('product', 'week', 30, user_id=request.user.id)
+    popular_commodities= get_popular_items('commodity', 'month', 30, user_id=request.user.id)
 
     # User-specific products and projects
     owned_projects, shared_projects, your_projects, products_in_projects = get_product_project_variables(request)
@@ -439,16 +443,13 @@ def product(request, slug):
         action = request.POST.get('action')
         if action == 'table_export_excel':
             response = download_table_excel_product(product.name, table_data)
-            return response  
         elif action == 'table_export_csv':
             response = download_table_csv_product(product.name, table_data)
-            return response  
         elif action == 'map_export_excel':
             response = download_map_excel(product.name, map_data)
-            return response  
         elif action == 'map_export_csv':
             response = download_map_csv(product.name, map_data)
-            return response  
+        return response  
 
     # Filter for similar products (products with the same manufacturer_name)
     similar_products = get_similar_products(product, request)[:50]
@@ -488,22 +489,17 @@ def commodity(request, name):
         action = request.POST.get('action')
         if action == 'table_export_excel':
             response = download_table_excel_commodity(commodity.name, table_data)
-            return response  
         elif action == 'table_export_csv':
             response = download_table_csv_commodity(commodity.name, table_data)
-            return response  
         elif action == 'map_export_excel':
             response = download_map_excel(commodity.name, map_data)
-            return response  
         elif action == 'map_export_csv':
             response = download_map_csv(commodity.name, map_data)
-            return response  
         elif action == 'futures_table_excel':
             response = download_futures_excel(commodity.name, futures_table_data)
-            return response
         elif action == 'futures_table_csv':
             response = download_futures_csv(commodity.name, futures_table_data)
-            return response
+        return response
 
     # Filter for similar products (products with the same manufacturer_name)
     similar_commodities = get_similar_commodities(commodity)[:20]
@@ -587,9 +583,12 @@ def project(request, project_slug):
     return render(request, "main/project.html",context)
 
 @show_new_notifications
-@valid_lite_membership_required
 def search(request):
-    products = Product.objects.filter(Q(user=None) | Q(user=request.user)).order_by('-view_count')
+    default_sorting = '-view_count'
+    if request.user.is_authenticated:
+        products = Product.objects.filter(Q(user=None) | Q(user=request.user)).order_by(default_sorting)
+    else:
+        products = Product.objects.filter(user=None).order_by(default_sorting)
     commodities = Commodity.objects.all().order_by('name')
 
     # Handle Products & Commodity filter
@@ -665,7 +664,7 @@ def search(request):
     pchangemin = request.GET.get('pchangemin')
     pchangemax = request.GET.get('pchangemax')
 
-    if pchangemin and pchangemax and pchangemax > pchangemin:
+    if pchangemin and pchangemax and pchangemax >= pchangemin:
         products = products.filter(increasefromlastyear__gte=float(pchangemin), increasefromlastyear__lte=float(pchangemax))
         commodities = commodities.filter(increasefromlastyear__gte=float(pchangemin), increasefromlastyear__lte=float(pchangemax))
     elif pchangemin:
@@ -701,7 +700,10 @@ def search(request):
                                   .order_by('-commodity_count') \
                                   .values_list('top_value_commodity__name', flat=True)
     
-    user_has_products = True if products.filter(user=request.user).exists() else False
+    if request.user.is_authenticated:
+        user_has_products = True if products.filter(user=request.user).exists() else False
+    else:
+        user_has_products = False
 
     # Handle sorting
     sort = request.GET.get('sort')
@@ -741,9 +743,10 @@ def search(request):
     except EmptyPage:
         page_commodity = paginator_commodity.page(paginator_commodity.num_pages)
 
-
-    owned_projects, shared_projects, your_projects, products_in_projects = get_product_project_variables(request)
-
+    if request.user.is_authenticated:
+        owned_projects, shared_projects, your_projects, products_in_projects = get_product_project_variables(request)
+    else:
+        owned_projects, shared_projects, your_projects, products_in_projects = None, None, None, None
 
     context = {
         "page":page,
@@ -881,7 +884,6 @@ def turn_off_email_notifications(request, uidb64, token):
         return HttpResponseForbidden("Invalid token.")
 
 
-@login_required
 def help(request):
     return render(request, 'main/help.html')
 
@@ -890,8 +892,8 @@ def help(request):
 def logged_contact_form(request):
     if request.method == "POST":
         text_content = request.POST.get("text-content")
-        if text_content and text_content.strip() != '':
-            user_email = request.user.email
+        user_email = request.POST.get("contact-email")
+        if text_content and text_content.strip() != '' and user_email:
             send_mail(
                 subject=f'New Contact Form Submission from {user_email}',
                 message=f'{text_content}\n\nfrom {user_email}',
@@ -909,3 +911,140 @@ def custom_404_view(request, exception):
 
 def custom_400_view(request, exception):
     return render(request, 'main/404.html', status=400)
+
+def project_calculate_view(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        # Extract required values
+        project_id = data.get('project_id', None)
+        date1 = data.get('date1', None)
+        price1 = data.get('price1', 0)
+        date2 = data.get('date2', None)
+        products = data.get('products', [])
+
+        data_for_calc = {
+            "project_id":project_id,
+            "date1": date1,
+            "price1": price1,
+            "date2": date2,
+            "products":products,
+        }
+        if project_id and date1 and date2 and price1 != 0:
+            calculated_price_2, success = calculate_price2_for_project(data_for_calc)
+            if success:
+                price2 = calculated_price_2
+            else:
+                return JsonResponse({
+            'error_message':"Invalid input for calcualtions. Contact support.",
+            })
+        else:
+            return JsonResponse({
+            'error_message':"Enter Date, Date to calculate and Price for calculations.",
+            })
+        return JsonResponse({
+            'price2':price2,
+        })
+    return JsonResponse({'error': 'Invalid request'}, status=400)
+
+def commodity_calculate_view(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        # Extract required values
+        commodity_id = data.get('commodity_id', None)
+        date1 = data.get('date1', None)
+        price1 = data.get('price1', 0)
+        date2 = data.get('date2', None)
+
+        data_for_calc = {
+            "commodity_id":commodity_id,
+            "date1": date1,
+            "price1": price1,
+            "date2": date2,
+        }
+        if commodity_id and date1 and date2 and price1 != 0:
+            calculated_price_2, success = calculate_price2_for_commodity(data_for_calc)
+            if success:
+                price2 = calculated_price_2
+            else:
+                return JsonResponse({
+            'error_message':"Invalid input for calcualtions. Contact support.",
+            })
+        else:
+            return JsonResponse({
+            'error_message':"Enter Date, Date to calculate and Price for calculations.",
+            })
+        return JsonResponse({
+            'price2':price2,
+        })
+    return JsonResponse({'error': 'Invalid request'}, status=400)
+
+
+def product_calculate_view(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+
+        # Extract required values
+        product_id = data.get('product_id', None)
+        date1 = data.get('date1', None)
+        price1 = data.get('price1', 0)
+        date2 = data.get('date2', None)
+        product_weight = float(data.get('product_weight', 0))
+
+        data_for_calc = {
+            "product_id":product_id,
+            "date1": date1,
+            "price1": price1,
+            "date2": date2,
+            "product_weight": product_weight,
+            "commodities":
+                [
+                    {"name":"Electricity UK",
+                     "commodity_id": 48,
+                     "weight":float(data.get('electricity_uk_weight', 0)),
+                     },
+                     {"name":"Labour UK",
+                      "commodity_id": 51,
+                     "weight":float(data.get('labour_uk_weight', 0)),
+                     },
+                     {"name":"Inflation UK",
+                      "commodity_id": 52,
+                     "weight":float(data.get('inflation_uk_weight', 0)),
+                     },
+                     {"name":"Containerized Freight China-Europe",
+                      "commodity_id": 50,
+                     "weight":float(data.get('freight_china_europe_weight', 0)),
+                     },
+                     {"name":"EU Carbon Permits",
+                      "commodity_id": 16,
+                     "weight":float(data.get('eu_carbon_permits_weight', 0)),
+                     },
+                     {"name":"Crude Oil",
+                      "commodity_id": 12,
+                     "weight":float(data.get('crude_oil_weight', 0)),
+                     },
+                     {"name":"Construction labour UK",
+                      "commodity_id": 53,
+                     "weight":float(data.get('construction_labour_uk_weight', 0)),
+                     },   
+                ],
+        }
+
+        # Perform calculations here
+        price2 = None
+        if product_id and date1 and date2 and price1 != 0 and product_weight != 0:
+            calculated_price_2, success = calculate_price2_for_product(data_for_calc)
+            if success:
+                price2 = calculated_price_2
+            else:
+                return JsonResponse({
+            'error_message':"Invalid input for calcualtions. Contact support.",
+            })
+        else:
+            return JsonResponse({
+            'error_message':"Enter Date, Date to calculate, Price, and Product weight for calculations.",
+            })
+        return JsonResponse({
+            'price2':price2,
+        })
+    
+    return JsonResponse({'error': 'Invalid request'}, status=400)
