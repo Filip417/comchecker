@@ -3,7 +3,8 @@
     <div class="container px-6 py-8 mx-auto">
         <div class="flex flex-col items-center text-center">
             <a href="#">
-                <img class="w-auto h-7" src="{% static 'main/images/fulllogo.svg' %}" alt="company-logo">
+                <img class="w-auto h-7 hidden dark:block" src="{% static 'main/images/fulllogo.svg' %}" alt="company-logo">
+                <img class="w-auto h-7 block dark:hidden"src="{% static 'main/images/fulllogo2dark.svg' %}" alt="company-logo">
             </a>
 
             <div class="flex flex-wrap justify-center mt-6 -mx-4">

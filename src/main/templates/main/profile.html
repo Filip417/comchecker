@@ -58,19 +58,19 @@
                       -->
 
                       <a href="{% url 'profile' %}?sort=default" 
-                           class="dark:text-gray-200 hover:text-gray-600 dark:hover:text-gray-300 dark:hover:bg-gray-700 block px-4 py-2 text-sm {% if sort == None or sort == 'default' %}font-medium text-gray-900 bg-gray-100 dark:text-gray-300 dark:bg-gray-800{% else %}text-gray-500{% endif %}" 
+                           class="hover:bg-gray-100 dark:text-gray-200 hover:text-gray-600 dark:hover:text-gray-300 dark:hover:bg-gray-700 block px-4 py-2 text-sm {% if sort == None or sort == 'default' %}font-medium text-gray-900 bg-gray-100 dark:text-gray-300 dark:bg-gray-800{% else %}text-gray-500{% endif %}" 
                            role="menuitem" tabindex="-1" id="menu-item-0">Default</a>
                       <a href="{% url 'profile' %}?sort=az" 
-                           class="dark:text-gray-200 hover:text-gray-600 dark:hover:text-gray-300 dark:hover:bg-gray-700 block px-4 py-2 text-sm {% if sort == 'az' %}font-medium text-gray-900 bg-gray-100 dark:text-gray-300 dark:bg-gray-700{% else %}text-gray-500{% endif %}" 
+                           class="hover:bg-gray-100 dark:text-gray-200 hover:text-gray-600 dark:hover:text-gray-300 dark:hover:bg-gray-700 block px-4 py-2 text-sm {% if sort == 'az' %}font-medium text-gray-900 bg-gray-100 dark:text-gray-300 dark:bg-gray-700{% else %}text-gray-500{% endif %}" 
                            role="menuitem" tabindex="-1" id="menu-item-1">A to Z</a>
                       <a href="{% url 'profile' %}?sort=za" 
-                           class="dark:text-gray-200 hover:text-gray-600 dark:hover:text-gray-300 dark:hover:bg-gray-700 block px-4 py-2 text-sm {% if sort == 'za' %}font-medium text-gray-900 bg-gray-100 dark:text-gray-300 dark:bg-gray-700{% else %}text-gray-500{% endif %}" 
+                           class="hover:bg-gray-100 dark:text-gray-200 hover:text-gray-600 dark:hover:text-gray-300 dark:hover:bg-gray-700 block px-4 py-2 text-sm {% if sort == 'za' %}font-medium text-gray-900 bg-gray-100 dark:text-gray-300 dark:bg-gray-700{% else %}text-gray-500{% endif %}" 
                            role="menuitem" tabindex="-1" id="menu-item-2">Z to A</a>
                       <a href="{% url 'profile' %}?sort=price_desc" 
-                           class="dark:text-gray-200 hover:text-gray-600 dark:hover:text-gray-300 dark:hover:bg-gray-700 block px-4 py-2 text-sm {% if sort == 'price_desc' %}font-medium text-gray-900 bg-gray-100 dark:text-gray-300 dark:bg-gray-700{% else %}text-gray-500{% endif %}" 
+                           class="hover:bg-gray-100 dark:text-gray-200 hover:text-gray-600 dark:hover:text-gray-300 dark:hover:bg-gray-700 block px-4 py-2 text-sm {% if sort == 'price_desc' %}font-medium text-gray-900 bg-gray-100 dark:text-gray-300 dark:bg-gray-700{% else %}text-gray-500{% endif %}" 
                            role="menuitem" tabindex="-1" id="menu-item-3">Price %: ↑ to ↓</a>
                       <a href="{% url 'profile' %}?sort=price_asc" 
-                           class="dark:text-gray-200 hover:text-gray-600 dark:hover:text-gray-300 dark:hover:bg-gray-700 block px-4 py-2 text-sm {% if sort == 'price_asc' %}font-medium text-gray-900 bg-gray-100 dark:text-gray-300 dark:bg-gray-700{% else %}text-gray-500{% endif %}" 
+                           class="hover:bg-gray-100 dark:text-gray-200 hover:text-gray-600 dark:hover:text-gray-300 dark:hover:bg-gray-700 block px-4 py-2 text-sm {% if sort == 'price_asc' %}font-medium text-gray-900 bg-gray-100 dark:text-gray-300 dark:bg-gray-700{% else %}text-gray-500{% endif %}" 
                            role="menuitem" tabindex="-1" id="menu-item-4">Price %: ↓ to ↑</a>
                     </div>
                   </div>

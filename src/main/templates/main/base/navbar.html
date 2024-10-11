@@ -4,8 +4,11 @@
     <div class="container px-6 py-3 mx-auto lg:flex">
         <div class="flex items-center justify-between">
             <a href="{% url 'index' %}">
-                <img class="w-auto h-6 block lg:hidden" src="{% static 'main/images/logo.svg' %}" alt="material wise logo icon">
-                <img class="w-auto h-12 hidden lg:block" src="{% static 'main/images/fulllogo2.svg' %}" alt="material wise logo icon">
+            <!-- This image will be hidden in dark mode and visible in light mode -->
+            <img class="w-auto h-12 block dark:hidden" src="{% static 'main/images/fulllogodark.svg' %}" alt="material wise logo icon">
+
+            <!-- This image will be hidden in light mode and visible in dark mode -->
+            <img class="w-auto h-12 hidden dark:block" src="{% static 'main/images/fulllogo2.svg' %}" alt="material wise logo icon">
             </a>
             
             <form action="{% url 'search' %}" method="GET" class="relative mx-3 xl:mx-6">
