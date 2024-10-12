@@ -1,0 +1,80 @@
+<section class="bg-white dark:bg-gray-900">
+    <div class="container max-w-4xl py-10 mx-auto">
+        <h1 class="text-2xl font-semibold text-center text-gray-800 lg:text-3xl dark:text-white">Frequently asked questions</h1>
+
+        <div class="mt-5 space-y-6">
+            <!-- FAQ 1 -->
+            <div x-data="{ open: false }" class="border-2 border-gray-100 rounded-lg dark:border-gray-700">
+                <button @click="open = !open" class="flex items-center justify-between w-full p-8">
+                    <h1 class="font-semibold text-gray-700 dark:text-white">How can I pay for my appointment?</h1>
+                    <span :class="open ? 'text-gray-400 bg-gray-200' : 'text-white bg-blue-500'" class="rounded-full">
+                        <svg x-show="open" 
+                        x-init="$el.classList.remove('hidden')"
+                        xmlns="http://www.w3.org/2000/svg"
+                        class="hidden w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 12H6" />
+                        </svg>
+                        <svg x-show="!open" xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                        </svg>
+                    </span>
+                </button>
+                <div x-init="$el.classList.remove('hidden')" class="hidden">
+                    <hr class="border-gray-200 dark:border-gray-700">
+                    <p x-show="open" x-collapse class="p-8 text-sm text-gray-500 dark:text-gray-300">
+                    Lorem ipsum dolor sit, amet consectetur adipisicing elit. Voluptas eaque nobis, fugit odit omnis fugiat deleniti animi ab maxime cum laboriosam recusandae facere dolorum veniam quia pariatur obcaecati illo ducimus?
+                    </p>
+                </div>
+            </div>
+
+            <!-- FAQ 2 -->
+            <div x-data="{ open: false }" class="border-2 border-gray-100 rounded-lg dark:border-gray-700">
+                <button @click="open = !open" class="flex items-center justify-between w-full p-8">
+                    <h1 class="font-semibold text-gray-700 dark:text-white">Is the cost of the appointment covered by private health insurance?</h1>
+                    <span :class="open ? 'text-gray-400 bg-gray-200' : 'text-white bg-blue-500'" class="rounded-full">
+                        <svg x-show="open"
+                        x-init="$el.classList.remove('hidden')"
+                        xmlns="http://www.w3.org/2000/svg" class="hidden w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 12H6" />
+                        </svg>
+                        <svg x-show="!open" xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                        </svg>
+                    </span>
+                </button>
+                <div x-init="$el.classList.remove('hidden')" class="hidden">
+                    <hr class="border-gray-200 dark:border-gray-700">
+                    <p x-show="open" x-collapse class="p-8 text-sm text-gray-500 dark:text-gray-300">
+                        Lorem ipsum dolor sit, amet consectetur adipisicing elit. Voluptas eaque nobis, fugit odit omnis fugiat deleniti animi ab maxime cum laboriosam recusandae facere dolorum veniam quia pariatur obcaecati illo ducimus?
+                    </p>
+                </div>
+            </div>
+
+            <!-- Repeat for other FAQs -->
+            <!-- FAQ 3 -->
+            <div x-data="{ open: false }" class="border-2 border-gray-100 rounded-lg dark:border-gray-700">
+                <button @click="open = !open" class="flex items-center justify-between w-full p-8">
+                    <h1 class="font-semibold text-gray-700 dark:text-white">Do I need a referral?</h1>
+                    <span :class="open ? 'text-gray-400 bg-gray-200' : 'text-white bg-blue-500'" class="rounded-full">
+                        <svg x-show="open"
+                        x-init="$el.classList.remove('hidden')"
+                        xmlns="http://www.w3.org/2000/svg" class="hidden w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 12H6" />
+                        </svg>
+                        <svg x-show="!open" xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                        </svg>
+                    </span>
+                </button>
+                <div x-init="$el.classList.remove('hidden')" class="hidden">
+                    <hr class="border-gray-200 dark:border-gray-700">
+                    <p x-show="open" x-collapse class="p-8 text-sm text-gray-500 dark:text-gray-300">
+                        Lorem ipsum dolor sit, amet consectetur adipisicing elit. Voluptas eaque nobis, fugit odit omnis fugiat deleniti animi ab maxime cum laboriosam recusandae facere dolorum veniam quia pariatur obcaecati illo ducimus?
+                    </p>
+                </div>
+            </div>
+
+            <!-- Add additional FAQs similarly -->
+        </div>
+    </div>
+</section>

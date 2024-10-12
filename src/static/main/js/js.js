@@ -118,24 +118,24 @@ document.addEventListener('DOMContentLoaded', function() {
   if (typeof staticUrls !== 'undefined') {
       slides = [
           {
-              title: 'Access Raw Material prices and forecasts for <span class="text-blue-600 dark:text-blue-500">10,000+</span> products',
-              text: 'Manufactured in the UK and all over the world',
-              img: staticUrls.image1
+              title: titles.title1,
+              text: subtitles.subtitle1,
+              img: staticUrls.image1,
           },
           {
-              title: 'Analyse any custom product risk <span class="text-blue-600 dark:text-blue-500">easier, faster, cheaper</span>',
-              text: 'Never be surprised of upcoming price increase and negotiate price decrease sooner',
-              img: staticUrls.image2
+            title: titles.title2,
+            text: subtitles.subtitle2,
+            img: staticUrls.image2,
           },
           {
-              title: 'Understand forecasts with no experience in <span class="text-blue-600 dark:text-blue-500">Commodity Trading</span>',
-              text: "You do not need Master's in Finance to know what forces impact market and what are the current odds",
-              img: staticUrls.image3
+            title: titles.title3,
+            text: subtitles.subtitle3,
+            img: staticUrls.image3,
           },
           {
-              title: 'Know more than manufacturers and use the <span class="text-blue-600 dark:text-blue-500">information advantage</span>',
-              text: 'Analyse products and commodities sooner than anyone average',
-              img: staticUrls.image4
+            title: titles.title4,
+            text: subtitles.subtitle4,
+            img: staticUrls.image4,
           }
       ];
 

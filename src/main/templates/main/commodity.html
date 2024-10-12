@@ -21,12 +21,16 @@
                     {% if commodity.increasefromlastyear %}
                         {% if commodity.increasefromlastyear > 0 %}
                           <a><span class="text-green-500 font-black">↑</span>{{ commodity.increasefromlastyear | floatformat:"1" }}%</a>
+                          <span class="px-2 py-1 text-xs font-bold text-green-600 transition-colors duration-300 transform rounded focus:outline-none">Since last year</span>
                         {% elif commodity.increasefromlastyear < 0 %}
                           <a><span class="text-red-500 font-black">↓</span>{{ commodity.increasefromlastyear | floatformat:"1" }}%</a>
+                          <span class="px-2 py-1 text-xs font-bold text-red-600 transition-colors duration-300 transform rounded focus:outline-none">Since last year</span>
+                          {% elif commodity.increasefromlastyear == 0 %}
+                          <a><span class="text-blue-500 font-black">=</span>{{ commodity.increasefromlastyear | floatformat:"1" }}%</a>
+                          <span class="px-2 py-1 text-xs font-bold text-blue-600 transition-colors duration-300 transform rounded focus:outline-none">Since last year</span>
                         {% endif %}
                       {% endif %}
                 </span>
-                <span class="px-2 py-1 text-xs font-semibold text-white transition-colors duration-300 transform bg-orange-600 rounded focus:outline-none">Since last year</span>
             </div>
         </div>
     </div>
