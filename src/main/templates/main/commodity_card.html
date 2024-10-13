@@ -25,11 +25,14 @@
           {{commodity.unit}}
         </p>
       </div>
-      <p class="text-sm font-semibold text-gray-900 dark:text-gray-200">{% if commodity.increasefromlastyear %}
+      <p class="text-sm font-semibold text-gray-900 dark:text-gray-200">
+        {% if commodity.increasefromlastyear %}
         {% if commodity.increasefromlastyear > 0 %}
-          <a><span class="text-green-500 font-black">↑</span>{{ commodity.increasefromlastyear | floatformat:"1" }}%</a>
-        {% elif commodity.increasefromlastyear < 0%}
-          <a><span class="text-red-500 font-black">↓</span>{{ commodity.increasefromlastyear | floatformat:"1" }}%</a>
+          <a><span class="text-green-500 font-black">↗</span>{{ commodity.increasefromlastyear | floatformat:"1" }}%</a>
+        {% elif commodity.increasefromlastyear < 0 %}
+          <a><span class="text-red-500 font-black">↘</span>{{ commodity.increasefromlastyear | floatformat:"1" }}%</a>
+        {% elif commodity.increasefromlastyear == 0 %}
+        <a><span class="text-blue-500 font-black">=</span>0%</a>
         {% endif %}
         {% endif %}
         </p>

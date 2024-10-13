@@ -37,6 +37,7 @@ from django.utils.http import urlsafe_base64_decode
 from django.utils.encoding import force_str
 from .tokens import email_notification_token
 from django.views.decorators.csrf import csrf_exempt
+from django.db.models import Case, When, IntegerField
 
 
 
@@ -56,7 +57,7 @@ def pricing(request):
             if finished:
                 messages.success(request, "Membership data refreshed.")
             else:
-                messages.error(request, "Membership data not refreshed. Please try again.")
+                messages.error(request, "Membership data not refreshed. Please try again or contact support.")
             return redirect(user_sub_obj.get_absolute_url())
     else:
         sub_data = None
@@ -85,12 +86,15 @@ def user_subscription_cancel_view(request):
             for k, v in sub_data.items():
                 setattr(user_sub_obj, k, v)
             user_sub_obj.save()
-            messages.success(request, "Your plan has been cancelled")
+            messages.success(request, "Your plan has been cancelled.")
         referer = request.META.get('HTTP_REFERER', '/')
         return redirect(referer)
-    messages.error(request, "Your plan could not been cancelled. Contact support.")
+    messages.error(request, "Your plan could not been cancelled. Try again or contact support.")
     return redirect(reverse('logged'))
 
+
+def privacy_tc(request):
+    return render(request, 'main/privacytc.html')
 
 
 # Views
@@ -99,6 +103,24 @@ def index(request):
     if request.user.is_authenticated:
         return redirect(reverse('logged'))
     
+    # Define the priority list
+    priority_list = [
+        'Construction labour UK', 'Construction activity UK', 'Steel', 'Lumber', 
+        'Copper', 'Aggregate', 'Aluminium', 'Gypsum', 'Glass', 'Electricity UK', 
+        'Inflation UK', 'Labour UK', 'Containerized Freight China-Europe', 'EU Carbon Permits'
+    ]
+    # Create cases for each priority commodity
+    cases = [When(name=priority, then=index) for index, priority in enumerate(priority_list)]
+
+    # Annotate the queryset with a priority score and order by that priority, followed by alphabetical ordering
+    commodities = Commodity.objects.annotate(
+        priority_order=Case(
+            *cases,  # Unpack the list of When conditions
+            default=len(priority_list),  # Default for non-priority items
+            output_field=IntegerField()
+        )
+    ).order_by('priority_order', 'name')  # Order first by priority, then alphabetically by name
+    
     pricing_qs = SubscriptionPrice.objects.filter(featured=True)
     month_qs = pricing_qs.filter(interval=SubscriptionPrice.IntervalChoices.MONTHLY)
     year_qs = pricing_qs.filter(interval=SubscriptionPrice.IntervalChoices.YEARLY)
@@ -106,6 +128,7 @@ def index(request):
     context = {
         "month_qs":list(month_qs),
         "year_qs":list(year_qs),
+        "commodities":commodities,
     }
 
     return render(request, "main/index.html", context=context)
@@ -187,7 +210,7 @@ def delete_notification(request):
                 notification.delete()
                 messages.success(request, "Notification has been deleted.")
             except:
-                messages.error(request, "Error in deleting notification. Contact support.")
+                messages.error(request, "Error in deleting notification. Try again or contact support.")
     referer = request.META.get('HTTP_REFERER', '/')
     return redirect(referer)
 
@@ -216,14 +239,11 @@ def set_notification(request):
             date_obj = datetime.strptime(notification.change_by, "%Y-%m-%d")
             formatted_date = date_obj.strftime("%d %b %Y")
             updated, sent = check_notification_and_send_email(notification.id)
-            if notification.email_notification and updated and sent:
-                messages.success(request,
-            f"Email notification for {notification.change}% change by {formatted_date} has been set.")
-            else:
+            if updated:
                 messages.success(request,
             f"Notification for {notification.change}% change by {formatted_date} has been set.")
         else:
-            messages.error(request, "Error in seting up notification. Contact support.")
+            messages.error(request, "Error in seting up notification. Try again or contact support.")
     
     referer = request.META.get('HTTP_REFERER', '/')
     return redirect(referer)
@@ -237,7 +257,7 @@ def delete_project(request):
             project.delete()
             messages.success(request, "Project has been deleted.")
         except:
-            messages.error(request, "Error in deleting project. Contact support.")
+            messages.error(request, "Error in deleting project. Try again or contact support.")
     return redirect(reverse('logged'))
 
 @login_required
@@ -252,9 +272,9 @@ def edit_project_name(request):
             project.slug = project.generate_unique_slug()
             project.description = new_project_description
             project.save()
-            messages.success(request, 'Project changes updated')
+            messages.success(request, 'Project has been updated.')
         else:
-            messages.error(request, 'Cannot change project name to empty field')
+            messages.error(request, 'Cannot change project name to empty field.')
     return redirect('project', project_slug=project.slug)
 
 @can_create_project
@@ -268,7 +288,7 @@ def new_project(request):
             project.save()
             messages.success(request, f"New project {project.name} has been created.")
         else:
-            messages.error(request, 'Cannot be empty name to create new project')
+            messages.error(request, 'Cannot use empty name to create new project.')
     return redirect('project', project_slug=project.slug)
 
 @can_create_project
@@ -277,7 +297,7 @@ def change_product_to_project(request, product_id):
     product = get_object_or_404(Product, id=product_id)
     
     if product.user != request.user and product.user != None:
-        messages.error(request, "You have no access to this product")
+        messages.error(request, "You have no access to this product.")
         return redirect(reverse('logged'))
 
     if request.method == 'POST':
@@ -290,7 +310,7 @@ def change_product_to_project(request, product_id):
                 project = Project.objects.create(user=request.user, name=new_project_name)
                 messages.success(request, f"New project {project.name} has been created.")
             else:
-                messages.error(request, 'Cannot be empty name to create new project')
+                messages.error(request, 'Cannot use empty name to create new project.')
                 return redirect(request.META.get('HTTP_REFERER', '/'))
             # Check if project has been saved and has an id
             if not project.id:
@@ -307,7 +327,7 @@ def change_product_to_project(request, product_id):
             project.products.remove(product)
             messages.success(request, f"Product {product.name} has been removed from {project.name} project.")
         else:
-            messages.error(request, f"Error in adding product to project.")
+            messages.error(request, f"Error in adding product to project. Try again or contact support.")
         project.calculate_increase()
         project.save()
     # Redirect back to the referer URL
@@ -320,7 +340,7 @@ def edit_product(request, slug):
     product = get_object_or_404(Product, slug=slug)
 
     if product.user != request.user and product.user != None:
-        messages.error(request, "You have no access to this product")
+        messages.error(request, "You have no access to this product.")
         return redirect(reverse('logged'))
     
     commodities = Commodity.objects.all().distinct()
@@ -356,7 +376,7 @@ def delete_product(request, slug):
         product.delete()
         messages.success(request, "Product has been deleted.")
     except:
-        messages.error(request, "Error in deleting product. Contact support.")
+        messages.error(request, "Error in deleting product. Try again or contact support.")
     return redirect(reverse('logged'))
     
 
@@ -431,7 +451,7 @@ def product(request, slug):
     product = get_object_or_404(Product, slug=slug)
 
     if product.user != None and product.user!= request.user:
-        messages.error(request, "You have no access to this product")
+        messages.error(request, "You have no access to this product.")
         return redirect(reverse('logged'))
 
     material_proportions = MaterialProportion.objects.filter(product=product).order_by('-proportion')
@@ -532,7 +552,7 @@ def project(request, project_slug):
     project = get_object_or_404(Project, slug=project_slug)
 
     if project.user != request.user and request.user not in project.shared_with.all():
-        messages.error(request, "You have no access to this project")
+        messages.error(request, "You have no access to this project.")
         return redirect(reverse('logged'))
 
     product_categories = project.products.values_list('category_3', flat=True).distinct()
@@ -723,7 +743,7 @@ def search(request):
         pass  # TODO Default sorting (if any)
 
 
-    ITEMS_PER_PAGE = 24
+    ITEMS_PER_PAGE = 24 # 24 multiplier
 
     paginator = Paginator(products, ITEMS_PER_PAGE)
     page_number = request.GET.get('page')
@@ -829,7 +849,7 @@ def user_settings(request):
         if finished:
             messages.success(request, "Membership data refreshed.")
         else:
-            messages.error(request, "Membership data not refreshed. Please try again.")
+            messages.error(request, "Membership data not refreshed. Please try again or contact support.")
         referer = request.META.get('HTTP_REFERER', '/')
         return redirect(referer)
 

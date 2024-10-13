@@ -18,7 +18,8 @@
                     </svg>
                 </span>
                 <input type="text" name="q" class="w-full py-2 pl-10 pr-2 text-gray-700 bg-white border rounded-lg dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 focus:border-blue-400 dark:focus:border-blue-300 focus:outline-none focus:ring focus:ring-opacity-40 focus:ring-blue-300"
-                placeholder="Search product" value="{{ request.GET.q }}">
+                placeholder={% if user.is_authenticated %}"Search product"{% else %}"Try now"{% endif %}
+                value="{{ request.GET.q }}">
             </form>
             
 
@@ -102,14 +103,14 @@
                         class="hidden absolute right-0 z-20 w-48 py-2 mt-2 origin-top-right bg-white rounded-md shadow-xl dark:bg-gray-800"
                     >
                     <a href="{% url 'search' %}?category=Construction+Materials" class="block px-4 py-3 text-sm text-gray-600 capitalize transition-colors duration-300 transform dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-white">Construction Materials</a>
-                    <a href="{% url 'search' %}?category=Doors+%26+Windows" class="block px-4 py-3 text-sm text-gray-600 capitalize transition-colors duration-300 transform dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-white">Doors & Windows</a>
+                    <a href="{% url 'search' %}?category=Doors%2C+Windows" class="block px-4 py-3 text-sm text-gray-600 capitalize transition-colors duration-300 transform dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-white">Doors, Windows</a>
                     <a href="{% url 'search' %}?category=Electrical" class="block px-4 py-3 text-sm text-gray-600 capitalize transition-colors duration-300 transform dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-white">Electrical</a>
-                    <a href="{% url 'search' %}?category=Finishes+%26+Coatings" class="block px-4 py-3 text-sm text-gray-600 capitalize transition-colors duration-300 transform dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-white">Finished & Coatings</a>
+                    <a href="{% url 'search' %}?category=Finishes%2C+Coatings" class="block px-4 py-3 text-sm text-gray-600 capitalize transition-colors duration-300 transform dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-white">Finished, Coatings</a>
                     <a href="{% url 'search' %}?category=Flooring" class="block px-4 py-3 text-sm text-gray-600 capitalize transition-colors duration-300 transform dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-white">Flooring</a>
                     <a href="{% url 'search' %}?category=Insulation" class="block px-4 py-3 text-sm text-gray-600 capitalize transition-colors duration-300 transform dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-white">Insulation</a>
                     <a href="{% url 'search' %}?category=Metal" class="block px-4 py-3 text-sm text-gray-600 capitalize transition-colors duration-300 transform dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-white">Metal</a>
-                    <a href="{% url 'search' %}?category=Panels%2C+Boards+%26+Structural" class="block px-4 py-3 text-sm text-gray-600 capitalize transition-colors duration-300 transform dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-white"> Panels, Boards & Structural </a>
-                    <a href="{% url 'search' %}?category=Plumbing+%26+HVAC" class="block px-4 py-3 text-sm text-gray-600 capitalize transition-colors duration-300 transform dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-white"> Plumbing & HVAC </a>
+                    <a href="{% url 'search' %}?category=Panels%2C+Boards%2C+Structural" class="block px-4 py-3 text-sm text-gray-600 capitalize transition-colors duration-300 transform dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-white"> Panels, Boards, Structural </a>
+                    <a href="{% url 'search' %}?category=Plumbing%2C+HVAC" class="block px-4 py-3 text-sm text-gray-600 capitalize transition-colors duration-300 transform dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-white"> Plumbing, HVAC </a>
                     <a href="{% url 'search' %}?category=Wood" class="block px-4 py-3 text-sm text-gray-600 capitalize transition-colors duration-300 transform dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-white"> Wood </a>
                     <hr class="border-gray-200 dark:border-gray-700 ">
                     <a href="{% url 'search' %}?category=Other" class="block px-4 py-3 text-sm text-gray-600 capitalize transition-colors duration-300 transform dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-white"> Other </a>

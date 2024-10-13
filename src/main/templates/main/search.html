@@ -249,12 +249,16 @@
                 <div>
                   <label for="min-range-input" class="sr-only">Labels range min</label>
                   <p class="my-2 text-xs text-gray-500">min</p>
-                  <input type="number" name="pchangemin" value="{{pchangemin}}" min="-100.0" step="0.1" class="bg-gray-50 border border-gray-300 text-gray-900 dark:text-gray-300 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500"/>
+                  <input type="number" name="pchangemin"
+                  {% if pchangemin %}value="{{pchangemin}}"{% endif %}
+                  min="-100.0" step="0.1" class="bg-gray-50 border border-gray-300 text-gray-900 dark:text-gray-300 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500"/>
                 </div>
                 <div>
                   <label for="min-range-input" class="sr-only">Labels range max</label>
                   <p class="my-2 text-xs text-gray-500">max</p>
-                  <input type="number" name="pchangemax" value="{{pchangemax}}" min="-100.0" step="0.1" class="bg-gray-50 border border-gray-300 text-gray-900 dark:text-gray-300 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500"/>
+                  <input type="number" name="pchangemax"
+                  {% if pchangemax %}value="{{pchangemax}}"{% endif %}
+                  min="-100.0" step="0.1" class="bg-gray-50 border border-gray-300 text-gray-900 dark:text-gray-300 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500"/>
                 </div>  
               </div>
 
@@ -695,12 +699,16 @@
                 <div>
                   <label for="min-range-input" class="sr-only">Labels range min</label>
                   <p class="my-2 text-xs text-gray-500">min</p>
-                  <input type="number" name="pchangemin" value="{{pchangemin}}" min="-100.0" step="0.1" class="bg-gray-50 border border-gray-300 text-gray-900 dark:text-gray-300 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500"/>
+                  <input type="number" name="pchangemin"
+                  {% if pchangemin %}value="{{pchangemin}}"{% endif %}
+                  min="-100.0" step="0.1" class="bg-gray-50 border border-gray-300 text-gray-900 dark:text-gray-300 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500"/>
                 </div>
                 <div>
                   <label for="min-range-input" class="sr-only">Labels range max</label>
                   <p class="my-2 text-xs text-gray-500">max</p>
-                  <input type="number" name="pchangemax" value="{{pchangemax}}" min="-100.0" step="0.1" class="bg-gray-50 border border-gray-300 text-gray-900 dark:text-gray-300 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500"/>
+                  <input type="number" name="pchangemax"
+                  {% if pchangemax %}value="{{pchangemax}}"{% endif %}
+                  min="-100.0" step="0.1" class="bg-gray-50 border border-gray-300 text-gray-900 dark:text-gray-300 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500"/>
                 </div>  
               </div>
 
@@ -922,15 +930,15 @@
                             {% if user.is_authenticated %}
                             {% if product.increasefromlastyear %}
                               {% if product.increasefromlastyear > 0 %}
-                                <a><span class="text-green-500 font-black">↑</span>{{ product.increasefromlastyear | floatformat:"1" }}%</a>
+                                <a><span class="text-green-500 font-black">↗</span>{{ product.increasefromlastyear | floatformat:"1" }}%</a>
                               {% elif product.increasefromlastyear < 0 %}
-                                <a><span class="text-red-500 font-black">↓</span>{{ product.increasefromlastyear | floatformat:"1" }}%</a>
+                                <a><span class="text-red-500 font-black">↘</span>{{ product.increasefromlastyear | floatformat:"1" }}%</a>
                               {% elif product.increasefromlastyear == 0 %}
-                              <a><span class="text-blue-500 font-black">=</span>{{ product.increasefromlastyear | floatformat:"1" }}%</a>
+                              <a><span class="text-blue-500 font-black">=</span>0%</a>
                               {% endif %}
                               {% endif %}
                               {% else %}
-                            <a><span class="text-blue-500 font-black"></span>-%</a>
+                            <a><span class="text-blue-500 font-black"></span>-</a>
                             {% endif %}
                         </p>
                   </div>
@@ -943,7 +951,7 @@
         <!-- Pagination -->
         <div class="mx-5 flex justify-between pt-10">
             {% if page.has_previous %}
-           <a href="?page={{ page.previous_page_number }}&pagec={{ page_commodity.number }}{% if search_query %}&q={{search_query}}{% endif %}{%for manufacturer in selected_manufacturers %}&manufacturer={{manufacturer}}{%endfor%}{%for country in selected_manufacturer_countries %}&mcountry={{country}}{%endfor%}{% for price_source in selected_commodities_price_source %}&comps={{price_source}}{% endfor %}{% for top_commodity in selected_top_commodities%}&topcom={{top_commodity}}{% endfor %}{% if pchangemin %}&pchangemin={{pchangemin}}{% endif %}{% if pchangemax %}&pchangemax={{pchangemax}}{% endif %}{% if sort %}&sort={{sort}}{% endif %}{% if product_show %}&product={{product_show}}{% endif %}{% if commodity_show %}&commodity={{commodity_show}}{% endif %}{% if only_user_products_selected %}&up=True{% endif %}"
+           <a href="?page={{ page.previous_page_number }}&pagec={{ page_commodity.number }}{% if search_query %}&q={{search_query}}{% endif %}{% for comtype in selected_comtype %}&comtype={{comtype}}{% endfor %}{% for category in selected_categories %}&category={{category}}{% endfor %}{%for manufacturer in selected_manufacturers %}&manufacturer={{manufacturer}}{%endfor%}{%for country in selected_manufacturer_countries %}&mcountry={{country}}{%endfor%}{% for price_source in selected_commodities_price_source %}&comps={{price_source}}{% endfor %}{% for top_commodity in selected_top_commodities%}&topcom={{top_commodity}}{% endfor %}{% if pchangemin %}&pchangemin={{pchangemin}}{% endif %}{% if pchangemax %}&pchangemax={{pchangemax}}{% endif %}{% if sort %}&sort={{sort}}{% endif %}{% if product_show %}&product={{product_show}}{% endif %}{% if commodity_show %}&commodity={{commodity_show}}{% endif %}{% if only_user_products_selected %}&up=True{% endif %}"
               class="px-4 py-2 mx-1 text-gray-700 dark:text-gray-300  transition-colors duration-300 transform bg-white dark:bg-gray-800 rounded-md hover:bg-blue-500 dark:hover:bg-blue-500 hover:text-white dark:hover:text-gray-200">
                 <div class="flex items-center -mx-1">
                     <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 mx-1 rtl:-scale-x-100" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -961,7 +969,7 @@
             </a>
 
             {% if page.has_next %}
-            <a href="?page={{ page.next_page_number }}&pagec={{ page_commodity.number }}{% if search_query %}&q={{search_query}}{% endif %}{%for manufacturer in selected_manufacturers %}&manufacturer={{manufacturer}}{%endfor%}{%for country in selected_manufacturer_countries %}&mcountry={{country}}{%endfor%}{% for price_source in selected_commodities_price_source %}&comps={{price_source}}{% endfor %}{% for top_commodity in selected_top_commodities%}&topcom={{top_commodity}}{% endfor %}{% if pchangemin %}&pchangemin={{pchangemin}}{% endif %}{% if pchangemax %}&pchangemax={{pchangemax}}{% endif %}{% if sort %}&sort={{sort}}{% endif %}{% if product_show %}&product={{product_show}}{% endif %}{% if commodity_show %}&commodity={{commodity_show}}{% endif %}{% if only_user_products_selected %}&up=True{% endif %}"
+            <a href="?page={{ page.next_page_number }}&pagec={{ page_commodity.number }}{% if search_query %}&q={{search_query}}{% endif %}{% for comtype in selected_comtype %}&comtype={{comtype}}{% endfor %}{% for category in selected_categories %}&category={{category}}{% endfor %}{%for manufacturer in selected_manufacturers %}&manufacturer={{manufacturer}}{%endfor%}{%for country in selected_manufacturer_countries %}&mcountry={{country}}{%endfor%}{% for price_source in selected_commodities_price_source %}&comps={{price_source}}{% endfor %}{% for top_commodity in selected_top_commodities%}&topcom={{top_commodity}}{% endfor %}{% if pchangemin %}&pchangemin={{pchangemin}}{% endif %}{% if pchangemax %}&pchangemax={{pchangemax}}{% endif %}{% if sort %}&sort={{sort}}{% endif %}{% if product_show %}&product={{product_show}}{% endif %}{% if commodity_show %}&commodity={{commodity_show}}{% endif %}{% if only_user_products_selected %}&up=True{% endif %}"
               class="px-7 py-2 mx-1 text-gray-700 dark:text-gray-300  transition-colors duration-300 transform bg-white dark:bg-gray-800 rounded-md hover:bg-blue-500 dark:hover:bg-blue-500 hover:text-white dark:hover:text-gray-200">
                 <div class="flex items-center -mx-1">
                     <span class="mx-1">Next</span>
@@ -1014,15 +1022,15 @@
                     {% if user.is_authenticated %}
                       {% if commodity.increasefromlastyear %}
                         {% if commodity.increasefromlastyear > 0 %}
-                          <a><span class="text-green-500 font-black">↑</span>{{ commodity.increasefromlastyear | floatformat:"1" }}%</a>
+                          <a><span class="text-green-500 font-black">↗</span>{{ commodity.increasefromlastyear | floatformat:"1" }}%</a>
                         {% elif commodity.increasefromlastyear < 0 %}
-                          <a><span class="text-red-500 font-black">↓</span>{{ commodity.increasefromlastyear | floatformat:"1" }}%</a>
+                          <a><span class="text-red-500 font-black">↘</span>{{ commodity.increasefromlastyear | floatformat:"1" }}%</a>
                         {% elif commodity.increasefromlastyear == 0 %}
-                        <a><span class="text-blue-500 font-black"></span>{{ commodity.increasefromlastyear | floatformat:"1" }}%</a>
+                        <a><span class="text-blue-500 font-black">=</span>0%</a>
                         {% endif %}
                         {% endif %}
                         {% else %}
-                        <a><span class="text-blue-500 font-black"></span>-%</a>
+                        <a><span class="text-blue-500 font-black"></span>-</a>
                       {% endif %}
                   </p>
             </div>
@@ -1038,7 +1046,7 @@
         <!-- Commodity Pagination -->
         <div class="mx-5 flex justify-between pt-10">
           {% if page_commodity.has_previous %}
-         <a href="?pagec={{ page_commodity.previous_page_number }}&page={{ page.number }}{% if search_query %}&q={{search_query}}{% endif %}{%for manufacturer in selected_manufacturers %}&manufacturer={{manufacturer}}{%endfor%}{%for country in selected_manufacturer_countries %}&mcountry={{country}}{%endfor%}{% for price_source in selected_commodities_price_source %}&comps={{price_source}}{% endfor %}{% for top_commodity in selected_top_commodities%}&topcom={{top_commodity}}{% endfor %}{% if pchangemin %}&pchangemin={{pchangemin}}{% endif %}{% if pchangemax %}&pchangemax={{pchangemax}}{% endif %}{% if sort %}&sort={{sort}}{% endif %}{% if product_show %}&product={{product_show}}{% endif %}{% if commodity_show %}&commodity={{commodity_show}}{% endif %}{% if only_user_products_selected %}&up=True{% endif %}"
+         <a href="?pagec={{ page_commodity.previous_page_number }}&page={{ page.number }}{% if search_query %}&q={{search_query}}{% endif %}{% for comtype in selected_comtype %}&comtype={{comtype}}{% endfor %}{% for category in selected_categories %}&category={{category}}{% endfor %}{%for manufacturer in selected_manufacturers %}&manufacturer={{manufacturer}}{%endfor%}{%for country in selected_manufacturer_countries %}&mcountry={{country}}{%endfor%}{% for price_source in selected_commodities_price_source %}&comps={{price_source}}{% endfor %}{% for top_commodity in selected_top_commodities%}&topcom={{top_commodity}}{% endfor %}{% if pchangemin %}&pchangemin={{pchangemin}}{% endif %}{% if pchangemax %}&pchangemax={{pchangemax}}{% endif %}{% if sort %}&sort={{sort}}{% endif %}{% if product_show %}&product={{product_show}}{% endif %}{% if commodity_show %}&commodity={{commodity_show}}{% endif %}{% if only_user_products_selected %}&up=True{% endif %}"
             class="px-4 py-2 mx-1 text-gray-700 dark:text-gray-300  transition-colors duration-300 transform bg-white dark:bg-gray-800 rounded-md hover:bg-blue-500 dark:hover:bg-blue-500 hover:text-white dark:hover:text-gray-200">
               <div class="flex items-center -mx-1">
                   <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 mx-1 rtl:-scale-x-100" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -1055,7 +1063,7 @@
           </a>
 
           {% if page_commodity.has_next %}
-          <a href="?pagec={{ page_commodity.next_page_number }}&page={{ page.number }}{% if search_query %}&q={{search_query}}{% endif %}{%for manufacturer in selected_manufacturers %}&manufacturer={{manufacturer}}{%endfor%}{%for country in selected_manufacturer_countries %}&mcountry={{country}}{%endfor%}{% for price_source in selected_commodities_price_source %}&comps={{price_source}}{% endfor %}{% for top_commodity in selected_top_commodities%}&topcom={{top_commodity}}{% endfor %}{% if pchangemin %}&pchangemin={{pchangemin}}{% endif %}{% if pchangemax %}&pchangemax={{pchangemax}}{% endif %}{% if sort %}&sort={{sort}}{% endif %}{% if product_show %}&product={{product_show}}{% endif %}{% if commodity_show %}&commodity={{commodity_show}}{% endif %}{% if only_user_products_selected %}&up=True{% endif %}"
+          <a href="?pagec={{ page_commodity.next_page_number }}&page={{ page.number }}{% if search_query %}&q={{search_query}}{% endif %}{% for comtype in selected_comtype %}&comtype={{comtype}}{% endfor %}{% for category in selected_categories %}&category={{category}}{% endfor %}{%for manufacturer in selected_manufacturers %}&manufacturer={{manufacturer}}{%endfor%}{%for country in selected_manufacturer_countries %}&mcountry={{country}}{%endfor%}{% for price_source in selected_commodities_price_source %}&comps={{price_source}}{% endfor %}{% for top_commodity in selected_top_commodities%}&topcom={{top_commodity}}{% endfor %}{% if pchangemin %}&pchangemin={{pchangemin}}{% endif %}{% if pchangemax %}&pchangemax={{pchangemax}}{% endif %}{% if sort %}&sort={{sort}}{% endif %}{% if product_show %}&product={{product_show}}{% endif %}{% if commodity_show %}&commodity={{commodity_show}}{% endif %}{% if only_user_products_selected %}&up=True{% endif %}"
             class="px-7 py-2 mx-1 text-gray-700 dark:text-gray-300  transition-colors duration-300 transform bg-white dark:bg-gray-800 rounded-md hover:bg-blue-500 dark:hover:bg-blue-500 hover:text-white dark:hover:text-gray-200">
               <div class="flex items-center -mx-1">
                   <span class="mx-1">Next</span>

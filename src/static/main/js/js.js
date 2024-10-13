@@ -386,12 +386,13 @@ updateSaveButtonState();
   // Only scroll to the header if the 'pagec' value has changed
   if (currentPagec !== previousPagec && currentPagec !== null) {
     // Scroll to the element with id 'commodities-header'
-    document.getElementById("commodities-header").scrollIntoView({ behavior: 'smooth' });
+    if (currentPagec !== "1" && previousPagec !== null){
+      document.getElementById("commodities-header").scrollIntoView({ behavior: 'smooth' });
+    }
   }
 
   // Update localStorage with the current 'pagec' value for future checks
   localStorage.setItem('previousPagec', currentPagec);
-
 
 
 });

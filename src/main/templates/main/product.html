@@ -586,10 +586,12 @@
                                 </td>
                                 <td class="px-4 py-4 text-center whitespace-nowrap">
                                     <div class="text-sm font-normal">
-                                        {% if data.today > data.1y_ago %}
-                                        <a><span class="text-green-500 font-black">↑</span></a>
-                                        {% elif data.today < data.1y_ago%}
-                                        <a><span class="text-red-500 font-black">↓</span></a>
+                                        {% if  data.5y_ahead > data.today %}
+                                        <a><span class="text-green-500 font-black">↗</span></a>
+                                        {% elif data.5y_ahead < data.today %}
+                                        <a><span class="text-red-500 font-black">↘</span></a>
+                                        {% elif data.5y_ahead < data.today %}
+                                        <a><span class="text-blue-500 font-black">=</span></a>
                                         {% else %}
                                         -
                                         {% endif %}

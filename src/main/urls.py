@@ -31,6 +31,7 @@ urlpatterns = [
     path('product-calculate/', views.product_calculate_view, name='product_calculate_view'),
     path('commodity-calculate/', views.commodity_calculate_view, name="commodity_calculate_view"),
     path('project-calculate/', views.project_calculate_view, name="project_calculate_view"),
+    path('privacy-terms-conditions/', views.privacy_tc, name="privacy_tc"),
     # Account management
     path('accounts/', include('allauth.urls')),
     # Checkouts

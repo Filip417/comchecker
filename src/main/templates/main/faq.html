@@ -3,10 +3,12 @@
         <h1 class="text-2xl font-semibold text-center text-gray-800 lg:text-3xl dark:text-white">Frequently asked questions</h1>
 
         <div class="mt-5 space-y-6">
-            <!-- FAQ 1 -->
+            <!-- FAQ element -->
             <div x-data="{ open: false }" class="border-2 border-gray-100 rounded-lg dark:border-gray-700">
                 <button @click="open = !open" class="flex items-center justify-between w-full p-8">
-                    <h1 class="font-semibold text-gray-700 dark:text-white">How can I pay for my appointment?</h1>
+                    <h1 class="font-semibold text-gray-700 dark:text-white">
+                        Where do you get the prices and predictions for materials?
+                    </h1>
                     <span :class="open ? 'text-gray-400 bg-gray-200' : 'text-white bg-blue-500'" class="rounded-full">
                         <svg x-show="open" 
                         x-init="$el.classList.remove('hidden')"
@@ -22,19 +24,21 @@
                 <div x-init="$el.classList.remove('hidden')" class="hidden">
                     <hr class="border-gray-200 dark:border-gray-700">
                     <p x-show="open" x-collapse class="p-8 text-sm text-gray-500 dark:text-gray-300">
-                    Lorem ipsum dolor sit, amet consectetur adipisicing elit. Voluptas eaque nobis, fugit odit omnis fugiat deleniti animi ab maxime cum laboriosam recusandae facere dolorum veniam quia pariatur obcaecati illo ducimus?
+                        We get our information from trusted places like the UK ONS, U.S. Bureau of Labor Statistics and several major stock and commodity exchanges around the world.
                     </p>
                 </div>
             </div>
-
-            <!-- FAQ 2 -->
+            <!-- FAQ element -->
             <div x-data="{ open: false }" class="border-2 border-gray-100 rounded-lg dark:border-gray-700">
                 <button @click="open = !open" class="flex items-center justify-between w-full p-8">
-                    <h1 class="font-semibold text-gray-700 dark:text-white">Is the cost of the appointment covered by private health insurance?</h1>
+                    <h1 class="font-semibold text-gray-700 dark:text-white">
+                        How often is the information updated?
+                    </h1>
                     <span :class="open ? 'text-gray-400 bg-gray-200' : 'text-white bg-blue-500'" class="rounded-full">
-                        <svg x-show="open"
+                        <svg x-show="open" 
                         x-init="$el.classList.remove('hidden')"
-                        xmlns="http://www.w3.org/2000/svg" class="hidden w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        xmlns="http://www.w3.org/2000/svg"
+                        class="hidden w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 12H6" />
                         </svg>
                         <svg x-show="!open" xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -45,20 +49,21 @@
                 <div x-init="$el.classList.remove('hidden')" class="hidden">
                     <hr class="border-gray-200 dark:border-gray-700">
                     <p x-show="open" x-collapse class="p-8 text-sm text-gray-500 dark:text-gray-300">
-                        Lorem ipsum dolor sit, amet consectetur adipisicing elit. Voluptas eaque nobis, fugit odit omnis fugiat deleniti animi ab maxime cum laboriosam recusandae facere dolorum veniam quia pariatur obcaecati illo ducimus?
+                        We update the information every 12 hours to make sure it's accurate and useful for purchasing needs.
                     </p>
                 </div>
             </div>
-
-            <!-- Repeat for other FAQs -->
-            <!-- FAQ 3 -->
+            <!-- FAQ element -->
             <div x-data="{ open: false }" class="border-2 border-gray-100 rounded-lg dark:border-gray-700">
                 <button @click="open = !open" class="flex items-center justify-between w-full p-8">
-                    <h1 class="font-semibold text-gray-700 dark:text-white">Do I need a referral?</h1>
+                    <h1 class="font-semibold text-gray-700 dark:text-white">
+                        How accurate are your predictions for material prices?
+                    </h1>
                     <span :class="open ? 'text-gray-400 bg-gray-200' : 'text-white bg-blue-500'" class="rounded-full">
-                        <svg x-show="open"
+                        <svg x-show="open" 
                         x-init="$el.classList.remove('hidden')"
-                        xmlns="http://www.w3.org/2000/svg" class="hidden w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        xmlns="http://www.w3.org/2000/svg"
+                        class="hidden w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 12H6" />
                         </svg>
                         <svg x-show="!open" xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -69,7 +74,135 @@
                 <div x-init="$el.classList.remove('hidden')" class="hidden">
                     <hr class="border-gray-200 dark:border-gray-700">
                     <p x-show="open" x-collapse class="p-8 text-sm text-gray-500 dark:text-gray-300">
-                        Lorem ipsum dolor sit, amet consectetur adipisicing elit. Voluptas eaque nobis, fugit odit omnis fugiat deleniti animi ab maxime cum laboriosam recusandae facere dolorum veniam quia pariatur obcaecati illo ducimus?
+                        We show how accurate the price predictions are for each material. Prices for materials bought and sold on the futures market are usually more accurate because those prices have already been predicted by major buyers and sellers. Long-term trends also tend to be more predictable.
+                    </p>
+                </div>
+            </div>
+            <!-- FAQ element -->
+            <div x-data="{ open: false }" class="border-2 border-gray-100 rounded-lg dark:border-gray-700">
+                <button @click="open = !open" class="flex items-center justify-between w-full p-8">
+                    <h1 class="font-semibold text-gray-700 dark:text-white">
+                        How do you predict future prices for raw materials?
+                    </h1>
+                    <span :class="open ? 'text-gray-400 bg-gray-200' : 'text-white bg-blue-500'" class="rounded-full">
+                        <svg x-show="open" 
+                        x-init="$el.classList.remove('hidden')"
+                        xmlns="http://www.w3.org/2000/svg"
+                        class="hidden w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 12H6" />
+                        </svg>
+                        <svg x-show="!open" xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                        </svg>
+                    </span>
+                </button>
+                <div x-init="$el.classList.remove('hidden')" class="hidden">
+                    <hr class="border-gray-200 dark:border-gray-700">
+                    <p x-show="open" x-collapse class="p-8 text-sm text-gray-500 dark:text-gray-300">
+                        We use a special custom model similar to ChatGPT to make predictions about prices for building materials.
+                    </p>
+                </div>
+            </div>
+            <!-- FAQ element -->
+            <div x-data="{ open: false }" class="border-2 border-gray-100 rounded-lg dark:border-gray-700">
+                <button @click="open = !open" class="flex items-center justify-between w-full p-8">
+                    <h1 class="font-semibold text-gray-700 dark:text-white">
+                        Can I trust your information for long-term construction planning?
+                    </h1>
+                    <span :class="open ? 'text-gray-400 bg-gray-200' : 'text-white bg-blue-500'" class="rounded-full">
+                        <svg x-show="open" 
+                        x-init="$el.classList.remove('hidden')"
+                        xmlns="http://www.w3.org/2000/svg"
+                        class="hidden w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 12H6" />
+                        </svg>
+                        <svg x-show="!open" xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                        </svg>
+                    </span>
+                </button>
+                <div x-init="$el.classList.remove('hidden')" class="hidden">
+                    <hr class="border-gray-200 dark:border-gray-700">
+                    <p x-show="open" x-collapse class="p-8 text-sm text-gray-500 dark:text-gray-300">
+                        Yes, you can trust the price and risk data for planning your long-term projects, especially for materials that are bought and sold on the futures market. But remember, each project is unique, and we can't predict everything about it.
+                    </p>
+                </div>
+            </div>
+            <!-- FAQ element -->
+            <div x-data="{ open: false }" class="border-2 border-gray-100 rounded-lg dark:border-gray-700">
+                <button @click="open = !open" class="flex items-center justify-between w-full p-8">
+                    <h1 class="font-semibold text-gray-700 dark:text-white">
+                        Will anyone see my projects or products?
+                    </h1>
+                    <span :class="open ? 'text-gray-400 bg-gray-200' : 'text-white bg-blue-500'" class="rounded-full">
+                        <svg x-show="open" 
+                        x-init="$el.classList.remove('hidden')"
+                        xmlns="http://www.w3.org/2000/svg"
+                        class="hidden w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 12H6" />
+                        </svg>
+                        <svg x-show="!open" xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                        </svg>
+                    </span>
+                </button>
+                <div x-init="$el.classList.remove('hidden')" class="hidden">
+                    <hr class="border-gray-200 dark:border-gray-700">
+                    <p x-show="open" x-collapse class="p-8 text-sm text-gray-500 dark:text-gray-300">
+                        No, only you can see your projects and products. No one else can access that information.
+                    </p>
+                </div>
+            </div>
+            <!-- FAQ element -->
+            <div x-data="{ open: false }" class="border-2 border-gray-100 rounded-lg dark:border-gray-700">
+                <button @click="open = !open" class="flex items-center justify-between w-full p-8">
+                    <h1 class="font-semibold text-gray-700 dark:text-white">
+                        Is there a free trial or demo before I buy a subscription?
+                    </h1>
+                    <span :class="open ? 'text-gray-400 bg-gray-200' : 'text-white bg-blue-500'" class="rounded-full">
+                        <svg x-show="open" 
+                        x-init="$el.classList.remove('hidden')"
+                        xmlns="http://www.w3.org/2000/svg"
+                        class="hidden w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 12H6" />
+                        </svg>
+                        <svg x-show="!open" xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                        </svg>
+                    </span>
+                </button>
+                <div x-init="$el.classList.remove('hidden')" class="hidden">
+                    <hr class="border-gray-200 dark:border-gray-700">
+                    <p x-show="open" x-collapse class="p-8 text-sm text-gray-500 dark:text-gray-300">
+                        No, there isn’t a free trial or demo available before you purchase a subscription.
+                    </p>
+                </div>
+            </div>
+
+            <!-- FAQ element -->
+            <div x-data="{ open: false }" class="border-2 border-gray-100 rounded-lg dark:border-gray-700">
+                <button @click="open = !open" class="flex items-center justify-between w-full p-8">
+                    <h1 class="font-semibold text-gray-700 dark:text-white">
+                        How can I get help if I have a problem?
+                    </h1>
+                    <span :class="open ? 'text-gray-400 bg-gray-200' : 'text-white bg-blue-500'" class="rounded-full">
+                        <svg x-show="open" 
+                        x-init="$el.classList.remove('hidden')"
+                        xmlns="http://www.w3.org/2000/svg"
+                        class="hidden w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 12H6" />
+                        </svg>
+                        <svg x-show="!open" xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                        </svg>
+                    </span>
+                </button>
+                <div x-init="$el.classList.remove('hidden')" class="hidden">
+                    <hr class="border-gray-200 dark:border-gray-700">
+                    <p x-show="open" x-collapse class="p-8 text-sm text-gray-500 dark:text-gray-300">
+                        You can contact us by clicking on the "Help" tab or by emailing 
+                        <span class="text-blue-500 font-semibold">contact@materialwise.co.uk </span>
+                         We're here every day and ready to help.
                     </p>
                 </div>
             </div>

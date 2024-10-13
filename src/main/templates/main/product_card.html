@@ -37,9 +37,11 @@
         <p class="text-sm font-semibold text-gray-900 dark:text-gray-200">
             {% if product.increasefromlastyear %}
                 {% if product.increasefromlastyear > 0 %}
-                    <a><span class="text-green-500 font-black">↑</span>{{ product.increasefromlastyear|floatformat:"1" }}%</a>
+                    <a><span class="text-green-500 font-black">↗</span>{{ product.increasefromlastyear|floatformat:"1" }}%</a>
                 {% elif product.increasefromlastyear < 0 %}
-                    <a><span class="text-red-500 font-black">↓</span>{{ product.increasefromlastyear|floatformat:"1" }}%</a>
+                    <a><span class="text-red-500 font-black">↘</span>{{ product.increasefromlastyear|floatformat:"1" }}%</a>
+                {% elif product.increasefromlastyear == 0 %}
+                <a><span class="text-blue-500 font-black">=</span>0%</a>
                 {% endif %}
             {% endif %}
         </p>
