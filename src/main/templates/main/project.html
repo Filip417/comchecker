@@ -31,21 +31,18 @@
       </div>
       <div class="absolute bottom-0 w-full">
           <div class="rounded-b-md flex items-center justify-between px-3 py-2 bg-gray-200 dark:bg-gray-700">
-              <span class="font-bold text-gray-800 dark:text-gray-200">
                 {% if project.increasefromlastyear %}
                       {% if project.increasefromlastyear > 0 %}
-                      <a><span class="text-green-500 font-black">↑</span>{{ project.increasefromlastyear|floatformat:"1" }}%</a>
+                      <a class="font-bold text-gray-800 dark:text-gray-200"><span class="text-green-500 font-black">↗</span>{{ project.increasefromlastyear|floatformat:"1" }}%</a>
                       <span class="px-2 py-1 text-xs font-bold text-green-600 transition-colors duration-300 transform rounded focus:outline-none">Since last year</span>
                       {% elif project.increasefromlastyear < 0 %}
-                      <a><span class="text-red-500 font-black">↓</span>{{ project.increasefromlastyear|floatformat:"1" }}%</a>
+                      <a class="font-bold text-gray-800 dark:text-gray-200"><span class="text-red-500 font-black">↘</span>{{ project.increasefromlastyear|floatformat:"1" }}%</a>
                       <span class="px-2 py-1 text-xs font-bold text-red-600 transition-colors duration-300 transform rounded focus:outline-none">Since last year</span>
                       {% elif project.increasefromlastyear == 0 %}
-                      <a><span class="text-blue-500 font-black">=</span>{{ project.increasefromlastyear|floatformat:"1" }}%</a>
+                      <a class="font-bold text-gray-800 dark:text-gray-200"><span class="text-blue-500 font-black">=</span>{{ project.increasefromlastyear|floatformat:"1" }}%</a>
                       <span class="px-2 py-1 text-xs font-bold text-blue-600 transition-colors duration-300 transform rounded focus:outline-none">Since last year</span>
                       {% endif %}
-                    {% endif %}
-              </span>
-              
+                    {% endif %}           
             </div>
       </div>
     </div>
@@ -445,7 +442,7 @@
                           <tbody class="bg-white divide-y divide-gray-200 dark:divide-gray-700 dark:bg-gray-900">
                             {% for id, data in table_data.items %}
                             <tr>
-                                <td class="px-4 py-4 text-sm whitespace-wrap">
+                                <td class="px-4 py-4 min-w-64 text-sm whitespace-wrap">
 
                                     <div class="flex items-center">
                                       <div>
@@ -459,7 +456,10 @@
                                           <input type="number" name="project_id" value="{{project.id}}" class="new-project-name hidden absolute top-10 left-0 mt-2 ml-2 px-1 py-1 text-xs bg-white text-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 z-10" />
                                         </form>
                                       </div>
+                                        <img class="mx-2 object-cover w-12 h-12 rounded"
+                                            src="{% get_product_image_url product=None product_id=id %}" alt="{{ data.name }} image">
                                         <div class="ml-2">
+                                            
                                           <a href="/product/{{data.slug}}" class="hover:underline">
                                             <div class="text-sm font-medium text-gray-900 dark:text-gray-300">
                                                     {{data.name}}

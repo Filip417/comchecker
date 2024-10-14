@@ -230,7 +230,15 @@
             <h3 class="-my-3 flow-root">
                 <!-- Expand/collapse section button -->
                 <button @click="sectionOpen.price = !sectionOpen.price" type="button" class="flex w-full items-center justify-between bg-white dark:bg-gray-800 py-3 text-sm text-gray-400 dark:text-gray-500  hover:text-gray-500" aria-controls="filter-section-price" :aria-expanded="sectionOpen.price">
-                    <span class="font-medium text-gray-900 dark:text-gray-300">Price change YTD in %</span>
+                  <div x-data="{ show: false }" class="relative inline-block">
+                    <span @mouseenter="show = true" @mouseleave="show = false" class="font-medium text-gray-900 dark:text-gray-300">
+                      Price change YTD in %
+                    </span>
+                  
+                    <p x-show="show" x-transition class="absolute w-48 px-5 py-3 text-center text-gray-600 truncate -translate-x-1/2 bg-white rounded-lg shadow-lg -bottom-12 left-1/2 dark:shadow-none shadow-gray-200 dark:bg-gray-800 dark:text-white">
+                      YTD - Year to date
+                    </p>
+                  </div>
                     <span class="ml-6 flex items-center">
                         <!-- Expand icon, show/hide based on section open state. -->
                         <svg x-show="!sectionOpen.price" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
@@ -676,7 +684,15 @@
             <h3 class="-my-3 flow-root">
                 <!-- Expand/collapse section button -->
                 <button @click="sectionOpen.price = !sectionOpen.price" type="button" class="flex w-full items-center justify-between bg-white dark:bg-gray-800 py-3 text-sm text-gray-400 dark:text-gray-500  hover:text-gray-500" aria-controls="filter-section-price" :aria-expanded="sectionOpen.price">
-                    <span class="font-medium text-gray-900 dark:text-gray-300">Price change YTD in %</span>
+                  <div x-data="{ show: false }" class="relative inline-block">
+                    <span @mouseenter="show = true" @mouseleave="show = false" class="font-medium text-gray-900 dark:text-gray-300">
+                      Price change YTD in %
+                    </span>
+                  
+                    <p x-show="show" x-transition class="absolute w-48 px-5 py-3 text-center text-gray-600 truncate -translate-x-1/2 bg-white rounded-lg shadow-lg -bottom-12 left-1/2 dark:shadow-none shadow-gray-200 dark:bg-gray-800 dark:text-white">
+                      YTD - Year to date
+                    </p>
+                  </div>
                     <span class="ml-6 flex items-center">
                         <!-- Expand icon, show/hide based on section open state. -->
                         <svg x-show="!sectionOpen.price" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">

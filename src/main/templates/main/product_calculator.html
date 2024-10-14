@@ -1,21 +1,23 @@
 <input id="product_id" value="{{product.id}}" required class="hidden" hidden/>
 <div class="grid grid-cols-2 gap-5">
+
+
 <!-- Dates -->
 <div>
-    <label for="date1" class="block text-sm text-gray-500 dark:text-gray-300">Date</label>
+    <label for="date1" class="block text-sm text-gray-500 dark:text-gray-300">Starting date</label>
 
     <input type="date" id="date1" min="2019-01-01" max="2029-01-01" value="{% now 'Y-m-d' %}" required class="block  mt-2 w-full placeholder-gray-400/70 dark:placeholder-gray-500 rounded-lg border border-gray-200 bg-white px-5 py-2.5 text-gray-700 focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-300 dark:focus:border-blue-300" />
 </div>
 <div>
-    <label for="date2" class="block text-sm text-gray-500 dark:text-gray-300">Date to calculate</label>
+    <label for="date2" class="block text-sm text-gray-500 font-semibold dark:text-gray-300">Date to calculate</label>
 
     <input type="date" id="date2" min="2019-01-01" max="2029-01-01" required class="block  mt-2 w-full placeholder-gray-400/70 dark:placeholder-gray-500 rounded-lg border border-gray-200 bg-white px-5 py-2.5 text-gray-700 focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-300 dark:focus:border-blue-300" />
 </div>
 <!-- Prices -->
 <div>
-    <label for="price1" class="block text-sm text-gray-500 dark:text-gray-300">Price</label>
+    <label for="price1" class="block text-sm text-gray-500 dark:text-gray-300">Starting price</label>
 
-    <input type="number" id="price1" value="100" class="block  mt-2 w-full placeholder-gray-400/70 dark:placeholder-gray-500 rounded-lg border border-gray-200 bg-white px-5 py-2.5 text-gray-700 focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-300 dark:focus:border-blue-300" />
+    <input type="number" id="price1" value="100" min="0" class="block  mt-2 w-full placeholder-gray-400/70 dark:placeholder-gray-500 rounded-lg border border-gray-200 bg-white px-5 py-2.5 text-gray-700 focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-300 dark:focus:border-blue-300" />
 </div>
 
 <div>
@@ -28,55 +30,58 @@
 <hr class="border-gray-200 dark:border-gray-700">
 <p class="text-gray-500 dark:text-gray-300">Weights:</p>
 <p class="text-gray-500 dark:text-gray-300"></p>
-
+<!-- Instruction -->
+<p class="text-gray-500 dark:text-gray-300 text-sm">To calculate the final price of a product based on its raw materials and other indicators/commodities, you assign weights to each component representing its relative contribution to the total cost.</p>
+<p class="text-gray-500 dark:text-gray-300 text-sm">The final price is computed as a weighted sum of the costs of the product's inputs.</p>
+    
 <!-- Weights -->
 <div>
     <label for="weight" class="block text-sm text-gray-500 dark:text-gray-300">Product</label>
 
-    <input type="number" value="100" id="product-weight" class="block  mt-2 w-full placeholder-gray-400/70 dark:placeholder-gray-500 rounded-lg border border-gray-200 bg-white px-5 py-2.5 text-gray-700 focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-300 dark:focus:border-blue-300" />
+    <input type="number" min="0" placeholder="100" value="100" id="product-weight" class="block  mt-2 w-full placeholder-gray-400/70 dark:placeholder-gray-500 rounded-lg border border-gray-200 bg-white px-5 py-2.5 text-gray-700 focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-300 dark:focus:border-blue-300" />
 </div>
 
 <div>
     <label for="weight" class="block text-sm text-gray-500 dark:text-gray-300">Electricity UK</label>
 
-    <input type="number" placeholder="0" id="electricity-uk-weight" class="block  mt-2 w-full placeholder-gray-400/70 dark:placeholder-gray-500 rounded-lg border border-gray-200 bg-white px-5 py-2.5 text-gray-700 focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-300 dark:focus:border-blue-300" />
+    <input type="number" min="0" placeholder="10" id="electricity-uk-weight" class="block  mt-2 w-full placeholder-gray-400/70 dark:placeholder-gray-500 rounded-lg border border-gray-200 bg-white px-5 py-2.5 text-gray-700 focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-300 dark:focus:border-blue-300" />
 </div>
 
 <div>
     <label for="weight" class="block text-sm text-gray-500 dark:text-gray-300">Labour UK</label>
 
-    <input type="number" placeholder="0" id="labour-uk-weight" class="block  mt-2 w-full placeholder-gray-400/70 dark:placeholder-gray-500 rounded-lg border border-gray-200 bg-white px-5 py-2.5 text-gray-700 focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-300 dark:focus:border-blue-300" />
+    <input type="number" min="0" placeholder="20" id="labour-uk-weight" class="block  mt-2 w-full placeholder-gray-400/70 dark:placeholder-gray-500 rounded-lg border border-gray-200 bg-white px-5 py-2.5 text-gray-700 focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-300 dark:focus:border-blue-300" />
 </div>
 
 <div>
     <label for="weight" class="block text-sm text-gray-500 dark:text-gray-300">Inflation UK</label>
 
-    <input type="number" placeholder="0" id="inflation-uk-weight" class="block  mt-2 w-full placeholder-gray-400/70 dark:placeholder-gray-500 rounded-lg border border-gray-200 bg-white px-5 py-2.5 text-gray-700 focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-300 dark:focus:border-blue-300" />
+    <input type="number" min="0" placeholder="10" id="inflation-uk-weight" class="block  mt-2 w-full placeholder-gray-400/70 dark:placeholder-gray-500 rounded-lg border border-gray-200 bg-white px-5 py-2.5 text-gray-700 focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-300 dark:focus:border-blue-300" />
 </div>
 
 <div>
     <label for="weight" class="block text-sm text-gray-500 dark:text-gray-300">Freight China-Europe</label>
 
-    <input type="number" placeholder="0" id="freight-china-europe-weight" class="block  mt-2 w-full placeholder-gray-400/70 dark:placeholder-gray-500 rounded-lg border border-gray-200 bg-white px-5 py-2.5 text-gray-700 focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-300 dark:focus:border-blue-300" />
+    <input type="number" min="0" placeholder="10" id="freight-china-europe-weight" class="block  mt-2 w-full placeholder-gray-400/70 dark:placeholder-gray-500 rounded-lg border border-gray-200 bg-white px-5 py-2.5 text-gray-700 focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-300 dark:focus:border-blue-300" />
 </div>
 
 
 <div>
     <label for="weight" class="block text-sm text-gray-500 dark:text-gray-300">EU Carbon Permits</label>
 
-    <input type="number" placeholder="0" id="eu-carbon-permits-weight" class="block  mt-2 w-full placeholder-gray-400/70 dark:placeholder-gray-500 rounded-lg border border-gray-200 bg-white px-5 py-2.5 text-gray-700 focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-300 dark:focus:border-blue-300" />
+    <input type="number" min="0" placeholder="10" id="eu-carbon-permits-weight" class="block  mt-2 w-full placeholder-gray-400/70 dark:placeholder-gray-500 rounded-lg border border-gray-200 bg-white px-5 py-2.5 text-gray-700 focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-300 dark:focus:border-blue-300" />
 </div>
 
 <div>
     <label for="weight" class="block text-sm text-gray-500 dark:text-gray-300">Crude Oil</label>
 
-    <input type="number" placeholder="0" id="crude-oil-weight" class="block  mt-2 w-full placeholder-gray-400/70 dark:placeholder-gray-500 rounded-lg border border-gray-200 bg-white px-5 py-2.5 text-gray-700 focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-300 dark:focus:border-blue-300" />
+    <input type="number" min="0" placeholder="10" id="crude-oil-weight" class="block  mt-2 w-full placeholder-gray-400/70 dark:placeholder-gray-500 rounded-lg border border-gray-200 bg-white px-5 py-2.5 text-gray-700 focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-300 dark:focus:border-blue-300" />
 </div>
 
 <div>
     <label for="weight" class="block text-sm text-gray-500 dark:text-gray-300">Construction labour UK</label>
 
-    <input type="number" placeholder="0" id="construction-labour-uk-weight" class="block  mt-2 w-full placeholder-gray-400/70 dark:placeholder-gray-500 rounded-lg border border-gray-200 bg-white px-5 py-2.5 text-gray-700 focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-300 dark:focus:border-blue-300" />
+    <input type="number" min="0" placeholder="5" id="construction-labour-uk-weight" class="block  mt-2 w-full placeholder-gray-400/70 dark:placeholder-gray-500 rounded-lg border border-gray-200 bg-white px-5 py-2.5 text-gray-700 focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-300 dark:focus:border-blue-300" />
 </div>
 
 <!-- Other commodities weights in the future -->
@@ -84,7 +89,8 @@
 </div>
 
 <button  id="calculate-button"  class="mt-5 px-6 py-2 font-medium tracking-wide text-white capitalize transition-colors duration-300 transform bg-blue-600 rounded-lg hover:bg-blue-500 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-80">
-    Calculate
+    <span id="button-text">Calculate</span>
+    <div id="spinner" style="border-top-color:#ffffff;" class="hidden loader ease-linear rounded-full border-4 border-t-4 h-5 w-5"></div>
 </button>
 
 <p id="error-message" class="mt-3 text-xs text-red-400"></p>
@@ -92,6 +98,8 @@
 <script>
     document.addEventListener('DOMContentLoaded', () => {
         const calculateButton = document.getElementById('calculate-button');
+        const buttonText = document.getElementById('button-text');
+        const spinner = document.getElementById('spinner');
     
         function calculate() {
             const data = {
@@ -109,6 +117,11 @@
                 crude_oil_weight: parseFloat(document.getElementById('crude-oil-weight').value) || 0,
                 construction_labour_uk_weight: parseFloat(document.getElementById('construction-labour-uk-weight').value) || 0,
             };
+
+            // Show the spinner and disable the button
+            buttonText.classList.add('hidden');
+            spinner.classList.remove('hidden');
+            calculateButton.disabled = true; // Disable button to prevent multiple clicks
     
             fetch('{% url "product_calculate_view" %}', {
                 method: 'POST',
@@ -145,6 +158,12 @@
             })
             .catch(error => {
                 console.error('There was a problem with the fetch operation:', error);
+            })
+            .finally(() => {
+                // Restore button text and re-enable the button
+                buttonText.classList.remove('hidden');
+                spinner.classList.add('hidden');
+                calculateButton.disabled = false;
             });
         }
     

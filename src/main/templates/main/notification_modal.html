@@ -3,17 +3,23 @@
     <div class="flex flex-col w-full space-y-4">
         <div>
             <p class="text-sm text-gray-500 dark:text-gray-300">
-                Change % is calculated from 'When' date to when notification is set.
-            </p>
-            <p class="text-sm text-gray-500 dark:text-gray-300">
-                Change by % &gt=0 activates when change % is higher.
-            </p>
-            <p class="text-sm text-gray-500 dark:text-gray-300">
-                Change by % &lt0 activates when change % is lower.
+                Change % is calculated from the date notification is set to 'When' date.
             </p>
         </div>
         <!-- Change by % -->
         <div class="flex flex-row space-x-2">
+
+            <!-- Change by more less -->
+            <div>
+                <label for="change-by" class="block text-sm text-gray-500 dark:text-gray-300">&ge;or&le;</label>
+                <select name="change_by_ml" required
+                class="block pr-8 pl-2 py-2.5 mt-2 w-max rounded-lg border border-gray-200 bg-white  text-gray-700 focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-300 dark:focus:border-blue-300">
+                    <option selected value=">=">&ge;</option>
+                    <option value="<=">&le;</option>
+                </select>
+            </div>
+
+
             <div>
                 <label for="change" class="block text-sm text-gray-500 dark:text-gray-300">Change by %</label>
                 <input type="number" name="change" min="-99" max="1000" step="0.01" required name="change" class="block  mt-2 w-full placeholder-gray-400/70 dark:placeholder-gray-500 rounded-lg border border-gray-200 bg-white px-5 py-2.5 text-gray-700 focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-300 dark:focus:border-blue-300" />
@@ -24,6 +30,8 @@
                 <label for="date-by" class="block text-sm text-gray-500 dark:text-gray-300">When</label>
                 <input type="date" name="change_by" required id="date-by" placeholder="mm/dd/yyyy" class="block  mt-2 w-full placeholder-gray-400/70 dark:placeholder-gray-500 rounded-lg border border-gray-200 bg-white px-5 py-2.5 text-gray-700 focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-300 dark:focus:border-blue-300" />
             </div>
+
+             
         </div>
         <!-- Email boolean -->
         <div class="flex flex-row space-x-2">

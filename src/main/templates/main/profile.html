@@ -107,9 +107,11 @@
                   <p class="text-sm font-semibold text-gray-900 dark:text-gray-200">
                     {% if your_products_average_1y_increase != 0 %}
                       {% if your_products_average_1y_increase > 0 %}
-                      <a><span class="text-green-500 font-black">↑</span>{{ your_products_average_1y_increase|floatformat:"1" }}%</a>
+                      <a><span class="text-green-500 font-black">↗</span>{{ your_products_average_1y_increase|floatformat:"1" }}%</a>
                       {% elif your_products_average_1y_increase < 0 %}
-                          <a><span class="text-red-500 font-black">↓</span>{{ your_products_average_1y_increase|floatformat:"1" }}%</a>
+                      <a><span class="text-red-500 font-black">↘</span>{{ your_products_average_1y_increase|floatformat:"1" }}%</a>
+                      {% elif your_products_average_1y_increase == 0 %}
+                      <a><span class="text-blue-500 font-black">=</span>0%</a>
                       {% endif %}
                     {% endif %}
                   </p>
@@ -181,9 +183,11 @@
                     <p class="text-sm font-semibold text-gray-900 dark:text-gray-200">
                       {% if project.increasefromlastyear %}
                         {% if project.increasefromlastyear > 0 %}
-                        <a><span class="text-green-500 font-black">↑</span>{{ project.increasefromlastyear|floatformat:"1" }}%</a>
+                        <a><span class="text-green-500 font-black">↗</span>{{ project.increasefromlastyear|floatformat:"1" }}%</a>
                         {% elif project.increasefromlastyear < 0 %}
-                            <a><span class="text-red-500 font-black">↓</span>{{ project.increasefromlastyear|floatformat:"1" }}%</a>
+                            <a><span class="text-red-500 font-black">↘</span>{{ project.increasefromlastyear|floatformat:"1" }}%</a>
+                        {% elif project.increasefromlastyear == 0 %}
+                        <a><span class="text-blue-500 font-black">=</span>0%</a>
                         {% endif %}
                       {% endif %}
                     </p>

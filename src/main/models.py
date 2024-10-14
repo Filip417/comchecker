@@ -615,6 +615,7 @@ class Notification(models.Model):
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     change = models.FloatField()
     change_by = models.DateField()
+    change_by_ml = models.CharField(max_length=2, null=True, blank=True) # input ">=" or "<="
     email_notification = models.BooleanField()
 
     created_at = models.DateTimeField(auto_now_add=True)

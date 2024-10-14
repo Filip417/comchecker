@@ -215,7 +215,7 @@ def delete_notification(request):
     return redirect(referer)
 
 @show_new_notifications
-@valid_standard_membership_required
+@valid_lite_membership_required
 def set_notification(request):
     if request.method == 'POST':
         commodity_id = request.POST.get('commodity_id', None)
@@ -223,10 +223,11 @@ def set_notification(request):
         project_id = request.POST.get('project_id', None)
         change = request.POST.get('change', None)
         change_by = request.POST.get('change_by', None)
+        change_by_ml = request.POST.get('change_by_ml', None)
         email_notification = request.POST.get('email_notification')
         email_notification = True if email_notification == "on" else False
 
-        if (commodity_id or product_id or project_id) and change and change_by:
+        if (commodity_id or product_id or project_id) and change and change_by and change_by_ml:
             notification = Notification.objects.create(
                 product_id=product_id,
                 commodity_id=commodity_id,
@@ -234,13 +235,13 @@ def set_notification(request):
                 user=request.user,
                 change=change,
                 change_by=change_by,
+                change_by_ml=change_by_ml,
                 email_notification=email_notification
             )
             date_obj = datetime.strptime(notification.change_by, "%Y-%m-%d")
             formatted_date = date_obj.strftime("%d %b %Y")
             updated, sent = check_notification_and_send_email(notification.id)
-            if updated:
-                messages.success(request,
+            messages.success(request,
             f"Notification for {notification.change}% change by {formatted_date} has been set.")
         else:
             messages.error(request, "Error in seting up notification. Try again or contact support.")
@@ -800,7 +801,7 @@ def search(request):
     return render(request, 'main/search.html', context)
 
 @show_new_notifications
-@valid_standard_membership_required
+@valid_lite_membership_required
 def notifications(request):
     active_notifications = Notification.objects.filter(user=request.user, activated=False).order_by('-created_at')
     activated_notifications = Notification.objects.filter(user=request.user, activated=True).order_by('-activated_at')
@@ -949,21 +950,18 @@ def project_calculate_view(request):
             "date2": date2,
             "products":products,
         }
-        if project_id and date1 and date2 and price1 != 0:
+        if price1 <= 0:
+            return JsonResponse({'error_message':"Enter valid Starting price for calculations.",})
+        if not date1:
+            return JsonResponse({'error_message':"Enter Starting date for calculations.",})
+        if not date2:
+            return JsonResponse({'error_message':"Enter Date to calculate for calculations.",})
+        if project_id:
             calculated_price_2, success = calculate_price2_for_project(data_for_calc)
             if success:
                 price2 = calculated_price_2
-            else:
-                return JsonResponse({
-            'error_message':"Invalid input for calcualtions. Contact support.",
-            })
-        else:
-            return JsonResponse({
-            'error_message':"Enter Date, Date to calculate and Price for calculations.",
-            })
-        return JsonResponse({
-            'price2':price2,
-        })
+                return JsonResponse({'price2':price2,})
+            return JsonResponse({'error_message':"Invalid input for calcualtions. Contact support.",})
     return JsonResponse({'error': 'Invalid request'}, status=400)
 
 def commodity_calculate_view(request):
@@ -981,21 +979,18 @@ def commodity_calculate_view(request):
             "price1": price1,
             "date2": date2,
         }
-        if commodity_id and date1 and date2 and price1 != 0:
+        if price1 <= 0:
+            return JsonResponse({'error_message':"Enter valid Starting price for calculations.",})
+        if not date1:
+            return JsonResponse({'error_message':"Enter Starting date for calculations.",})
+        if not date2:
+            return JsonResponse({'error_message':"Enter Date to calculate for calculations.",})
+        if commodity_id:
             calculated_price_2, success = calculate_price2_for_commodity(data_for_calc)
             if success:
                 price2 = calculated_price_2
-            else:
-                return JsonResponse({
-            'error_message':"Invalid input for calcualtions. Contact support.",
-            })
-        else:
-            return JsonResponse({
-            'error_message':"Enter Date, Date to calculate and Price for calculations.",
-            })
-        return JsonResponse({
-            'price2':price2,
-        })
+                return JsonResponse({'price2':price2,})
+            return JsonResponse({'error_message':"Invalid input for calculations. Contact support.",})
     return JsonResponse({'error': 'Invalid request'}, status=400)
 
 
@@ -1051,20 +1046,21 @@ def product_calculate_view(request):
 
         # Perform calculations here
         price2 = None
-        if product_id and date1 and date2 and price1 != 0 and product_weight != 0:
+        if price1 <= 0:
+            return JsonResponse({'error_message':"Enter valid Starting price for calculations.",})
+        if product_weight <= 0:
+            return JsonResponse({'error_message':"Enter valid Product weight for calculations.",})
+        if not date1:
+            return JsonResponse({'error_message':"Enter Starting date for calculations.",})
+        if not date2:
+            return JsonResponse({'error_message':"Enter Date to calculate for calculations.",})
+        if product_id:
+            for n in data_for_calc['commodities']:
+                if n['weight'] < 0:
+                    return JsonResponse({'error_message':"Enter valid weights for calculations.",})
             calculated_price_2, success = calculate_price2_for_product(data_for_calc)
             if success:
                 price2 = calculated_price_2
-            else:
-                return JsonResponse({
-            'error_message':"Invalid input for calcualtions. Contact support.",
-            })
-        else:
-            return JsonResponse({
-            'error_message':"Enter Date, Date to calculate, Price, and Product weight for calculations.",
-            })
-        return JsonResponse({
-            'price2':price2,
-        })
-    
+                return JsonResponse({'price2':price2,})
+            return JsonResponse({'error_message':"Invalid input for calculations. Contact support.",})
     return JsonResponse({'error': 'Invalid request'}, status=400)

@@ -42,39 +42,65 @@
                                 </a>
                             </th>
 
-                            <th scope="col" class="px-4 py-3.5 text-sm font-normal text-left rtl:text-right text-gray-500 dark:text-gray-400">
-                              <a class="flex items-center gap-x-2">
-                                  <span>Change %</span>
+                            <th scope="col" x-data="{ show: false }" class="relative px-4 py-3.5 text-sm font-normal text-left rtl:text-right text-gray-500 dark:text-gray-400">
+                                <a  @mouseenter="show = true" @mouseleave="show = false" class="flex items-center gap-x-2">
+                                    Change %
                                 </a>
-                          </th>
-                            
-
-                            <th scope="col" class="px-4 py-3.5 text-sm font-normal text-left rtl:text-right text-gray-500 dark:text-gray-400">
-                                <a class="flex items-center gap-x-2">
-                                    <span>When</span>
-                                </a>
+                                  
+                                <p x-show="show" @mouseenter="show = true" @mouseleave="show = false" x-transition class="absolute z-10 text-wrap w-48 h-24 px-5 py-3 text-center text-gray-600 truncate -translate-x-1/2 bg-white rounded-lg shadow-lg -bottom-12 left-1/2 dark:shadow-none shadow-gray-200 dark:bg-gray-800 dark:text-white">
+                                    The percentage change you've set for triggering the notification.
+                                </p>
                             </th>
 
-                            <th scope="col" class="px-4 py-3.5 text-sm font-normal text-left rtl:text-right text-gray-500 dark:text-gray-400">
-                                <a class="flex items-center gap-x-2">
-                                    <span>Calculated from</span>
-                                  </a>
+
+                            <th scope="col" x-data="{ show: false }" class="relative px-4 py-3.5 text-sm font-normal text-left rtl:text-right text-gray-500 dark:text-gray-400">
+                                <a  @mouseenter="show = true" @mouseleave="show = false" class="flex items-center gap-x-2">
+                                    When
+                                </a>
+                                  
+                                <p x-show="show" @mouseenter="show = true" @mouseleave="show = false" x-transition class="absolute z-10 text-wrap w-48 h-24 px-5 py-3 text-center text-gray-600 truncate -translate-x-1/2 bg-white rounded-lg shadow-lg -bottom-12 left-1/2 dark:shadow-none shadow-gray-200 dark:bg-gray-800 dark:text-white">
+                                    The ending date to which the percentage change is calculated.
+                                </p>
                             </th>
 
-                            <th scope="col" class="px-4 py-3.5 text-sm font-normal text-left rtl:text-right text-gray-500 dark:text-gray-400">
-                              <a class="flex items-center gap-x-2">
-                                  <span>Activated</span>
+                            <th scope="col" x-data="{ show: false }" class="relative px-4 py-3.5 text-sm font-normal text-left rtl:text-right text-gray-500 dark:text-gray-400">
+                                <a  @mouseenter="show = true" @mouseleave="show = false" class="flex items-center gap-x-2">
+                                    Calculated from
                                 </a>
-                          </th>
-                          <th scope="col" class="px-4 py-3.5 text-sm font-normal text-left rtl:text-right text-gray-500 dark:text-gray-400">
-                            <a class="flex items-center gap-x-2">
-                                <span>Activated %</span>
-                              </a>
-                        </th>
+                                  
+                                <p x-show="show" @mouseenter="show = true" @mouseleave="show = false" x-transition class="absolute z-10 text-wrap w-48 h-24 px-5 py-3 text-center text-gray-600 truncate -translate-x-1/2 bg-white rounded-lg shadow-lg -bottom-12 left-1/2 dark:shadow-none shadow-gray-200 dark:bg-gray-800 dark:text-white">
+                                    The starting date from which the percentage change is calculated.
+                                </p>
+                            </th>
+
+                            <th scope="col" x-data="{ show: false }" class="relative px-4 py-3.5 text-sm font-normal text-left rtl:text-right text-gray-500 dark:text-gray-400">
+                                <a  @mouseenter="show = true" @mouseleave="show = false" class="flex items-center gap-x-2">
+                                    Activated
+                                </a>
+                                  
+                                <p x-show="show" @mouseenter="show = true" @mouseleave="show = false" x-transition class="absolute z-10 text-wrap w-48 h-24 px-5 py-3 text-center text-gray-600 truncate -translate-x-1/2 bg-white rounded-lg shadow-lg -bottom-12 left-1/2 dark:shadow-none shadow-gray-200 dark:bg-gray-800 dark:text-white">
+                                    Time when notification criteria were met and triggered.
+                                </p>
+                            </th>
+                            <th scope="col" x-data="{ show: false }" class="relative px-4 py-3.5 text-sm font-normal text-left rtl:text-right text-gray-500 dark:text-gray-400">
+                                <a  @mouseenter="show = true" @mouseleave="show = false" class="flex items-center gap-x-2">
+                                    Activated %
+                                </a>
+                                  
+                                <p x-show="show" @mouseenter="show = true" @mouseleave="show = false" x-transition class="absolute z-10 text-wrap w-48 h-24 px-5 py-3 text-center text-gray-600 truncate -translate-x-1/2 bg-white rounded-lg shadow-lg -bottom-12 left-1/2 dark:shadow-none shadow-gray-200 dark:bg-gray-800 dark:text-white">
+                                    % change when notification criteria were met and triggered.
+                                </p>
+                            </th>
 
 
-                            <th scope="col" class="px-4 py-3.5 text-sm font-normal text-left rtl:text-right text-gray-500 dark:text-gray-400">
-                                Email
+                            <th scope="col" x-data="{ show: false }" class="relative px-4 py-3.5 text-sm font-normal text-left rtl:text-right text-gray-500 dark:text-gray-400">
+                                <a  @mouseenter="show = true" @mouseleave="show = false" class="flex items-center gap-x-2">
+                                    Email
+                                </a>
+                                  
+                                <p x-show="show" @mouseenter="show = true" @mouseleave="show = false" x-transition class="absolute z-10 text-wrap w-48 h-24 px-5 py-3 text-center text-gray-600 truncate -translate-x-1/2 bg-white rounded-lg shadow-lg -bottom-12 left-1/2 dark:shadow-none shadow-gray-200 dark:bg-gray-800 dark:text-white">
+                                    Whether the email alert has been sent upon activation.
+                                </p>
                             </th>
 
                             <th scope="col" class="relative py-3.5 px-4">
@@ -167,6 +193,11 @@
                             </div>
                         </td>
                         <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap">
+                            {% if notification.change_by_ml == '>=' %}
+                            &ge;
+                            {% elif notification.change_by_ml == '<=' %}
+                            &le;
+                            {% endif %}
                             {{notification.change}}
                         </td>
                         <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap">
@@ -254,26 +285,46 @@
                                   <span>Item</span>
                             </th>
 
-                            <th scope="col" class="px-4 py-3.5 text-sm font-normal text-left rtl:text-right text-gray-500 dark:text-gray-400">
-                              <a class="flex items-center gap-x-2">
-                                  <span>Change %</span>
+                            <th scope="col" x-data="{ show: false }" class="relative px-4 py-3.5 text-sm font-normal text-left rtl:text-right text-gray-500 dark:text-gray-400">
+                                <a  @mouseenter="show = true" @mouseleave="show = false" class="flex items-center gap-x-2">
+                                    Change %
                                 </a>
-                          </th>
-
-                            <th scope="col" class="px-4 py-3.5 text-sm font-normal text-left rtl:text-right text-gray-500 dark:text-gray-400">
-                                <a class="flex items-center gap-x-2">
-                                    <span>When</span>
-                                </a>
+                                  
+                                <p x-show="show" @mouseenter="show = true" @mouseleave="show = false" x-transition class="absolute z-10 text-wrap w-48 h-24 px-5 py-3 text-center text-gray-600 truncate -translate-x-1/2 bg-white rounded-lg shadow-lg -bottom-12 left-1/2 dark:shadow-none shadow-gray-200 dark:bg-gray-800 dark:text-white">
+                                    The percentage change you've set for triggering the notification.
+                                </p>
                             </th>
 
-                            <th scope="col" class="px-4 py-3.5 text-sm font-normal text-left rtl:text-right text-gray-500 dark:text-gray-400">
-                                <a class="flex items-center gap-x-2">
-                                    <span>Calculated from</span>
-                                  </a>
+
+                            <th scope="col" x-data="{ show: false }" class="relative px-4 py-3.5 text-sm font-normal text-left rtl:text-right text-gray-500 dark:text-gray-400">
+                                <a  @mouseenter="show = true" @mouseleave="show = false" class="flex items-center gap-x-2">
+                                    When
+                                </a>
+                                  
+                                <p x-show="show" @mouseenter="show = true" @mouseleave="show = false" x-transition class="absolute z-10 text-wrap w-48 h-24 px-5 py-3 text-center text-gray-600 truncate -translate-x-1/2 bg-white rounded-lg shadow-lg -bottom-12 left-1/2 dark:shadow-none shadow-gray-200 dark:bg-gray-800 dark:text-white">
+                                    The ending date to which the percentage change is calculated.
+                                </p>
                             </th>
 
-                            <th scope="col" class="px-4 py-3.5 text-sm font-normal text-left rtl:text-right text-gray-500 dark:text-gray-400">
-                                Email
+                            <th scope="col" x-data="{ show: false }" class="relative px-4 py-3.5 text-sm font-normal text-left rtl:text-right text-gray-500 dark:text-gray-400">
+                                <a  @mouseenter="show = true" @mouseleave="show = false" class="flex items-center gap-x-2">
+                                    Calculated from
+                                </a>
+                                  
+                                <p x-show="show" @mouseenter="show = true" @mouseleave="show = false" x-transition class="absolute z-10 text-wrap w-48 h-24 px-5 py-3 text-center text-gray-600 truncate -translate-x-1/2 bg-white rounded-lg shadow-lg -bottom-12 left-1/2 dark:shadow-none shadow-gray-200 dark:bg-gray-800 dark:text-white">
+                                    The starting date from which the percentage change is calculated.
+                                </p>
+                            </th>
+
+
+                            <th scope="col" x-data="{ show: false }" class="relative px-4 py-3.5 text-sm font-normal text-left rtl:text-right text-gray-500 dark:text-gray-400">
+                                <a  @mouseenter="show = true" @mouseleave="show = false" class="flex items-center gap-x-2">
+                                    Email
+                                </a>
+                                  
+                                <p x-show="show" @mouseenter="show = true" @mouseleave="show = false" x-transition class="absolute z-10 text-wrap w-48 h-24 px-5 py-3 text-center text-gray-600 truncate -translate-x-1/2 bg-white rounded-lg shadow-lg -bottom-12 left-1/2 dark:shadow-none shadow-gray-200 dark:bg-gray-800 dark:text-white">
+                                    Whether the email alert should be sent upon activation.
+                                </p>
                             </th>
 
                             <th scope="col" class="relative py-3.5 px-4">
@@ -360,6 +411,11 @@
                                     </div>
                                 </td>
                                 <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap">
+                                    {% if notification.change_by_ml == '>=' %}
+                                    &ge;
+                                    {% elif notification.change_by_ml == '<=' %}
+                                    &le;
+                                    {% endif %}
                                     {{notification.change}}
                                 </td>
                                 <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap">
@@ -418,13 +474,7 @@
     <section class="py-10">
         <div>
             <p class="text-sm text-gray-500 dark:text-gray-400">
-                Change % is calculated from 'When' date to when notification is set.
-            </p>
-            <p class="text-sm text-gray-500 dark:text-gray-400">
-                Change by % &gt=0 activates when change % is higher.
-            </p>
-            <p class="text-sm text-gray-500 dark:text-gray-400">
-                Change by % &lt0 activates when change % is lower.
+                Change % is calculated from the date notification is set to 'When' date.
             </p>
         </div>
     </section>

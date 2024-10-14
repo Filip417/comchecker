@@ -3,7 +3,7 @@
 <nav x-data="{ isOpen: false }" class="sticky top-0 bg-white shadow dark:shadow-xl dark:bg-gray-800 z-50">
     <div class="container px-6 py-3 mx-auto lg:flex">
         <div class="flex items-center justify-between">
-            <a href="{% url 'index' %}">
+            <a href="{% url 'index' %}" >
             <!-- This image will be hidden in dark mode and visible in light mode -->
             <img class="w-auto h-12 block dark:hidden" src="{% static 'main/images/fulllogodark.svg' %}" alt="material wise logo icon">
 
@@ -162,7 +162,13 @@
                                     <span class="font-bold">
                                         
                                         {{notification.product.name|slice:"30"}}</span>
-                                         is expected to change by {{notification.change}}%
+                                         is expected to change by 
+                                         {% if notification.change_by_ml == '>=' %}
+                                         &ge;
+                                         {% elif notification.change_by_ml == '<=' %}
+                                         &le;
+                                         {% endif %}
+                                         {{notification.change}}%
                                          • {{notification.activated_at|time_since}} ago</p>
                             </a>
                                 {% elif notification.project %}
@@ -172,7 +178,13 @@
                                     <span class="font-bold">
                                         
                                         {{notification.project.name|slice:"30"}}</span>
-                                            is expected to change by {{notification.change}}% 
+                                        is expected to change by 
+                                        {% if notification.change_by_ml == '>=' %}
+                                         &ge;
+                                         {% elif notification.change_by_ml == '<=' %}
+                                         &le;
+                                         {% endif %}
+                                         {{notification.change}}% 
                                             • {{notification.activated_at|time_since}} ago</p>
                             </a>
                                 {% elif notification.commodity %}
@@ -182,7 +194,13 @@
                                     <span class="font-bold">
                                         
                                         {{notification.commodity.name|slice:"30"}}</span>
-                                            is expected to change by {{notification.change}}%
+                                         is expected to change by 
+                                        {% if notification.change_by_ml == '>=' %}
+                                         &ge;
+                                         {% elif notification.change_by_ml == '<=' %}
+                                         &le;
+                                         {% endif %}
+                                         {{notification.change}}%
                                             • {{notification.activated_at|time_since}} ago</p>
                             </a>
                                 {% endif %}

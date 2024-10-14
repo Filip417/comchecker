@@ -20,16 +20,15 @@
         <div class="absolute bottom-0 w-full">
             <div class="rounded-b-md flex items-center justify-between px-3 py-2 bg-gray-200 dark:bg-gray-700">   
                     {% if product.increasefromlastyear > 0 %}
-                    <span class="font-bold text-gray-800 dark:text-gray-200"><span class="text-green-500 font-black">↑</span>{{ product.increasefromlastyear | floatformat:"1" }}%</span>
+                    <span class="font-bold text-gray-800 dark:text-gray-200"><span class="text-green-500 font-black">↗</span>{{ product.increasefromlastyear | floatformat:"1" }}%</span>
                     <span class="px-2 py-1 text-xs font-bold text-green-600 transition-colors duration-300 transform rounded focus:outline-none">Since last year</span>
                     {% elif product.increasefromlastyear < 0 %}
-                    <span class="font-bold text-gray-800 dark:text-gray-200"><span class="text-red-500 font-black">↓</span>{{ product.increasefromlastyear | floatformat:"1" }}%</span>
+                    <span class="font-bold text-gray-800 dark:text-gray-200"><span class="text-red-500 font-black">↘</span>{{ product.increasefromlastyear | floatformat:"1" }}%</span>
                     <span class="px-2 py-1 text-xs font-bold text-red-600 transition-colors duration-300 transform rounded focus:outline-none">Since last year</span>
                     {% elif product.increasefromlastyear == 0 %}
                     <span class="font-bold text-gray-800 dark:text-gray-200"><span class="text-blue-500 font-black">=</span>{{ product.increasefromlastyear | floatformat:"1" }}%</span>
                     <span class="px-2 py-1 text-xs font-bold text-blue-600 transition-colors duration-300 transform rounded focus:outline-none">Since last year</span>
                     {% endif %}
-                              
             </div>
         </div>
         </div>

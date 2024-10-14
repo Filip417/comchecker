@@ -17,20 +17,18 @@
         <img src="{% get_commodity_image_url commodity %}" alt="{{commodity.name}}" class="rounded-lg shadow-md h-60 w-60 max-w-60 object-cover object-center aspect-square">
         <div class="absolute bottom-0 w-full">
             <div class="rounded-b-md flex items-center justify-between px-3 py-2 bg-gray-200 dark:bg-gray-700">
-                <span class="font-bold text-gray-800 dark:text-gray-200">
                     {% if commodity.increasefromlastyear %}
                         {% if commodity.increasefromlastyear > 0 %}
-                          <a><span class="text-green-500 font-black">↑</span>{{ commodity.increasefromlastyear | floatformat:"1" }}%</a>
+                          <a class="font-bold text-gray-800 dark:text-gray-200"><span class="text-green-500 font-black">↗</span>{{ commodity.increasefromlastyear | floatformat:"1" }}%</a>
                           <span class="px-2 py-1 text-xs font-bold text-green-600 transition-colors duration-300 transform rounded focus:outline-none">Since last year</span>
                         {% elif commodity.increasefromlastyear < 0 %}
-                          <a><span class="text-red-500 font-black">↓</span>{{ commodity.increasefromlastyear | floatformat:"1" }}%</a>
+                          <a class="font-bold text-gray-800 dark:text-gray-200"><span class="text-red-500 font-black">↘</span>{{ commodity.increasefromlastyear | floatformat:"1" }}%</a>
                           <span class="px-2 py-1 text-xs font-bold text-red-600 transition-colors duration-300 transform rounded focus:outline-none">Since last year</span>
                           {% elif commodity.increasefromlastyear == 0 %}
-                          <a><span class="text-blue-500 font-black">=</span>{{ commodity.increasefromlastyear | floatformat:"1" }}%</a>
+                          <a class="font-bold text-gray-800 dark:text-gray-200"><span class="text-blue-500 font-black">=</span>{{ commodity.increasefromlastyear | floatformat:"1" }}%</a>
                           <span class="px-2 py-1 text-xs font-bold text-blue-600 transition-colors duration-300 transform rounded focus:outline-none">Since last year</span>
                         {% endif %}
                       {% endif %}
-                </span>
             </div>
         </div>
     </div>

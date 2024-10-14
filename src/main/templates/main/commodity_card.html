@@ -12,7 +12,14 @@
     <div class="mt-4 flex justify-between">
       <div>
         <h3 class="text-xs text-gray-700 dark:text-gray-300">
-          <a href="{% url 'commodity' commodity.name %}" class="font-semibold whitespace-normal break-words">
+          <a 
+          {% if to_pricing %}
+          href="#pricing"
+          {% else %}
+          href="{% url 'commodity' commodity.name %}"
+          {% endif %}
+          
+          class="font-semibold whitespace-normal break-words">
             <span aria-hidden="true" class="absolute inset-0"></span>
             {{commodity.name}}
           </a>

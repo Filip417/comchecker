@@ -82,10 +82,9 @@ def get_cumulative_line_chart_and_table_data_product(product_id):
 
         # Fetch prices for the commodity within the date range
         prices = CommodityPrice.objects.filter(
+            Q(price__isnull=False) | Q(projected_price__isnull=False),
             commodity_id=material_proportion.commodity_id,
             date__range=[start_date, end_date]
-        ).filter(
-            Q(price__isnull=False) | Q(projected_price__isnull=False)
         ).order_by('date')
 
         for price in prices:
@@ -961,11 +960,11 @@ def get_popular_items(model_name, time_period, return_items, user_id=None):
     today = now().date()
     
     if time_period == 'week':
-        start_date = today - timedelta(days=today.weekday())  # Start of the week
+        start_date = today - timedelta(days=7)
     elif time_period == 'month':
-        start_date = today.replace(day=1)  # Start of the month
+        start_date = today - timedelta(days=30)
     elif time_period == 'year':
-        start_date = today.replace(month=1, day=1)  # Start of the year
+        start_date = today - timedelta(days=365)
     else:
         raise ValueError("Invalid time_period. Choose from 'week', 'month', 'year'.")
 
@@ -1043,14 +1042,16 @@ def calculate_price2_for_product(calc_data):
     date_2_prod_price = get_closest_product_price(product_id, date2_obj) 
     proportion_1to2 += date_1_prod_price / date_2_prod_price * product_weight
     total_weight += product_weight    
-
+    
     # get price for each commodity in date 1 and 2
     com_results = {}
     for commodity in calc_data['commodities']:
         # Special rule for inflation
         com_weight = commodity['weight']
-        com_price1 = get_closest_commodity_price(commodity['commodity_id'], date1_obj, 365*3)
-        com_price2 = get_closest_commodity_price(commodity['commodity_id'], date2_obj, 365*3)
+        if com_weight == 0:
+            continue
+        com_price1 = get_closest_commodity_price(commodity['commodity_id'], date1_obj)
+        com_price2 = get_closest_commodity_price(commodity['commodity_id'], date2_obj)
         if commodity['name'] == 'Inflation UK' and com_price1 and com_price2:
             date_1_com_price = (100 + com_price1)
             date_2_com_price = (100 + com_price2)
@@ -1087,10 +1088,9 @@ def calculate_price2_for_project(calc_data):
         product_id = product['product_id']
         product_weight = product['weight']
         date_1_prod_price = get_closest_product_price(product_id, date1_obj)
-        date_2_prod_price = get_closest_product_price(product_id, date2_obj) 
+        date_2_prod_price = get_closest_product_price(product_id, date2_obj)
         proportion_1to2 += date_1_prod_price / date_2_prod_price * product_weight
         total_weight += product_weight
-
     # proportionally calculate final price 2 to return
     try:
         new_price2 = price1 / proportion_1to2 * total_weight
@@ -1110,10 +1110,9 @@ def calculate_price2_for_commodity(calc_data):
     date1_obj = datetime.strptime(date1_str, "%Y-%m-%d").date()
     date2_obj = datetime.strptime(date2_str, "%Y-%m-%d").date()
 
-    date_1_com_price = get_closest_commodity_price(commodity_id, date1_obj, 365*1)
-    date_2_com_price = get_closest_commodity_price(commodity_id, date2_obj, 365*1)
+    date_1_com_price = get_closest_commodity_price(commodity_id, date1_obj)
+    date_2_com_price = get_closest_commodity_price(commodity_id, date2_obj)
     proportion_1to2 = date_1_com_price / date_2_com_price
-
     # proportionally calculate final price 2 to return
     try:
         new_price2 = price1 / proportion_1to2

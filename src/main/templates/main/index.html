@@ -103,7 +103,7 @@
             <div class="flex space-x-2 snap-x snap-mandatory flex-nowrap overflow-x-auto overflow-visible no-scrollbar scroll-container">
     
               {% for commodity in commodities %}
-                {% include 'main/commodity_card.html' with commodity=commodity %}
+                {% include 'main/commodity_card.html' with commodity=commodity to_pricing=True %}
               {% endfor %}
     
             </section>
@@ -113,8 +113,8 @@
       </div>
       <div class="w-full lg:w-1/2 lg:pl-10">
           <div class="lg:max-w-lg">
-              <h1 class="text-3xl font-semibold tracking-wide text-gray-800 dark:text-white lg:text-4xl">Find commodities you are interested in</h1>
-              <p class="mt-4 text-gray-600 dark:text-gray-300">We analyse major construction manufacturers and raw materials.</p>
+              <h1 class="text-2xl font-semibold tracking-wide text-gray-800 dark:text-white lg:text-3xl">Find commodities you are interested in</h1>
+              <p class="mt-4 text-gray-600 dark:text-gray-300">We analyse major construction raw materials and manufacturers products.</p>
               <div class="grid gap-6 mt-8 sm:grid-cols-2">
                   <div class="flex items-center text-gray-800 -px-3 dark:text-gray-200">
                       <svg class="w-5 h-5 mx-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">

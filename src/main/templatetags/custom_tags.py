@@ -10,16 +10,24 @@ from django.http import QueryDict
 import datetime
 from django import template
 from django.utils.timezone import now
+from main.models import Product
+
 
 register = template.Library()
 
 @register.simple_tag
-def get_product_image_url(product):
+def get_product_image_url(product, product_id=None):
+    if product_id:
+        product = Product.objects.get(id=product_id)
     SIZE = 'medium'
     default_image = 'main/images/product/default.png'
+    your_product_image = 'main/images/product/yourproduct.png'
     try:
         epd_id = product.epd_id
         format = product.first_prod_image_format
+        manufacturer = product.manufacturer_name
+        if manufacturer == 'Your product':
+            return static(your_product_image)
         if epd_id and format:
             path = f'main/images_resized/{epd_id}_prod_1_{SIZE}.{format}'
             return static(path)

@@ -5,7 +5,7 @@ import os
 import freecurrencyapi
 from django.core.mail import send_mail
 from django.conf import settings
-
+from django.db.models import Q
 # Live prices update
 import requests
 from bs4 import BeautifulSoup
@@ -770,71 +770,55 @@ def check_all_notifications_and_send_emails():
     for notification in notifications_to_check:
         check_notification_and_send_email(notification.id)
 
-def get_closest_commodity_price(commodity_id, target_date, days_range=365):
-    # First, check if there's an exact match for the given date
-    exact_price = CommodityPrice.objects.filter(commodity_id=commodity_id, date=target_date).first()
-
-    if exact_price:
-        # If price exists, use it; if not, use projected_price
-        if exact_price.price:
-            return exact_price.price
-        elif exact_price.projected_price:
-            return exact_price.projected_price
-
-    # Define a range for the search
+def get_closest_commodity_price(commodity_id, target_date, days_range=36, loop=0):
+    if loop > 3:
+        return None
+    # Define date range boundaries
     date_range_start = target_date - timedelta(days_range)
     date_range_end = target_date + timedelta(days_range)
 
-    # Retrieve all prices within the date range
-    possible_past_prices = CommodityPrice.objects.filter(
+    # Get the closest past and future prices in a single query
+    prices = CommodityPrice.objects.filter(
+        Q(price__isnull=False) | Q(projected_price__isnull=False),  # Either price or projected_price must exist
         commodity_id=commodity_id,
-        price__isnull=False,
-        date__range=(date_range_start, target_date),
-    ).order_by('-date')  # Ordering by date descending for closest past
+        date__range=(date_range_start, date_range_end)
+        ).order_by('date')
 
-    possible_future_prices = CommodityPrice.objects.filter(
-        commodity_id=commodity_id,
-        projected_price__isnull=False,
-        date__range=(target_date, date_range_end),
-    ).order_by('date')  # Ordering by date ascending for closest future
+    closest_past = None
+    closest_future = None
 
-    if not possible_past_prices.exists() and not possible_future_prices.exists():
-        return None  # No prices found in the date range
+    for price in prices:
+        if price == target_date:
+            if price.price:
+                price_value = price.price if price.price else price.projected_price if price.projected_price and price.date > today else 0
+                return price_value
+        elif price.date < target_date and price.price:  # Use price first if available
+            closest_past = price
+        elif price.date > target_date and price.projected_price:  # Use projected price for future
+            closest_future = price
+            break  # No need to check further as prices are sorted
 
-    closest_past = possible_past_prices.first() if possible_past_prices.exists() else None
-    closest_future = possible_future_prices.first() if possible_future_prices.exists() else None
+    # Determine the valid past or future prices
+    closest_past_price = closest_past.price if closest_past and closest_past.price else None
+    closest_future_price = closest_future.projected_price if closest_future else None
 
-    # Initialize variables for prices and days
-    closest_past_price = None
-    closest_future_price = None
-
-    # Calculate past-related values if closest_past exists
-    if closest_past:
-        days_to_closest_past = (target_date - closest_past.date).days
-        closest_past_price = closest_past.price or closest_past.projected_price
-
-    # Calculate future-related values if closest_future exists
-    if closest_future:
-        days_to_closest_future = (closest_future.date - target_date).days
-        closest_future_price = closest_future.price or closest_future.projected_price
-
-    # Handle cases where both past and future prices are present
+    # Calculate the weighted average if both past and future prices are present
     if closest_past and closest_future:
+        days_to_closest_past = (target_date - closest_past.date).days
+        days_to_closest_future = (closest_future.date - target_date).days
         total_days = days_to_closest_past + days_to_closest_future
-        new_commodity_price = (
+
+        return (
             closest_past_price * days_to_closest_past / total_days +
             closest_future_price * days_to_closest_future / total_days
         )
-    elif closest_past:
-        # If only past prices are available
-        new_commodity_price = closest_past_price
-    elif closest_future:
-        # If only future prices are available
-        new_commodity_price = closest_future_price
-    else:
-        return None  # Fallback in case something went wrong
+    elif closest_past_price:
+        return closest_past_price # Use past price if no future price is available
+    elif closest_future_price:
+        return closest_future_price # Use future price if no past price is available
 
-    return new_commodity_price
+    return get_closest_commodity_price(commodity_id, target_date, days_range=days_range*10, loop=loop+1)
+
 
 def get_closest_product_price(product_id, target_date):
     # Fetch all material proportions for the product
@@ -975,7 +959,13 @@ def check_notification_and_send_email(notification_id):
             change_to_check = notification.change
             print(f'Calculated change: {calculated_change}')
             print(f'Change to check: {change_to_check}')
-            if (change_to_check >= 0 and calculated_change >= change_to_check) or (change_to_check < 0 and calculated_change < change_to_check):
+            if notification.change_by_ml == ">=" and calculated_change >= change_to_check:
                 updated = update_notification_db(notification.id, calculated_change)
                 sent = send_notification_email(notification_id=notification.id)
+            elif notification.change_by_ml == "<=" and calculated_change <= change_to_check:
+                updated = update_notification_db(notification.id, calculated_change)
+                sent = send_notification_email(notification_id=notification.id)
+            else:
+                updated, sent = False, False
+                
     return updated, sent

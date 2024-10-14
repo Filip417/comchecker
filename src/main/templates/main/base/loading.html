@@ -1,0 +1,35 @@
+<!-- Loading Spinner Overlay -->
+<div x-data="{ loading: false }"
+     x-init="
+        // Hide loading spinner when DOM is fully loaded or when returning to the page (from cache)
+        window.addEventListener('DOMContentLoaded', () => loading = false);
+        window.addEventListener('pageshow', () => loading = false);  // For page load from cache
+        
+        // Show loading spinner on page unload (navigation) and when leaving the page
+        window.addEventListener('beforeunload', () => loading = true);
+        window.addEventListener('pagehide', () => loading = true);  // For when page is hidden
+     "
+     x-show="loading"
+     x-cloak
+     class="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50">
+    <div class="loader ease-linear rounded-full border-8 border-t-8 border-gray-200 h-24 w-24"></div>
+</div>
+
+<style>
+    .loader {
+        border-top-color: #3490dc;
+        border-right-color: transparent;
+        border-left-color: transparent;
+        border-bottom-color: transparent;
+        animation: spin 1s cubic-bezier(0.15, 0.06, 0.78, 0.49) infinite;
+    }
+
+    @keyframes spin {
+        0% {
+            transform: rotate(0deg);
+        }
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+</style>
