@@ -829,6 +829,8 @@ def user_settings(request):
     
     payment_intents = get_payment_intents(request.user.id, limit=24)
 
+    stripe_customer_portal_link = settings.STRIPE_CUSTOMER_PORTAL
+
     if request.method == 'POST':
         # refresh data request
         finished = refresh_active_users_subscriptions(user_ids=[request.user.id],
@@ -845,6 +847,7 @@ def user_settings(request):
         "year_qs":list(year_qs),
         "subscription": sub_data,
         "payment_intents":payment_intents,
+        "stripe_customer_portal_link":stripe_customer_portal_link,
     }
     return render(request, "main/settings.html", context)
 

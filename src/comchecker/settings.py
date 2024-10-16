@@ -32,6 +32,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 CURRENCIES_API_KEY = config('CURRENCIES_API_KEY')
 
+STRIPE_CUSTOMER_PORTAL = config("STRIPE_CUSTOMER_PORTAL")
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
