@@ -16,8 +16,10 @@ def product_price_redirect_view(request, price_id=None, *args, **kwargs):
     request.session['checkout_subscription_price_id'] = price_id
     return redirect("stripe-checkout-start")
 
-@login_required
 def checkout_redirect_view(request):
+    # If the user is not authenticated, redirect to the signup page
+    if not request.user.is_authenticated:
+        return redirect(reverse("account_signup")) # Or use reverse("signup") if you have a named URL
     checkout_subscription_price_id = request.session.get("checkout_subscription_price_id")
     try:
         obj = SubscriptionPrice.objects.get(id=checkout_subscription_price_id)

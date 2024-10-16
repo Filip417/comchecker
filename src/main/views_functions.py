@@ -17,7 +17,7 @@ import pandas as pd
 from itertools import chain
 from django.db.models import Count
 from .update_prices import get_closest_product_price, get_closest_commodity_price, get_closest_project_price
-
+from django.db.models import Case, When, IntegerField
 
 
 def get_table_data_project(project):
@@ -1122,3 +1122,24 @@ def calculate_price2_for_commodity(calc_data):
         success = False
 
     return round(new_price2, 2), success
+
+def get_priority_commodities():
+    # Define the priority list
+    priority_list = [
+        'Construction labour UK', 'Construction activity UK', 'Steel', 'Lumber', 
+        'Copper', 'Aggregate', 'Aluminium', 'Gypsum', 'Glass', 'Electricity UK', 
+        'Inflation UK', 'Labour UK', 'Containerized Freight China-Europe', 'EU Carbon Permits'
+    ]
+    # Create cases for each priority commodity
+    cases = [When(name=priority, then=index) for index, priority in enumerate(priority_list)]
+
+    # Annotate the queryset with a priority score and order by that priority, followed by alphabetical ordering
+    commodities = Commodity.objects.annotate(
+        priority_order=Case(
+            *cases,  # Unpack the list of When conditions
+            default=len(priority_list),  # Default for non-priority items
+            output_field=IntegerField()
+        )
+    ).order_by('priority_order', 'name')  # Order first by priority, then alphabetically by name
+
+    return commodities

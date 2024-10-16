@@ -481,7 +481,7 @@
             </div>
             
               
-              <div class="my-2 flex items-center">
+              {% comment %} <div class="my-2 flex items-center">
                 <label class="relative inline-flex items-center cursor-pointer">
                 <input type="checkbox" name="personalisation" class="sr-only peer" {% if user.userprofile.cookie_personalisation %}checked{% endif %}>
                 <div class="w-9 h-5 bg-gray-200 hover:bg-gray-300 peer-focus:outline-0  rounded-full peer transition-all ease-in-out duration-500 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all  peer-checked:bg-indigo-600 hover:peer-checked:bg-indigo-700 "></div>
@@ -491,7 +491,7 @@
                 <br>
                 <span class="text-xs max-md:hidden font-normal text-gray-400 dark:text-gray-500">Helps show more relevant content. These cookies help us customise product recommendations.</span>
               </div>
-            </div>
+            </div> {% endcomment %}
 
 
 

@@ -103,23 +103,7 @@ def index(request):
     if request.user.is_authenticated:
         return redirect(reverse('logged'))
     
-    # Define the priority list
-    priority_list = [
-        'Construction labour UK', 'Construction activity UK', 'Steel', 'Lumber', 
-        'Copper', 'Aggregate', 'Aluminium', 'Gypsum', 'Glass', 'Electricity UK', 
-        'Inflation UK', 'Labour UK', 'Containerized Freight China-Europe', 'EU Carbon Permits'
-    ]
-    # Create cases for each priority commodity
-    cases = [When(name=priority, then=index) for index, priority in enumerate(priority_list)]
-
-    # Annotate the queryset with a priority score and order by that priority, followed by alphabetical ordering
-    commodities = Commodity.objects.annotate(
-        priority_order=Case(
-            *cases,  # Unpack the list of When conditions
-            default=len(priority_list),  # Default for non-priority items
-            output_field=IntegerField()
-        )
-    ).order_by('priority_order', 'name')  # Order first by priority, then alphabetically by name
+    commodities = get_priority_commodities()
     
     pricing_qs = SubscriptionPrice.objects.filter(featured=True)
     month_qs = pricing_qs.filter(interval=SubscriptionPrice.IntervalChoices.MONTHLY)
@@ -135,8 +119,9 @@ def index(request):
 
 @login_required
 def index_logged_no_valid_membership(request):
-    # TODO change whole template and view
 
+    commodities = get_priority_commodities()
+    
     pricing_qs = SubscriptionPrice.objects.filter(featured=True)
     month_qs = pricing_qs.filter(interval=SubscriptionPrice.IntervalChoices.MONTHLY)
     year_qs = pricing_qs.filter(interval=SubscriptionPrice.IntervalChoices.YEARLY)
@@ -144,6 +129,7 @@ def index_logged_no_valid_membership(request):
     context = {
         "month_qs":list(month_qs),
         "year_qs":list(year_qs),
+        "commodities":commodities,
     }
 
     return render(request, "main/index.html", context=context)
