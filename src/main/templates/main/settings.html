@@ -35,13 +35,13 @@
             </a>
 
             <!-- Email management -->
-            <section>
+            {% comment %} <section>
               <div class="relative flex mt-2 ">
                 <a href="{% url 'account_email' %}" class="px-6 py-2 font-medium tracking-wide text-white capitalize transition-colors duration-300 transform bg-blue-600 rounded-lg hover:bg-blue-500 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-80">
                   Manage email
                 </a>
               </div>
-          </section>
+          </section> {% endcomment %}
           </div>
 
           <div>
@@ -202,8 +202,11 @@
         <!-- TODO update link for stripe prod from views.py using django template 
          -->
         <a href="{{stripe_customer_portal_link}}" class="w-full px-4 py-2 mt-2 text-sm font-medium tracking-wide text-white capitalize transition-colors duration-300 transform bg-gray-600 rounded-md sm:w-auto sm:mt-0 hover:bg-gray-700 focus:outline-none focus:ring focus:ring-gray-800 focus:ring-opacity-40">
-          Manage Payment methods
-        </a> 
+          Customer Portal
+        </a>
+        <p class="mt-2 block text-xs text-gray-500 dark:text-gray-300">
+          Manage Payment methods, billing information and invoice history
+        </p>
 
     <!-- Show + - -->
     <section class="container mx-auto">
@@ -328,30 +331,30 @@
           </div>
         </section>
 
-
-        <!-- Payment History -->
-<section class="container mx-auto">
-  <style>
-      [x-cloak] { display: none; }
-  </style>
-  <div class="my-5 flex flex-col" x-data="{ sectionOpen: { membership3: false } }" >
-  <!-- Expand/collapse section button -->
-  <button @click="sectionOpen.membership3 = !sectionOpen.membership3" type="button"
-  class="flex w-full items-center justify-between bg-white dark:bg-gray-800 text-gray-400 hover:text-gray-500 hover:underline" aria-controls="membership-section-0" :aria-expanded="sectionOpen.membership3.toString()">
-      <span class="text-lg font-medium text-gray-800 dark:text-white">Payment history</span>
-      <span class="flex items-center">
-          <!-- Expand icon, show/hide based on section open state. -->
-          <svg x-show="!sectionOpen.membership3 " class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" x-cloak>
-          <path d="M10.75 4.75a.75.75 0 00-1.5 0v4.5h-4.5a.75.75 0 000 1.5h4.5v4.5a.75.75 0 001.5 0v-4.5h4.5a.75.75 0 000-1.5h-4.5v-4.5z" />
-          </svg>
-          <!-- Collapse icon, show/hide based on section open state. -->
-          <svg x-show="sectionOpen.membership3 " class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" x-cloak>
-          <path fill-rule="evenodd" d="M4 10a.75.75 0 01.75-.75h10.5a.75.75 0 010 1.5H4.75A.75.75 0 014 10z" clip-rule="evenodd" />
-          </svg>
-      </span>
-      </button>
-  
-  <div x-show="sectionOpen.membership3 " id="membership-section-0" x-cloak>  
+{% if payment_intents %}
+  <!-- Payment History -->
+  <section class="container mx-auto">
+    <style>
+        [x-cloak] { display: none; }
+    </style>
+    <div class="my-5 flex flex-col" x-data="{ sectionOpen: { membership3: false } }" >
+    <!-- Expand/collapse section button -->
+    <button @click="sectionOpen.membership3 = !sectionOpen.membership3" type="button"
+    class="flex w-full items-center justify-between bg-white dark:bg-gray-800 text-gray-400 hover:text-gray-500 hover:underline" aria-controls="membership-section-0" :aria-expanded="sectionOpen.membership3.toString()">
+        <span class="text-lg font-medium text-gray-800 dark:text-white">Payment history</span>
+        <span class="flex items-center">
+            <!-- Expand icon, show/hide based on section open state. -->
+            <svg x-show="!sectionOpen.membership3 " class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" x-cloak>
+            <path d="M10.75 4.75a.75.75 0 00-1.5 0v4.5h-4.5a.75.75 0 000 1.5h4.5v4.5a.75.75 0 001.5 0v-4.5h4.5a.75.75 0 000-1.5h-4.5v-4.5z" />
+            </svg>
+            <!-- Collapse icon, show/hide based on section open state. -->
+            <svg x-show="sectionOpen.membership3 " class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" x-cloak>
+            <path fill-rule="evenodd" d="M4 10a.75.75 0 01.75-.75h10.5a.75.75 0 010 1.5H4.75A.75.75 0 014 10z" clip-rule="evenodd" />
+            </svg>
+        </span>
+        </button>
+    
+    <div x-show="sectionOpen.membership3 " id="membership-section-0" x-cloak>  
     <p class="my-2 text-sm text-gray-500 dark:text-gray-300">Showing invoices within the past </p>
         <!-- Payment history table -->
         <section class="container px-4 mx-auto">
@@ -433,7 +436,7 @@
               </div>
             </div>
           </div>
-          </section>
+        </section>
         </div>
       </div>
     </section>
@@ -442,8 +445,8 @@
 
       </div>
       </div>
-    </section>
-
+  </section>
+  {% endif payment_intents %}
 
 
       
