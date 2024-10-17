@@ -135,7 +135,7 @@ def index_logged_no_valid_membership(request):
     return render(request, "main/index.html", context=context)
 
 @show_new_notifications
-@valid_lite_membership_required
+@valid_standard_membership_required
 def index_logged(request):
     # Adjust this view for a logged-in user's dashboard or main page
     # Step 1: Get all products sorted by 'increasefromlastyear' and filter by at least 3 unique commodities
@@ -201,7 +201,7 @@ def delete_notification(request):
     return redirect(referer)
 
 @show_new_notifications
-@valid_lite_membership_required
+@can_create_notification
 def set_notification(request):
     if request.method == 'POST':
         commodity_id = request.POST.get('commodity_id', None)
@@ -385,7 +385,7 @@ def create(request):
     return render(request, "main/create.html", context=context)
 
 @show_new_notifications
-@valid_lite_membership_required
+@valid_standard_membership_required
 def profile(request):
     user_sub_obj, created = UserSubscription.objects.get_or_create(user=request.user)
     sub_data = user_sub_obj.serialize()
@@ -534,7 +534,7 @@ def commodity(request, name):
     return render(request, "main/commodity.html", context)
 
 @show_new_notifications
-@valid_lite_membership_required
+@valid_standard_membership_required
 def project(request, project_slug):
     project = get_object_or_404(Project, slug=project_slug)
 
@@ -787,7 +787,7 @@ def search(request):
     return render(request, 'main/search.html', context)
 
 @show_new_notifications
-@valid_lite_membership_required
+@valid_standard_membership_required
 def notifications(request):
     active_notifications = Notification.objects.filter(user=request.user, activated=False).order_by('-created_at')
     activated_notifications = Notification.objects.filter(user=request.user, activated=True).order_by('-activated_at')
@@ -1053,3 +1053,32 @@ def product_calculate_view(request):
                 return JsonResponse({'price2':price2,})
             return JsonResponse({'error_message':"Invalid input for calculations. Contact support.",})
     return JsonResponse({'error': 'Invalid request'}, status=400)
+
+
+def contact_us_enterprise(request):
+    if request.method == "POST":
+        contact_email = request.POST.get("contact-email")
+        contact_company = request.POST.get("contact-company")
+        contact_mobile = request.POST.get("contact-mobile")
+        contact_time = request.POST.get("contact-time")
+        inputs_to_check = [contact_email , contact_company, contact_mobile]
+        if not contact_email and contact_email.strip() == '':
+            messages.error(request, 'Invalid email. Please try again.')
+            return
+        
+        for n in inputs_to_check:
+            if not n and n.strip() == '':
+                messages.error(request, 'Invalid email, mobile or company. Please try again.')
+                return render(request, 'main/contact_us_enterprise.html')
+            
+            send_mail(
+                subject=f'New Enterprise Contact from {contact_email}',
+                message=f'Email: {contact_email}\n\nCompany: {contact_company}\n\n Mobile: {contact_mobile}\n\n Best contact time: {contact_time}',
+                from_email=settings.EMAIL_HOST_USER,  # Sender's email
+                recipient_list=[settings.EMAIL_HOST_USER],  # Recipient's email
+                fail_silently=False,
+            )
+            messages.success(request, 'Thank you for contacting us. We will reach out asap.')
+            return redirect('help')
+
+    return render(request, 'main/contact_us_enterprise.html')

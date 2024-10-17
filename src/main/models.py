@@ -23,7 +23,6 @@ from django.db.models import UniqueConstraint
 
 ALLOW_CUSTOM_GROUPS = True
 SUBSCRIPTION_PERMISSIONS = [
-            ("lite", "Lite Perm"), # subscriptions.lite
             ("standard","Standard Perm"), # subscriptions.standard
             ("unlimited","Unlimited Perm"), # subscriptions.unlimited
         ]
