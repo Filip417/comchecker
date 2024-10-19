@@ -427,6 +427,16 @@ class Product(models.Model):
     view_count = models.IntegerField(default=0)
     first_prod_image_format = models.CharField(max_length=5, blank=True, null=True)
     first_man_image_format = models.CharField(max_length=5, blank=True, null=True)
+    # Price points adjusted for today = 100
+    ago_5y =  models.FloatField(null=True, blank=True)
+    ago_2y = models.FloatField(null=True, blank=True)
+    ago_1y = models.FloatField(null=True, blank=True)
+    ago_6m = models.FloatField(null=True, blank=True)
+    today = models.FloatField(null=True, blank=True)
+    ahead_6m = models.FloatField(null=True, blank=True)
+    ahead_1y = models.FloatField(null=True, blank=True)
+    ahead_2y = models.FloatField(null=True, blank=True)
+    ahead_5y = models.FloatField(null=True, blank=True)
 
     def __str__(self):
         return self.name

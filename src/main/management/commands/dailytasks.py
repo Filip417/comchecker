@@ -13,7 +13,8 @@ from ...update_prices import (
     futures_commodities_data_input,
     update_futures_prices_in_db,
     check_all_notifications_and_send_emails,
-    add_1y_increase_to_products_and_add_top_value_commodities
+    add_1y_increase_to_products_and_add_top_value_commodities,
+    add_price_points,
 )
 
 from ...project_pricesv2 import (
@@ -45,16 +46,15 @@ class Command(BaseCommand):
             update_futures_prices_in_db(futures_commodities_data)
 
             # # 4. Update values
-            products = Product.objects.all()
+            products = Product.objects.objects.all()
             commodities = Commodity.objects.all()
-            
             add_1y_increase_to_commodities(commodities)
             add_price_now(commodities)
             update_total_production(commodities)
             # # # add_1y_increase_to_products(products) # irrelevant
             # # # add_top_value_commodities(products) # irrelevant
             add_1y_increase_to_products_and_add_top_value_commodities(products) # combined separate functions for efficiency         
-
+            add_price_points(products)
             # 5. Forecast prices
             update_forecast_prices()
 

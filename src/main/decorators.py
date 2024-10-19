@@ -44,6 +44,17 @@ def check_if_user_sub_active(user_id):
         return False
     return False
 
+def valid_subscription(view_func):
+    @wraps(view_func)
+    @login_required
+    def wrapper(request, *args, **kwargs):
+        if check_if_user_sub_active(request.user.id):
+            return view_func(request, *args, **kwargs)
+        else:
+            messages.error(request, "You have no active subscription.")
+            return redirect(reverse('index_logged_no_valid_membership'))  # Redirect if the user doesn't have the required permission
+    return wrapper
+
 def valid_unlimited_membership_required(view_func):
     @wraps(view_func)
     @login_required  # Ensure the user is authenticated before checking permissions
@@ -79,7 +90,7 @@ def logged_in_cant_access(view_func):
 
 def can_access_product(view_func):
     @wraps(view_func)
-    @valid_standard_membership_required
+    @valid_subscription
     def wrapper(request, *args, **kwargs):
         if request.user.has_perm('main.unlimited'):
             return view_func(request, *args, **kwargs)
@@ -103,7 +114,7 @@ def can_access_product(view_func):
 
 def can_access_commodity(view_func):
     @wraps(view_func)
-    @valid_standard_membership_required
+    @valid_subscription
     def wrapper(request, *args, **kwargs):
         if request.user.has_perm('main.unlimited'):
             return view_func(request, *args, **kwargs)
@@ -127,7 +138,7 @@ def can_access_commodity(view_func):
 
 def can_create_product(view_func):
     @wraps(view_func)
-    @valid_standard_membership_required
+    @valid_subscription
     def wrapper(request, *args, **kwargs):
         if request.user.has_perm('main.unlimited'):
             return view_func(request, *args, **kwargs)
@@ -146,7 +157,7 @@ def can_create_product(view_func):
 
 def can_create_project(view_func):
     @wraps(view_func)
-    @valid_standard_membership_required
+    @valid_subscription
     def wrapper(request, *args, **kwargs):
         if request.user.has_perm('main.unlimited'):
             return view_func(request, *args, **kwargs)
@@ -167,7 +178,7 @@ def can_create_project(view_func):
 
 def can_create_notification(view_func):
     @wraps(view_func)
-    @valid_standard_membership_required
+    @valid_subscription
     def wrapper(request, *args, **kwargs):
         if request.user.has_perm('main.unlimited'):
             return view_func(request, *args, **kwargs)

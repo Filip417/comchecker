@@ -28,6 +28,7 @@ from main.models import (
 
 # Load the Excel file
 excel_file_path = r'C:\Coding projects\Commodity Project\django_project\comchecker\src\static\db_v1_demo\db_v_1_0.xlsx'
+excel_file_path = r'C:\Coding projects\Commodity Project\django_project\comchecker\src\main\new_products_to_add.xlsx'
 xls = pd.ExcelFile(excel_file_path)
 
 # Try to load the Excel file and catch exceptions if any

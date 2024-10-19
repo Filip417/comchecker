@@ -44,8 +44,9 @@
                 {% if product.user == request.user %}
                 Your product
                 {% else %}
+                {% if product.manufacturer_name and product.manufacturer_name != 'nan' %}
                 <a href="{% url 'search' %}?manufacturer={{product.manufacturer_name}}">{{product.manufacturer_name}}</a>
-                
+                {% endif %}
                 {% endif %}
                 </h2>
         </div>
@@ -233,15 +234,16 @@
             >{{ product.description }}
             </p>
             <div class="mt-5 grid grid-cols-[max-content_1fr] lg:grid-cols-[max-content_1fr_max-content_1fr] gap-5">
-                {% if product.manufacturer_name %}
                 <p class="col-span-1 text-xs text-gray-500 dark:text-gray-400">EN15804</p>
                 <p class="col-span-1 text-sm text-gray-800 dark:text-gray-500 font-semibold">Compliant</p>
-                
+                {% if product.manufacturer_name and product.manufacturer_name != 'nan' %}
                 <p class="col-span-1 text-xs text-gray-500 dark:text-gray-400">Manufacturer country</p>
                 <p class="col-span-1 text-sm text-gray-800 dark:text-gray-500 font-semibold">{{product.manufacturer_country}}</p>
                 {% endif %}
+                {% if product.reg_date and product.reg_date != 'nan' %}
                 <p class="col-span-1 text-xs text-gray-500 dark:text-gray-400">Declaration date</p>
                 <p class="col-span-1 text-sm text-gray-800 dark:text-gray-500 font-semibold">{{product.reg_date}}</p>
+                {% endif %}
                 <p class="col-span-1 text-xs text-gray-500 dark:text-gray-400">Highest value commodity</p>
                 <p class="col-span-1 text-sm text-gray-800 dark:text-gray-500 font-semibold">{{product.top_value_commodity.name}}</p>
             </div>

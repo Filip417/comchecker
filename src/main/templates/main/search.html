@@ -939,7 +939,11 @@
                         </a>
                       </h3>
                       <p class="mt-1 text-xs text-gray-600 dark:text-gray-400  text-wrap">{{product.category_1}}</p>
-                      <p class="mt-1 text-xs text-gray-400 dark:text-gray-500  text-wrap">{{product.manufacturer_name}}</p>
+                      <p class="mt-1 text-xs text-gray-400 dark:text-gray-500  text-wrap">
+                        {% if product.manufacturer_name and product.manufacturer_name != 'nan' %}
+                        {{ product.manufacturer_name }}
+                        {% endif %}
+                      </p>
                     </div>
 
                         <p class="text-xs font-semibold text-gray-900 dark:text-gray-300">

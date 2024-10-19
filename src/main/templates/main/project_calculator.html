@@ -24,15 +24,17 @@
     <input disabled type="number" id="price2" class="block cursor-not-allowed mt-2 w-full placeholder-gray-400/70 dark:placeholder-gray-500 rounded-lg border border-gray-200 bg-white px-5 py-2.5 text-gray-700 focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-300 dark:focus:border-blue-300" />
 </div>
 
+
+
 <hr class="border-gray-200 dark:border-gray-700">
 <hr class="border-gray-200 dark:border-gray-700">
 <p class="text-gray-500 dark:text-gray-300">Weights:</p>
 <p class="text-gray-500 dark:text-gray-300"></p>
 <!-- Instruction -->
-<p class="text-gray-500 dark:text-gray-300 text-sm">To calculate the final price of a project based on its products, you assign weights to each product representing its relative contribution to the total cost.</p>
+<p class="text-gray-500 dark:text-gray-300 text-sm">To calculate the final price of a project based on its products and other indicators/commodities, you assign weights to each component representing its relative contribution to the total cost.</p>
 <p class="text-gray-500 dark:text-gray-300 text-sm">The final price is computed as a weighted sum of the costs of the products.</p>
 
-<!-- Weights -->
+<!-- Product Weights -->
 {% for product in project.products.all %}
 <div>
     <label for="weight" class="block text-sm text-gray-500 dark:text-gray-300">
@@ -42,7 +44,53 @@
     <input type="number" id="product-{{ forloop.counter }}-weight" min="0" value="10" class="block  mt-2 w-full placeholder-gray-400/70 dark:placeholder-gray-500 rounded-lg border border-gray-200 bg-white px-5 py-2.5 text-gray-700 focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-300 dark:focus:border-blue-300" />
 </div>
  {% endfor %}
+</div>
+<div class="grid grid-cols-2 gap-5">
+ <hr class="border-gray-200 dark:border-gray-700 my-5">
+ <hr class="border-gray-200 dark:border-gray-700 my-5">
+<!-- Commodities/Indexes Weights -->
+ <div>
+    <label for="weight" class="block text-sm text-gray-500 dark:text-gray-300">Electricity UK</label>
 
+    <input type="number" min="0" placeholder="10" id="electricity-uk-weight" class="block  mt-2 w-full placeholder-gray-400/70 dark:placeholder-gray-500 rounded-lg border border-gray-200 bg-white px-5 py-2.5 text-gray-700 focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-300 dark:focus:border-blue-300" />
+</div>
+
+<div>
+    <label for="weight" class="block text-sm text-gray-500 dark:text-gray-300">Labour UK</label>
+
+    <input type="number" min="0" placeholder="20" id="labour-uk-weight" class="block  mt-2 w-full placeholder-gray-400/70 dark:placeholder-gray-500 rounded-lg border border-gray-200 bg-white px-5 py-2.5 text-gray-700 focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-300 dark:focus:border-blue-300" />
+</div>
+
+<div>
+    <label for="weight" class="block text-sm text-gray-500 dark:text-gray-300">Inflation UK</label>
+
+    <input type="number" min="0" placeholder="10" id="inflation-uk-weight" class="block  mt-2 w-full placeholder-gray-400/70 dark:placeholder-gray-500 rounded-lg border border-gray-200 bg-white px-5 py-2.5 text-gray-700 focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-300 dark:focus:border-blue-300" />
+</div>
+
+<div>
+    <label for="weight" class="block text-sm text-gray-500 dark:text-gray-300">Freight China-Europe</label>
+
+    <input type="number" min="0" placeholder="10" id="freight-china-europe-weight" class="block  mt-2 w-full placeholder-gray-400/70 dark:placeholder-gray-500 rounded-lg border border-gray-200 bg-white px-5 py-2.5 text-gray-700 focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-300 dark:focus:border-blue-300" />
+</div>
+
+
+<div>
+    <label for="weight" class="block text-sm text-gray-500 dark:text-gray-300">EU Carbon Permits</label>
+
+    <input type="number" min="0" placeholder="10" id="eu-carbon-permits-weight" class="block  mt-2 w-full placeholder-gray-400/70 dark:placeholder-gray-500 rounded-lg border border-gray-200 bg-white px-5 py-2.5 text-gray-700 focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-300 dark:focus:border-blue-300" />
+</div>
+
+<div>
+    <label for="weight" class="block text-sm text-gray-500 dark:text-gray-300">Crude Oil</label>
+
+    <input type="number" min="0" placeholder="10" id="crude-oil-weight" class="block  mt-2 w-full placeholder-gray-400/70 dark:placeholder-gray-500 rounded-lg border border-gray-200 bg-white px-5 py-2.5 text-gray-700 focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-300 dark:focus:border-blue-300" />
+</div>
+
+<div>
+    <label for="weight" class="block text-sm text-gray-500 dark:text-gray-300">Construction labour UK</label>
+
+    <input type="number" min="0" placeholder="5" id="construction-labour-uk-weight" class="block  mt-2 w-full placeholder-gray-400/70 dark:placeholder-gray-500 rounded-lg border border-gray-200 bg-white px-5 py-2.5 text-gray-700 focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-300 dark:focus:border-blue-300" />
+</div>
 
 </div>
 

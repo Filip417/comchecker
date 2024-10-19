@@ -37,7 +37,7 @@ from django.utils.http import urlsafe_base64_decode
 from django.utils.encoding import force_str
 from .tokens import email_notification_token
 from django.views.decorators.csrf import csrf_exempt
-from django.db.models import Case, When, IntegerField
+from django.db.models import Case, When, IntegerField, Value
 
 
 
@@ -135,7 +135,7 @@ def index_logged_no_valid_membership(request):
     return render(request, "main/index.html", context=context)
 
 @show_new_notifications
-@valid_standard_membership_required
+@valid_subscription
 def index_logged(request):
     # Adjust this view for a logged-in user's dashboard or main page
     # Step 1: Get all products sorted by 'increasefromlastyear' and filter by at least 3 unique commodities
@@ -153,7 +153,7 @@ def index_logged(request):
     unique_manufacturer_products = [products[0] for products in products_by_manufacturer.values()]
 
     # Limit the result of products
-    LIMIT = 30
+    LIMIT = 40
     highest_products = unique_manufacturer_products[:LIMIT]
     lowest_products = unique_manufacturer_products[-LIMIT:]
     lowest_products.reverse()
@@ -278,7 +278,7 @@ def new_project(request):
             messages.error(request, 'Cannot use empty name to create new project.')
     return redirect('project', project_slug=project.slug)
 
-@can_create_project
+@valid_subscription
 def change_product_to_project(request, product_id):
     # Get the product object
     product = get_object_or_404(Product, id=product_id)
@@ -292,17 +292,20 @@ def change_product_to_project(request, product_id):
         # Check if a new project is being created or an existing one is selected
         if project_id == 'new':
             # Create a new project (You can extend this logic based on your form)
-            new_project_name = request.POST.get('new_project_name', None)
-            if new_project_name and new_project_name.strip() != '':
-                project = Project.objects.create(user=request.user, name=new_project_name)
-                messages.success(request, f"New project {project.name} has been created.")
-            else:
-                messages.error(request, 'Cannot use empty name to create new project.')
-                return redirect(request.META.get('HTTP_REFERER', '/'))
-            # Check if project has been saved and has an id
-            if not project.id:
-                messages.error(request, "Failed to create the project.")
-                return redirect(request.META.get('HTTP_REFERER', '/'))
+            @can_create_project
+            def create_new_project(request):
+                new_project_name = request.POST.get('new_project_name', None)
+                if new_project_name and new_project_name.strip() != '':
+                    project = Project.objects.create(user=request.user, name=new_project_name)
+                    messages.success(request, f"New project {project.name} has been created.")
+                else:
+                    messages.error(request, 'Cannot use empty name to create new project.')
+                    return redirect(request.META.get('HTTP_REFERER', '/'))
+                # Check if project has been saved and has an id
+                if not project.id:
+                    messages.error(request, "Failed to create the project.")
+                    return redirect(request.META.get('HTTP_REFERER', '/'))
+            create_new_project(request)
         else:
             project = get_object_or_404(Project, id=project_id, user=request.user)
 
@@ -336,7 +339,6 @@ def edit_product(request, slug):
     categories = Product.objects.all().values_list('category_3', flat=True).distinct().order_by('category_3')
 
     materialproportions = MaterialProportion.objects.filter(product_id=product.id)
-    print(f"LENGTH: {len(materialproportions)}")
 
     context = {
         "product":product,
@@ -346,7 +348,7 @@ def edit_product(request, slug):
     }
 
     if request.method == 'POST':
-        return save_new_product(request)        
+        return save_new_product(request)  
 
     return render(request, "main/create.html", context=context)
 
@@ -385,7 +387,7 @@ def create(request):
     return render(request, "main/create.html", context=context)
 
 @show_new_notifications
-@valid_standard_membership_required
+@valid_subscription
 def profile(request):
     user_sub_obj, created = UserSubscription.objects.get_or_create(user=request.user)
     sub_data = user_sub_obj.serialize()
@@ -532,12 +534,11 @@ def commodity(request, name):
         "products_in_projects": json.dumps(products_in_projects),
     }
     return render(request, "main/commodity.html", context)
-
+import time
 @show_new_notifications
-@valid_standard_membership_required
+@valid_subscription
 def project(request, project_slug):
     project = get_object_or_404(Project, slug=project_slug)
-
     if project.user != request.user and request.user not in project.shared_with.all():
         messages.error(request, "You have no access to this project.")
         return redirect(reverse('logged'))
@@ -555,13 +556,14 @@ def project(request, project_slug):
             response = download_table_csv_project(project.name, table_data)
             return response  
 
-    unique_sources = []
     all_products = project.products.all()
-    for product in all_products:
-        for n in product.price_history_sources:
-            if n not in unique_sources:
-                unique_sources.append(n)
-
+    # unique_sources = []
+    # 
+    # for product in all_products:
+    #     for n in product.price_history_sources:
+    #         if n not in unique_sources:
+    #             unique_sources.append(n)
+    
     similar_products = get_similar_products_for_products(all_products, request)
     top_value_commodity_ids = project.products.values_list('top_value_commodity', flat=True).distinct()[:20]
     top_value_commodities = Commodity.objects.filter(id__in=top_value_commodity_ids)
@@ -570,24 +572,23 @@ def project(request, project_slug):
 
     project.add_view(user=request.user)
 
-    # User-specific products and projects
     owned_projects, shared_projects, your_projects, products_in_projects = get_product_project_variables(request)
 
     context = {
         'project': project,
-        "product_categories":product_categories,
-        "table_data":table_data,
-        "unique_sources":unique_sources,
-        "similar_products":similar_products,
-        "top_value_commodities":top_value_commodities,
-        "your_products":your_products,
-        "popular_products":popular_products,
+        "product_categories": product_categories,
+        "table_data": table_data,
+        # "unique_sources": unique_sources,
+        "similar_products": similar_products,
+        "top_value_commodities": top_value_commodities,
+        "your_products": your_products,
+        "popular_products": popular_products,
         "owned_projects": owned_projects,
-        "shared_projects":shared_projects,
-        "your_projects":your_projects,
+        "shared_projects": shared_projects,
+        "your_projects": your_projects,
         "products_in_projects": json.dumps(products_in_projects),
     }
-    return render(request, "main/project.html",context)
+    return render(request, "main/project.html", context)
 
 @show_new_notifications
 def search(request):
@@ -615,23 +616,133 @@ def search(request):
         products = products.filter(id=-1)
 
 
-    # Handle search query
     search_query = request.GET.get('q')
     if search_query:
-        # Filter products matching name, manufacturer_name, or description
-        products = products.filter(
-            Q(name__icontains=search_query) |
-            Q(manufacturer_name__icontains=search_query) |
-            Q(description__icontains=search_query) |
-            Q(original_name__icontains=search_query) |
-            Q(included_products_in_this_epd__icontains=search_query) 
+        # Split the query into individual words
+        search_terms = search_query.split()
+
+        # Construct a Q object for products and commodities
+        product_queries = Q()
+        commodity_queries = Q()
+
+        for word in search_terms:
+            # Handle plural forms
+            if word[-1].lower() == 's' and len(word) > 3:
+                word = word[:-1]  # Remove the last character if it's 's'
+
+            # Build the product queries
+            product_queries |= Q(name__icontains=word) \
+                            | Q(original_name__icontains=word) \
+                            | Q(included_products_in_this_epd__icontains=word) \
+                            | Q(category_1__icontains=word) \
+                            | Q(category_2__icontains=word) \
+                            | Q(category_3__icontains=word) \
+                            | Q(manufacturer_name__icontains=word) \
+                            | Q(description__icontains=word) \
+                            | Q(epd_id__icontains=word)
+
+            # Build the commodity queries
+            commodity_queries |= Q(name__icontains=word) \
+                            | Q(category__icontains=word) \
+                            | Q(basic_description__icontains=word) \
+                            | Q(substitutes__icontains=word) \
+                            | Q(use__icontains=word)
+
+        # Filter the products
+        products = Product.objects.filter(product_queries)
+
+        # Annotate with priorities for products
+        products = products.annotate(
+            priority_name=Case(
+                When(name__icontains=search_query, then=Value(1)),
+                default=Value(0),
+                output_field=IntegerField()
+            ),
+            priority_original_name=Case(
+                When(original_name__icontains=search_query, then=Value(1)),
+                default=Value(0),
+                output_field=IntegerField()
+            ),
+            priority_included_products=Case(
+                When(included_products_in_this_epd__icontains=search_query, then=Value(1)),
+                default=Value(0),
+                output_field=IntegerField()
+            ),
+            priority_category_1=Case(
+                When(category_1__icontains=search_query, then=Value(1)),
+                default=Value(0),
+                output_field=IntegerField()
+            ),
+            priority_category_2=Case(
+                When(category_2__icontains=search_query, then=Value(1)),
+                default=Value(0),
+                output_field=IntegerField()
+            ),
+            priority_category_3=Case(
+                When(category_3__icontains=search_query, then=Value(1)),
+                default=Value(0),
+                output_field=IntegerField()
+            ),
+            priority_manufacturer_name=Case(
+                When(manufacturer_name__icontains=search_query, then=Value(1)),
+                default=Value(0),
+                output_field=IntegerField()
+            ),
+            priority_description=Case(
+                When(description__icontains=search_query, then=Value(1)),
+                default=Value(0),
+                output_field=IntegerField()
+            ),
+            priority_epd_id=Case(
+                When(epd_id__icontains=search_query, then=Value(1)),
+                default=Value(0),
+                output_field=IntegerField()
+            )
+        ).order_by(
+            '-priority_name', 
+            '-priority_original_name', 
+            '-priority_included_products', 
+            '-priority_category_1', 
+            '-priority_category_2', 
+            '-priority_category_3', 
+            '-priority_manufacturer_name', 
+            '-priority_description', 
+            '-priority_epd_id'
         )
-        commodities = commodities.filter(
-            Q(name__icontains=search_query) |
-            Q(category__icontains=search_query) |
-            Q(basic_description__icontains=search_query) |
-            Q(substitutes__icontains=search_query) |
-            Q(use__icontains=search_query) 
+
+        # Filter and annotate commodities similarly
+        commodities = Commodity.objects.filter(commodity_queries).annotate(
+            priority_name=Case(
+                When(name__icontains=search_query, then=Value(1)),
+                default=Value(0),
+                output_field=IntegerField()
+            ),
+            priority_category=Case(
+                When(category__icontains=search_query, then=Value(1)),
+                default=Value(0),
+                output_field=IntegerField()
+            ),
+            priority_basic_description=Case(
+                When(basic_description__icontains=search_query, then=Value(1)),
+                default=Value(0),
+                output_field=IntegerField()
+            ),
+            priority_substitutes=Case(
+                When(substitutes__icontains=search_query, then=Value(1)),
+                default=Value(0),
+                output_field=IntegerField()
+            ),
+            priority_use=Case(
+                When(use__icontains=search_query, then=Value(1)),
+                default=Value(0),
+                output_field=IntegerField()
+            )
+        ).order_by(
+            '-priority_name', 
+            '-priority_category', 
+            '-priority_basic_description', 
+            '-priority_substitutes', 
+            '-priority_use'
         )
 
     # Handle category filter
@@ -787,7 +898,7 @@ def search(request):
     return render(request, 'main/search.html', context)
 
 @show_new_notifications
-@valid_standard_membership_required
+@valid_subscription
 def notifications(request):
     active_notifications = Notification.objects.filter(user=request.user, activated=False).order_by('-created_at')
     activated_notifications = Notification.objects.filter(user=request.user, activated=True).order_by('-activated_at')
@@ -938,6 +1049,37 @@ def project_calculate_view(request):
             "price1": price1,
             "date2": date2,
             "products":products,
+            "commodities":
+                [
+                    {"name":"Electricity UK",
+                     "commodity_id": 48,
+                     "weight":float(data.get('electricity_uk_weight', 0)),
+                     },
+                     {"name":"Labour UK",
+                      "commodity_id": 51,
+                     "weight":float(data.get('labour_uk_weight', 0)),
+                     },
+                     {"name":"Inflation UK",
+                      "commodity_id": 52,
+                     "weight":float(data.get('inflation_uk_weight', 0)),
+                     },
+                     {"name":"Containerized Freight China-Europe",
+                      "commodity_id": 50,
+                     "weight":float(data.get('freight_china_europe_weight', 0)),
+                     },
+                     {"name":"EU Carbon Permits",
+                      "commodity_id": 16,
+                     "weight":float(data.get('eu_carbon_permits_weight', 0)),
+                     },
+                     {"name":"Crude Oil",
+                      "commodity_id": 12,
+                     "weight":float(data.get('crude_oil_weight', 0)),
+                     },
+                     {"name":"Construction labour UK",
+                      "commodity_id": 53,
+                     "weight":float(data.get('construction_labour_uk_weight', 0)),
+                     },   
+                ],
         }
         if price1 <= 0:
             return JsonResponse({'error_message':"Enter valid Starting price for calculations.",})

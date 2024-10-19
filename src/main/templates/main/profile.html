@@ -85,9 +85,10 @@
         <div class="flex flex-col">
           <div class="mt-6 grid grid-cols-2 gap-x-6 gap-y-10 sm:grid-cols-4 lg:grid-cols-6 xl:gap-x-8">
             <!-- Projects items -->
+             {% if your_products %}
             <div class="group relative">
               <div class="flex flex-row aspect-square overflow-hidden rounded-md bg-gray-200 relative">
-                  <img src="{% get_product_image_url product %}" alt="{{product.name}} image" class="h-full w-full object-fill object-center">
+                  <img src="{% get_product_image_url your_products.0 %}" alt="{{your_products.0.name}} image" class="h-full w-full object-fill object-center">
                 
                   <!-- Hidden content that appears on hover -->
                   <div class="absolute inset-0 flex justify-between items-start opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-gray-800 bg-opacity-75">
@@ -117,6 +118,19 @@
                   </p>
                 </div>
             </div>
+            {% else %}
+            <div class="group relative">
+            <div class="flex flex-row items-center aspect-square overflow-hidden rounded-md bg-gray-200 relative">
+            <a href="{% url 'create' %}" 
+                        class="product-button text-white text-center
+                         bg-blue-700 hover:bg-blue-800 
+                        m-2 p-2 text-sm rounded-md focus:outline-none focus:ring-2 z-10"
+                        >
+                        Create your first product
+                    </a>
+                    </div>
+                  </div>
+                {% endif %}
 
 
             <div class="group relative">

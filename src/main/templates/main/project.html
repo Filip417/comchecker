@@ -308,9 +308,11 @@
           {{project.products.count}} product{{ project.products.count|pluralize:"s" }}</span>
       </div>
       <p class="text-sm text-gray-500 dark:text-gray-300">
-        Historical and forecast data  • source:
+        Historical and forecast data
+        {% comment %}   • source:
         {% for source in unique_sources %} {{ source }} {% if not forloop.last %}, {% endif %} {% endfor %}
-      </p>
+        {% endcomment %}
+      </p> 
   
       <div class="flex flex-col mt-2">
           <div class="overflow-x-auto">

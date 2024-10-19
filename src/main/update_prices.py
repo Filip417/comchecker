@@ -969,3 +969,38 @@ def check_notification_and_send_email(notification_id):
                 updated, sent = False, False
                 
     return updated, sent
+
+def add_price_points(products):
+    today = datetime.now().date()
+    intervals = {
+        'ago_5y': today - timedelta(days=5 * 365),
+        'ago_2y': today - timedelta(days=2 * 365),
+        'ago_1y': today - timedelta(days=365),
+        'ago_6m': today - timedelta(days=183),
+        'ahead_6m': today + timedelta(days=183),
+        'ahead_1y': today + timedelta(days=365),
+        'ahead_2y': today + timedelta(days=2 * 365),
+        'ahead_5y': today + timedelta(days=5 * 365)
+    }
+    
+    for p in products:
+        # Get today's price and scale it to 100
+        today_price = get_closest_product_price(p.id, today)
+        if today_price is not None:
+            p.today = 100
+            
+            # Calculate price points for each interval
+            for key, date in intervals.items():
+                past_price = get_closest_product_price(p.id, date)
+                
+                # Only calculate price point if past price is available
+                if past_price is not None and today_price > 0:
+                    scaled_price = (past_price / today_price) * 100
+                    setattr(p, key, scaled_price)  # Dynamically set attribute (e.g., p.5y_ago)
+                else:
+                    setattr(p, key, None)  # Handle missing prices
+            
+            p.save()
+            print(f'Price points updated for product: {p.name} {p.id}')
+        else:
+            print(f"No price found for product: {p.name} on {today}")

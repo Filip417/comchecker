@@ -7,7 +7,7 @@ import csv
 import xlwt
 from django.http import HttpResponse
 from datetime import date
-from .update_prices import add_1y_increase_to_products, add_top_value_commodities
+from .update_prices import add_1y_increase_to_products, add_top_value_commodities, add_price_points
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Count
 from django.utils.timezone import now, timedelta
@@ -25,21 +25,25 @@ def get_table_data_project(project):
     
     # Use list comprehension to build product data
     for product in project.products.all():
-        graph_x, table_y = get_cumulative_line_chart_and_table_data_product(product.id)
-        
         # Initialize product data
         product_data = {
             'commodity': [],
             'name': product.name,
             'slug': product.slug,
+            '5y_ago':product.ago_5y,
+            '2y_ago':product.ago_2y,
+            '1y_ago':product.ago_1y,
+            '6m_ago':product.ago_6m,
+            'today':product.today,
+            '6m_ahead':product.ahead_6m,
+            '1y_ahead':product.ahead_1y,
+            '2y_ahead':product.ahead_2y,
+            '5y_ahead':product.ahead_5y
         }
         
         # Aggregate commodity data
-        for com_name, interval_key in table_y.items():
-            product_data['commodity'].append(com_name)
-            for label, value in interval_key.items():
-                if label != 'material':
-                    product_data[label] = product_data.get(label, 0) + value
+        # for mp in MaterialProportion.objects.filter(product_id=product.id):
+        #    product_data['commodity'].append(mp.commodity.name)
         
         new_table_data[product.id] = product_data
     
@@ -679,12 +683,12 @@ def get_similar_products_for_products(products, request, limit=50):
                 # Get word counts for other product's name and description
                 name_score = similarity_score(input_product.name, other_product.name)
                 category_1_score = similarity_score(input_product.category_1, other_product.category_1)
-                category_3_score = 1 if input_product.category_3 == other_product.category_3 else 0
+                category_3_score = 3 if input_product.category_3 == other_product.category_3 else 0
                 original_name_score = similarity_score(input_product.original_name, other_product.original_name)
-                description_score = similarity_score(input_product.description, other_product.description)
+                
 
                 # Calculate combined similarity score (you can adjust weights as needed)
-                combined_similarity = name_score + description_score + category_1_score + category_3_score + original_name_score
+                combined_similarity = name_score + category_1_score + category_3_score + original_name_score
 
                 # Store the product and its similarity score
                 similar_products.append((other_product, combined_similarity))
@@ -909,7 +913,7 @@ def save_new_product(request):
         new_product.category_2 = category
         new_product.category_1 = category
         new_product.manufacturer_name = None
-        new_product.manufacturer_country = 'United Kingdom'
+        new_product.manufacturer_country = None
         new_product.create_new_slug()
     except ObjectDoesNotExist:
         # Create a new Product instance if it does not exist
@@ -922,7 +926,7 @@ def save_new_product(request):
             category_2=category,
             category_1=category,
             manufacturer_name = 'Your product',
-            manufacturer_country = 'United Kingdom',
+            manufacturer_country = None,
         )
     new_product.save()
 
@@ -952,6 +956,7 @@ def save_new_product(request):
     products_to_add_1y_price_change.append(new_product)
     add_1y_increase_to_products(products_to_add_1y_price_change)
     add_top_value_commodities(products_to_add_1y_price_change)
+    add_price_points(products_to_add_1y_price_change)
 
     return redirect('product', slug=new_product.slug)
 
@@ -1091,6 +1096,25 @@ def calculate_price2_for_project(calc_data):
         date_2_prod_price = get_closest_product_price(product_id, date2_obj)
         proportion_1to2 += date_1_prod_price / date_2_prod_price * product_weight
         total_weight += product_weight
+
+    for commodity in calc_data['commodities']:
+        # Special rule for inflation
+        com_weight = commodity['weight']
+        if com_weight == 0:
+            continue
+        com_price1 = get_closest_commodity_price(commodity['commodity_id'], date1_obj)
+        com_price2 = get_closest_commodity_price(commodity['commodity_id'], date2_obj)
+        if commodity['name'] == 'Inflation UK' and com_price1 and com_price2:
+            date_1_com_price = (100 + com_price1)
+            date_2_com_price = (100 + com_price2)
+        else:
+            date_1_com_price = com_price1
+            date_2_com_price = com_price2
+        
+        if date_1_com_price != 0 and date_2_com_price != 0 and date_1_com_price and date_2_com_price:
+            proportion_1to2 += date_1_com_price / date_2_com_price * com_weight
+            total_weight += com_weight
+    
     # proportionally calculate final price 2 to return
     try:
         new_price2 = price1 / proportion_1to2 * total_weight
