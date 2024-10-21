@@ -20,7 +20,7 @@ EMAIL_HOST = 'smtp.office365.com'  # Office 365 SMTP server
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_USE_SSL = False
-
+#
 # Office 365 email credentials
 EMAIL_HOST_USER = config('EMAIL_HOST_USER', cast=str)  # Your email address
 EMAIL_HOST_PASSWORD = config('EMAIL_APP_PASSWORD', cast=str)  # Your Office 365 app password
