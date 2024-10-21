@@ -74,8 +74,11 @@ if GITHUB_ACTIONS:
 
 
 
-today = date(2024, 7, 1)
-last_year = date(2023, 7, 1)
+# Get today's date
+today = date.today()
+
+# Get the date exactly one year ago
+last_year = today.replace(year=today.year - 1)
 
 
 
@@ -107,18 +110,7 @@ futures_commodities_data_input  = {
 
 
 def get_price(date, commodity_id):
-    closest_price_entry = (
-        CommodityPrice.objects
-        .filter(commodity=commodity_id)
-        .annotate(date_diff=ExpressionWrapper(
-            Abs(Extract(F('date') - date, 'epoch') / 86400),  # Extract seconds and convert to days
-            output_field=fields.FloatField()  # Use a float field for the date difference
-        ))
-        .order_by('date_diff')  # Order by the smallest date difference
-        .values('price')
-        .first()
-    )        
-    return closest_price_entry['price'] if closest_price_entry else 0
+    return get_closest_commodity_price(commodity_id, date)
 
 def update_total_production(commodities):
     for commodity in commodities:

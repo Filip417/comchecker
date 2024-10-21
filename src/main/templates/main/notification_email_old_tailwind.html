@@ -151,7 +151,11 @@
                         </div>
                     </td>
                     <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap">
-                        {{notification.change}}
+                        {% if notification.change_by_ml == '>=' %}
+                            &ge;
+                            {% elif notification.change_by_ml == '<=' %}
+                            &le;
+                            {% endif %}{{notification.change}}
                     </td>
                     <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-300 whitespace-nowrap">
                         {{notification.change_by}}

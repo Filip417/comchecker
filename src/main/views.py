@@ -298,14 +298,11 @@ def change_product_to_project(request, product_id):
                 if new_project_name and new_project_name.strip() != '':
                     project = Project.objects.create(user=request.user, name=new_project_name)
                     messages.success(request, f"New project {project.name} has been created.")
+                    return project
                 else:
                     messages.error(request, 'Cannot use empty name to create new project.')
                     return redirect(request.META.get('HTTP_REFERER', '/'))
-                # Check if project has been saved and has an id
-                if not project.id:
-                    messages.error(request, "Failed to create the project.")
-                    return redirect(request.META.get('HTTP_REFERER', '/'))
-            create_new_project(request)
+            project = create_new_project(request)
         else:
             project = get_object_or_404(Project, id=project_id, user=request.user)
 

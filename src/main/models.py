@@ -446,7 +446,7 @@ class Product(models.Model):
         self.save()
         self.refresh_from_db()
         View.objects.create(product=self, user=user)
-
+    
     @property
     def price_history_sources(self):
         # Distinct list of price history sources from commodities in material proportions
@@ -461,6 +461,11 @@ class Product(models.Model):
     # Automatically generate slug from name if not provided
         if not self.slug:
             self.slug = self.generate_unique_slug()
+        
+        if self.ago_1y is not None and self.ago_1y != 0:
+            self.increasefromlastyear = float((self.today - self.ago_1y) / self.ago_1y * 100)
+        else:
+            self.increasefromlastyear = None  # or set to 0 if preferred
 
         super().save(*args, **kwargs)
 
@@ -528,17 +533,22 @@ class Project(models.Model):
         super().save(*args, **kwargs)
 
     def calculate_increase(self):
-        # Calculate the average increase from last year for products and commodities
-        product_increase_sum = self.products.aggregate(total=models.Sum('increasefromlastyear'))['total'] or 0
-        commodity_increase_sum = self.commodities.aggregate(total=models.Sum('increasefromlastyear'))['total'] or 0
-        
-        total_items = self.products.count() + self.commodities.count()
-        
-        # Avoid division by zero
+        product_increase_sum = 0.0
+        total_items = 0
+
+        # Iterate through the products to calculate the increase
+        for product in self.products.all():
+            if product.ago_1y is not None and product.ago_1y != 0:
+                increase = (product.today - product.ago_1y) / product.ago_1y * 100
+                product_increase_sum += increase
+                total_items += 1
+
+        # Update the increasefromlastyear for the project
         if total_items > 0:
-            self.increasefromlastyear = (product_increase_sum + commodity_increase_sum) / total_items
+            self.increasefromlastyear = product_increase_sum / total_items
         else:
-            self.increasefromlastyear = None  # Or set a default value if desired
+            self.increasefromlastyear = None  # or set a default value if desired
+
         self.save()
         
     

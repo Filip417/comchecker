@@ -180,8 +180,14 @@
                             </div>
                             {% endif %}
                         </td>
-                        <td style="font-size: 8px;">{{notification.change}}</td>
-                        <td style="font-size: 8px;">{{notification.change_by}}</td>
+                        <td style="font-size: 8px;">
+                            {% if notification.change_by_ml == '>=' %}
+                            &ge;
+                            {% elif notification.change_by_ml == '<=' %}
+                            &le;
+                            {% endif %}{{notification.change}}</td>
+                        <td style="font-size: 8px;">
+                            {{notification.change_by}}</td>
                         <td style="font-size: 8px;">{{notification.created_at|time_since}} ago</td>
                         <td style="font-size: 8px;">{{notification.activated_value| floatformat:"2"}}</td>
                     </tr>

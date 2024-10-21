@@ -46,15 +46,17 @@ class Command(BaseCommand):
             update_futures_prices_in_db(futures_commodities_data)
 
             # # 4. Update values
-            products = Product.objects.objects.all()
+            products = Product.objects.all()
             commodities = Commodity.objects.all()
             add_1y_increase_to_commodities(commodities)
             add_price_now(commodities)
             update_total_production(commodities)
             # # # add_1y_increase_to_products(products) # irrelevant
-            # # # add_top_value_commodities(products) # irrelevant
-            add_1y_increase_to_products_and_add_top_value_commodities(products) # combined separate functions for efficiency         
+            add_top_value_commodities(products) # irrelevant
+            # add_1y_increase_to_products_and_add_top_value_commodities(products) # combined separate functions for efficiency         
             add_price_points(products)
+            for p in products:
+                p.save()
             # 5. Forecast prices
             update_forecast_prices()
 
