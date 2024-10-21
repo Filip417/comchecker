@@ -38,7 +38,7 @@ from django.utils.encoding import force_str
 from .tokens import email_notification_token
 from django.views.decorators.csrf import csrf_exempt
 from django.db.models import Case, When, IntegerField, Value
-
+from django.utils.html import format_html
 
 
 
@@ -97,6 +97,13 @@ def privacy_tc(request):
     return render(request, 'main/privacytc.html')
 
 
+EXAMPLE_PRODUCTS = [ 4752, 12946, 6929, 13046, 7031, 
+                    12392,  6927,  5782, 1427, 8255,
+                    11665, 10359, 8574, 11582, 15109,
+                    16800, 10901, 6643, 5889, 12407, 
+                    11583, 791, 10618, 12773, 10900,
+                     ]
+
 # Views
 @logged_in_cant_access
 def index(request):
@@ -109,10 +116,15 @@ def index(request):
     month_qs = pricing_qs.filter(interval=SubscriptionPrice.IntervalChoices.MONTHLY)
     year_qs = pricing_qs.filter(interval=SubscriptionPrice.IntervalChoices.YEARLY)
 
+    example_products = []
+    for n in EXAMPLE_PRODUCTS:
+        example_products.append(Product.objects.get(epd_id=n))
+
     context = {
         "month_qs":list(month_qs),
         "year_qs":list(year_qs),
         "commodities":commodities,
+        "example_products":example_products,
     }
 
     return render(request, "main/index.html", context=context)
@@ -126,11 +138,14 @@ def index_logged_no_valid_membership(request):
     month_qs = pricing_qs.filter(interval=SubscriptionPrice.IntervalChoices.MONTHLY)
     year_qs = pricing_qs.filter(interval=SubscriptionPrice.IntervalChoices.YEARLY)
 
+    example_products = Product.objects.filter(epd_id__in=EXAMPLE_PRODUCTS)
+
     context = {
         "month_qs":list(month_qs),
         "year_qs":list(year_qs),
         "commodities":commodities,
         "scroll_to_pricing": True,
+        "example_products":example_products,
     }
     return render(request, "main/index.html", context=context)
 
@@ -297,7 +312,11 @@ def change_product_to_project(request, product_id):
                 new_project_name = request.POST.get('new_project_name', None)
                 if new_project_name and new_project_name.strip() != '':
                     project = Project.objects.create(user=request.user, name=new_project_name)
-                    messages.success(request, f"New project {project.name} has been created.")
+                    project_url = reverse('project', args=[project.slug])
+                    messages.success(request, format_html(
+                        "New project <a class='hover:underline' href='{}'>{}</a> has been created.",
+                        project_url, project.name
+                    ))
                     return project
                 else:
                     messages.error(request, 'Cannot use empty name to create new project.')
@@ -309,10 +328,18 @@ def change_product_to_project(request, product_id):
         # Check if the product is already in the project
         if product not in project.products.all():
             project.products.add(product)
-            messages.success(request, f"Product {product.name} has been added to {project.name} project.")
+            product_url = reverse('product', args=[product.slug])
+            project_url = reverse('project', args=[project.slug])
+            messages.success(request, format_html(
+                "Product <a class='hover:underline' href='{}'>{}</a> has been added to <a class='hover:underline' href='{}'>{}</a> project.", product_url, product.name, project_url, project.name
+            ))
         elif product in project.products.all():
             project.products.remove(product)
-            messages.success(request, f"Product {product.name} has been removed from {project.name} project.")
+            product_url = reverse('product', args=[product.slug])
+            project_url = reverse('project', args=[project.slug])
+            messages.success(request, format_html(
+                "Product <a class='hover:underline' href='{}'>{}</a> has been removed from <a class='hover:underline' href='{}'>{}</a> project.", product_url, product.name, project_url, project.name
+            ))
         else:
             messages.error(request, f"Error in adding product to project. Try again or contact support.")
         project.calculate_increase()
@@ -429,6 +456,60 @@ def profile(request):
         "subscription": sub_data,
     }
     return render(request, "main/profile.html", context)
+
+def product_example(request, slug):
+    # Retrieve the product object, handle the case where it might not exist
+    product = get_object_or_404(Product, slug=slug)
+
+    if product.user != None and product.user!= request.user:
+        messages.error(request, "You have no access to this product.")
+        return redirect(reverse('logged'))
+    
+    if product.epd_id not in EXAMPLE_PRODUCTS:
+        return redirect(reverse('logged'))
+
+    material_proportions = MaterialProportion.objects.filter(product=product).order_by('-proportion')
+
+    cumulative_line_chart_data, table_data = get_cumulative_line_chart_and_table_data_product(product.id)
+    map_data = get_map_data_product(product.id)
+
+    if request.method == "POST":
+        action = request.POST.get('action')
+        if action == 'table_export_excel':
+            response = download_table_excel_product(product.name, table_data)
+        elif action == 'table_export_csv':
+            response = download_table_csv_product(product.name, table_data)
+        elif action == 'map_export_excel':
+            response = download_map_excel(product.name, map_data)
+        elif action == 'map_export_csv':
+            response = download_map_csv(product.name, map_data)
+        return response  
+
+    # Filter for similar products (products with the same manufacturer_name)
+    similar_products = get_similar_products(product, request)[:25]
+
+    # Filter for products from the same manufacturer, excluding the current product
+    from_same_manufacturer = Product.objects.filter(manufacturer_name=product.manufacturer_name, user=None).exclude(id=product.id)[:50]
+
+    product.add_view(user=None) # or remove this 
+
+    owned_projects, shared_projects, your_projects, products_in_projects = None, None, None, None # get_product_project_variables(request)
+
+    context = {
+        "product": product,
+        "cumulative_line_chart_data": json.dumps(cumulative_line_chart_data),
+        "table_data": table_data,
+        "map_data":map_data,
+        "similar_products": similar_products,
+        "from_same_manufacturer": from_same_manufacturer,
+        "material_proportions":material_proportions,
+        "owned_projects": owned_projects,
+        "shared_projects":shared_projects,
+        "your_projects":your_projects,
+        "products_in_projects": json.dumps(products_in_projects),
+        "product_example":True,
+    }
+    return render(request, "main/product.html", context)
 
 @show_new_notifications
 @can_access_product

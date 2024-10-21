@@ -706,7 +706,10 @@ def get_similar_products(product, request):
     similar_products = []
     
     # Iterate over all products to find most similar ones
-    all_products = Product.objects.filter(Q(user=None) | Q(user=request.user))
+    try:
+        all_products = Product.objects.filter(Q(user=None) | Q(user=request.user))
+    except TypeError:
+        all_products = Product.objects.filter(user=None)
 
     for other_product in all_products:
         if other_product.id != product.id:

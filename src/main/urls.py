@@ -10,6 +10,7 @@ urlpatterns = [
     path("create/",views.create, name="create"),
     path("profile/",views.profile, name="profile"),
     path("product/<str:slug>",views.product,name="product"),
+    path("product-example/<str:slug>",views.product_example,name="product_example"),
     path("dashboard/", views.index_logged, name='logged'),  # Adjusted path for logged-in users
     path("search/",views.search, name="search"),
     path("notifications/",views.notifications, name="notifications"),

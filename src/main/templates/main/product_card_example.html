@@ -1,0 +1,37 @@
+{% load custom_tags %}
+<div class="product-container group relative flex-none snap-center snap-always w-40 ">
+    <div class="aspect-square overflow-hidden rounded-md bg-gray-200 relative">
+        <img src="{% get_product_image_url product %}" alt="{{ product.name }}" class="w-40 h-40 object-fill object-center">
+        <!-- Hidden content that appears on hover -->
+      <div class="absolute inset-0 flex justify-between items-start opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-gray-800 bg-opacity-75">
+
+      </div>
+    </div>
+    <div class="mt-4 flex justify-between">
+        <div>
+            <h3 class="text-sm text-gray-700 dark:text-gray-300">
+                <a href="{% url 'product_example' product.slug %}" class="font-semibold whitespace-normal break-words">
+                    <span aria-hidden="true" class="absolute inset-0"></span>
+                    {{ product.name|slice:":50"|word_break:14 }}
+                </a>
+            </h3>
+            <p class="mt-1 text-xs text-gray-600 dark:text-gray-400">{{ product.category_1 }}</p>
+            <p class="mt-1 text-xs text-gray-400 dark:text-gray-500">
+                {% if product.manufacturer_name and product.manufacturer_name != 'nan' %}
+                {{ product.manufacturer_name }}
+                {% endif %}
+            </p>
+        </div>
+        <p class="text-sm font-semibold text-gray-900 dark:text-gray-200">
+            {% if product.increasefromlastyear %}
+                {% if product.increasefromlastyear > 0 %}
+                    <a><span class="text-green-500 font-black">↗</span>{{ product.increasefromlastyear|floatformat:"1" }}%</a>
+                {% elif product.increasefromlastyear < 0 %}
+                    <a><span class="text-red-500 font-black">↘</span>{{ product.increasefromlastyear|floatformat:"1" }}%</a>
+                {% elif product.increasefromlastyear == 0 %}
+                <a><span class="text-blue-500 font-black">=</span>0%</a>
+                {% endif %}
+            {% endif %}
+        </p>
+    </div>
+</div>

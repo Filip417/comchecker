@@ -24,7 +24,7 @@
       },
   };
   const titles = {
-    title1: 'Get prices and future costs for <span class="text-blue-600 dark:text-blue-500">over 3,000</span> products',
+    title1: 'Get prices and future costs for <span class="text-blue-600 dark:text-blue-500">over 3,500</span> products',
     title2: 'Stay ahead of <span class="text-blue-600 dark:text-blue-500">price changes</span>',
     title3: 'See real-time market prices and how they affect <span class="text-blue-600 dark:text-blue-500">your projects</span>',
     title4: 'Use it to <span class="text-blue-600 dark:text-blue-500">negotiate deals</span> and manage risks',
@@ -61,7 +61,9 @@
         </h1>
         <p class="carousel-text text-center mt-4 text-gray-600 dark:text-gray-300"></p>
         <div class="mt-6 text-center">
-          <a href="#pricing" class="carousel-button px-6 py-2.5 mt-6 text-sm font-medium leading-5 text-center text-white capitalize bg-blue-600 rounded-lg hover:bg-blue-500 lg:mx-0 lg:w-auto focus:outline-none">See pricing</a>
+          <a href="#pricing" class="carousel-button px-6 py-2.5 mt-6 text-sm font-medium leading-5 text-center text-white capitalize bg-blue-600 rounded-lg hover:bg-blue-500 lg:mx-0 lg:w-auto focus:outline-none">
+            See pricing
+          </a>
         </div>
       </div>
     </div>
@@ -71,6 +73,54 @@
     </div>
   </div>
 </section>
+
+  <!-- Example products -->
+  <section class="py-5 container mx-auto">
+    <h2 class="text-lg font-medium text-gray-800 dark:text-white">Find products you buy</h2>
+
+    <p class="text-sm text-gray-500 dark:text-gray-300">Over 3500 products available | 
+      <a class="hover:underline" href="{% url 'search' %}">See all products</a></p>
+
+    <div class="flex flex-col mt-2">
+
+    <section class="relative">
+        <!-- Arrow left -->
+        <div x-init="$el.classList.remove('hidden')" class="hidden absolute left-0 inset-y-0 cursor-pointer z-10 arrow-left">
+            <div class="px-2 sm:px-6 h-full items-center flex bg-gradient-to-l from-white/60 to-white/80 dark:from-gray-800/60 dark:to-gray-800/80 relative">
+                <!-- Background container with opacity -->
+            </div>
+            <div class="w-[32px] flex justify-center absolute top-1/2 transform -translate-y-1/2 left-2">
+                <!-- SVG icon without opacity -->
+                <svg class="arrow-icon rotate-180 duration-300 ease-in-out hidden sm:block" xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 35 35" fill="none">
+                    <path d="M17.0749 17.4296C17.0748 9.65152 0.457965 4.34819 0.457917 0.812575C0.457869 -2.72304 34.8993 9.2351 34.8993 17.7204C34.8994 26.2056 0.811422 37.2285 0.811418 33.6931C0.811414 30.1576 17.075 25.2076 17.0749 17.4296Z" fill="#2563EB"/>
+                </svg>
+            </div>
+        </div>
+
+        <!-- Arrow right -->
+        <div x-init="$el.classList.remove('hidden')" class="hidden absolute inset-y-0 right-0 cursor-pointer z-10 arrow-right">
+            <div class="px-2 sm:px-6 h-full items-center flex bg-gradient-to-r from-white/60 to-white/80 dark:from-gray-800/60 dark:to-gray-800/80 relative">
+                <!-- Background container with opacity -->
+            </div>
+            <div class="w-[32px] flex justify-center absolute top-1/2 transform -translate-y-1/2 right-2">
+                <!-- SVG icon without opacity -->
+                <svg class="arrow-icon duration-300 ease-in-out hidden sm:block" xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 35 35" fill="none">
+                    <path d="M17.0749 17.4296C17.0748 9.65152 0.457965 4.34819 0.457917 0.812575C0.457869 -2.72304 34.8993 9.2351 34.8993 17.7204C34.8994 26.2056 0.811422 37.2285 0.811418 33.6931C0.811414 30.1576 17.075 25.2076 17.0749 17.4296Z" fill="#2563EB"/>
+                </svg>
+            </div>
+        </div>
+
+        
+        <div class="flex space-x-2 snap-x snap-mandatory flex-nowrap overflow-x-auto overflow-visible no-scrollbar scroll-container">
+
+          {% for product in example_products %}
+            {% include 'main/product_card_example.html' with product=product %}
+          {% endfor %}
+
+
+    </section>
+    </div>
+  </section>
 
   <!-- Commodities listed -->
   <section>
