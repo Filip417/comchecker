@@ -130,8 +130,8 @@ def index_logged_no_valid_membership(request):
         "month_qs":list(month_qs),
         "year_qs":list(year_qs),
         "commodities":commodities,
+        "scroll_to_pricing": True,
     }
-
     return render(request, "main/index.html", context=context)
 
 @show_new_notifications

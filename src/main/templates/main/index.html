@@ -38,7 +38,13 @@
   const staticUrls = isDarkMode ? maincarousel.dark : maincarousel.light;
 
 </script>
-   
+
+{% if scroll_to_pricing %}
+<script>
+    window.location.hash = '#pricing';
+</script>
+{% endif %}
+
 <section id="title-carousel">
   <div class="container flex flex-col pt-6 px-6 py-4 mx-auto space-y-6 lg:h-[32rem] lg:py-16 lg:flex-row lg:items-center">
     <div class="flex flex-col items-center w-full lg:flex-row lg:w-1/2">
