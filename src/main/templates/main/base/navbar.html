@@ -171,7 +171,7 @@
                                          &le;
                                          {% endif %}
                                          {{notification.change}}%
-                                         • {{notification.activated_at|time_since}} ago</p>
+                                         | {{notification.activated_at|time_since}} ago</p>
                             </a>
                                 {% elif notification.project %}
                             <a href="{% url 'project' notification.project.slug %}" class="flex items-center px-4 py-3 -mx-2 transition-colors duration-300 transform border-b border-gray-100 hover:bg-gray-50 dark:hover:bg-gray-700 dark:border-gray-700">
@@ -187,7 +187,7 @@
                                          &le;
                                          {% endif %}
                                          {{notification.change}}% 
-                                            • {{notification.activated_at|time_since}} ago</p>
+                                            | {{notification.activated_at|time_since}} ago</p>
                             </a>
                                 {% elif notification.commodity %}
                             <a href="{% url 'commodity' notification.commodity.name %}" class="flex items-center px-4 py-3 -mx-2 transition-colors duration-300 transform border-b border-gray-100 hover:bg-gray-50 dark:hover:bg-gray-700 dark:border-gray-700">
@@ -203,7 +203,7 @@
                                          &le;
                                          {% endif %}
                                          {{notification.change}}%
-                                            • {{notification.activated_at|time_since}} ago</p>
+                                            | {{notification.activated_at|time_since}} ago</p>
                             </a>
                                 {% endif %}
                             {% empty %}

@@ -1,38 +1,30 @@
 <input id="project_id" value="{{project.id}}" required class="hidden" hidden/>
 <div class="grid grid-cols-2 gap-5">
-<!-- Dates -->
-<div>
-    <label for="date1" class="block text-sm text-gray-500 dark:text-gray-300">Starting date</label>
+{% now "Y-m-d" as current_date %}
 
-    <input type="date" id="date1" min="2019-01-01" max="2029-01-01" value="{% now 'Y-m-d' %}" required class="block  mt-2 w-full placeholder-gray-400/70 dark:placeholder-gray-500 rounded-lg border border-gray-200 bg-white px-5 py-2.5 text-gray-700 focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-300 dark:focus:border-blue-300" />
-</div>
+<!-- Date 1 Price 1 -->
 <div>
-    <label for="date2" class="block text-sm font-semibold text-gray-500 dark:text-gray-300">Date to calculate</label>
+    <label for="date1" class="block text-sm text-gray-500 dark:text-gray-300">Date X</label>
 
-    <input type="date" id="date2" min="2019-01-01" max="2029-01-01" required class="block  mt-2 w-full placeholder-gray-400/70 dark:placeholder-gray-500 rounded-lg border border-gray-200 bg-white px-5 py-2.5 text-gray-700 focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-300 dark:focus:border-blue-300" />
+    <input type="date" id="date1" min="2019-01-01" max="2029-01-01" value="{{current_date}}" required class="block  mt-2 w-full placeholder-gray-400/70 dark:placeholder-gray-500 rounded-lg border border-gray-200 bg-white px-5 py-2.5 text-gray-700 focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-300 dark:focus:border-blue-300" />
 </div>
-<!-- Prices -->
+
 <div>
-    <label for="price1" class="block text-sm text-gray-500 dark:text-gray-300">Starting price</label>
+    <label for="price1" class="block text-sm text-gray-500 dark:text-gray-300">Price at Date X</label>
 
     <input type="number" id="price1" min="0" value="100" class="block  mt-2 w-full placeholder-gray-400/70 dark:placeholder-gray-500 rounded-lg border border-gray-200 bg-white px-5 py-2.5 text-gray-700 focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-300 dark:focus:border-blue-300" />
 </div>
 
-<div>
-    <label for="price2" class="block text-sm text-gray-500 dark:text-gray-300">Calculated Price</label>
-
-    <input disabled type="number" id="price2" class="block cursor-not-allowed mt-2 w-full placeholder-gray-400/70 dark:placeholder-gray-500 rounded-lg border border-gray-200 bg-white px-5 py-2.5 text-gray-700 focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-300 dark:focus:border-blue-300" />
-</div>
 
 
 
-<hr class="border-gray-200 dark:border-gray-700">
-<hr class="border-gray-200 dark:border-gray-700">
-<p class="text-gray-500 dark:text-gray-300">Weights:</p>
-<p class="text-gray-500 dark:text-gray-300"></p>
+
+
+<hr class="border-gray-200 dark:border-gray-700 col-span-2">
+<p class="text-gray-500 dark:text-gray-300 col-span-2">Weights:</p>
 <!-- Instruction -->
-<p class="text-gray-500 dark:text-gray-300 text-sm">To calculate the final price of a project based on its products and other indicators/commodities, you assign weights to each component representing its relative contribution to the total cost.</p>
-<p class="text-gray-500 dark:text-gray-300 text-sm">The final price is computed as a weighted sum of the costs of the products.</p>
+<p class="text-gray-500 dark:text-gray-300 text-sm col-span-2">To calculate the price of a project based on its products and other indicators/commodities, you assign weights to each component representing its relative contribution to the total cost.</p>
+<p class="text-gray-500 dark:text-gray-300 text-sm col-span-2">The final price is computed as a weighted sum of the costs of the products.</p>
 
 <!-- Product Weights -->
 {% for product in project.products.all %}
@@ -46,9 +38,9 @@
  {% endfor %}
 </div>
 <div class="grid grid-cols-2 gap-5">
- <hr class="border-gray-200 dark:border-gray-700 my-5">
- <hr class="border-gray-200 dark:border-gray-700 my-5">
+ <hr class="border-gray-200 dark:border-gray-700 my-5 col-span-2">
 <!-- Commodities/Indexes Weights -->
+<p class="text-gray-500 dark:text-gray-300 col-span-2">Commodities/Indexes Weights:</p>
  <div>
     <label for="weight" class="block text-sm text-gray-500 dark:text-gray-300">Electricity UK</label>
 
@@ -91,6 +83,26 @@
 
     <input type="number" min="0" placeholder="5" id="construction-labour-uk-weight" class="block  mt-2 w-full placeholder-gray-400/70 dark:placeholder-gray-500 rounded-lg border border-gray-200 bg-white px-5 py-2.5 text-gray-700 focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-300 dark:focus:border-blue-300" />
 </div>
+<!-- Other commodities weights in the future -->
+
+</div>
+
+
+<div class="mt-5 grid grid-cols-2 gap-5">
+<hr class="border-gray-200 dark:border-gray-700 col-span-2">
+<!-- Date 2 Price 2 -->
+<div>
+    {% load custom_tags %}
+    <label for="date2" class="block text-sm text-gray-500 font-semibold dark:text-gray-300">Date Y</label>
+    <input type="date" id="date2" value="{{ current_date|add_year|date:'Y-m-d' }}" min="2019-01-01" max="2029-01-01" required class="block  mt-2 w-full placeholder-gray-400/70 dark:placeholder-gray-500 rounded-lg border border-gray-200 bg-white px-5 py-2.5 text-gray-700 focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-300 dark:focus:border-blue-300" />
+</div>
+
+<div>
+    <label for="price2" class="block text-sm text-gray-500 dark:text-gray-300">Calculated Price at Date Y</label>
+
+    <input disabled type="number" id="price2" class="block cursor-not-allowed mt-2 w-full placeholder-gray-400/70 dark:placeholder-gray-500 rounded-lg border border-gray-200 bg-gray-100 dark:bg-gray-700 px-5 py-2.5 text-gray-700 focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40 dark:border-gray-600  dark:text-gray-300 dark:focus:border-blue-300" />
+</div>
+
 
 </div>
 

@@ -291,7 +291,7 @@
         <div class="my-5 flex flex-col">
         <h2 class="text-lg font-medium text-gray-800 dark:text-white">Contents</h2>
 
-        <p class="text-sm text-gray-500 dark:text-gray-300">Raw materials prices • source: manufacturer declaration • today=100</p>
+        <p class="text-sm text-gray-500 dark:text-gray-300">Raw materials prices  |  source: manufacturer declaration  |  Now=100</p>
     
         <div class="flex flex-col justify-center items-center mt-2">
             <canvas class="dark:dark" id='productChart'></canvas>
@@ -394,7 +394,7 @@
                 {{table_data.items|length}} material{{ table_data.items|length|pluralize:"s" }}</span>
         </div>
   
-      <p class="text-sm text-gray-500 dark:text-gray-300">Historical and forecast data  • source: {% for source in product.price_history_sources %} {{ source }} {% if not forloop.last %}, {% endif %} {% endfor %}</p>
+      <p class="text-sm text-gray-500 dark:text-gray-300">Historical and forecast data  | source: {% for source in product.price_history_sources %} {{ source }} {% if not forloop.last %}, {% endif %} {% endfor %}</p>
   
       <div class="flex flex-col mt-2">
           <div class="overflow-x-auto">
@@ -488,7 +488,8 @@
                                             class="hidden font-medium absolute right-0 z-30 w-48 py-2 mt-2 origin-top-right bg-white rounded-md shadow-xl dark:bg-gray-800"
                                         >
                                             <!-- Export to Excel -->
-                                            <form method="post" action="{% url 'product' slug=product.slug %}">
+                                            <form method="post" action="{% url 'product' slug=product.slug %}"
+                                            @submit="ignoreLoading = true; setTimeout(() => ignoreLoading = false, 100);">
                                                 {% csrf_token %}
                                                 <input type="hidden" name="action" value="table_export_excel">
                                                 <button type="submit" class="w-full flex items-center px-3 py-3 text-sm text-gray-600 transition-colors duration-300 transform dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-white">
@@ -501,7 +502,8 @@
                                             </form>
                                     
                                             <!-- Export to CSV -->
-                                            <form method="post" action="{% url 'product' slug=product.slug %}">
+                                            <form method="post" action="{% url 'product' slug=product.slug %}"
+                                            @submit="ignoreLoading = true; setTimeout(() => ignoreLoading = false, 100);">
                                                 {% csrf_token %}
                                                 <input type="hidden" name="action" value="table_export_csv">
                                                 <button type="submit" class="w-full flex items-center px-3 py-3 text-sm text-gray-600 transition-colors duration-300 transform dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-white">
@@ -600,6 +602,50 @@
                                 </td>
                             </tr>
                             {% endfor %}
+                            <!-- Total Row -->
+                            {% if table_data|length > 1 %}
+                            <tr class="bg-gray-50 dark:bg-gray-800"> <!-- Change color if needed -->
+                                <td class="px-4 py-4 font-bold text-gray-900 dark:text-gray-300" colspan="1">Total</td>
+                                <td class="px-4 py-4 text-center font-bold text-gray-900 dark:text-gray-300">
+                                    {{ table_data|sum_values:'5y_ago' }}
+                                </td>
+                                <td class="px-4 py-4 text-center font-bold text-gray-900 dark:text-gray-300">
+                                    {{ table_data|sum_values:'2y_ago' }}
+                                </td>
+                                <td class="px-4 py-4 text-center font-bold text-gray-900 dark:text-gray-300">
+                                    {{ table_data|sum_values:'1y_ago' }}
+                                </td>
+                                <td class="px-4 py-4 text-center font-bold text-gray-900 dark:text-gray-300">
+                                    {{ table_data|sum_values:'6m_ago' }}
+                                </td>
+                                <td class="px-4 py-4 text-center font-bold text-gray-900 dark:text-gray-300">
+                                    {{ table_data|sum_values:'today' }}
+                                </td>
+                                <td class="px-4 py-4 text-center font-bold text-gray-900 dark:text-gray-300">
+                                    {{ table_data|sum_values:'6m_ahead' }}
+                                </td>
+                                <td class="px-4 py-4 text-center font-bold text-gray-900 dark:text-gray-300">
+                                    {{ table_data|sum_values:'1y_ahead' }}
+                                </td>
+                                <td class="px-4 py-4 text-center font-bold text-gray-900 dark:text-gray-300">
+                                    {{ table_data|sum_values:'2y_ahead' }}
+                                </td>
+                                <td class="px-4 py-4 text-center font-bold text-gray-900 dark:text-gray-300">
+                                    {{ table_data|sum_values:'5y_ahead' }}
+                                </td>
+                                <td class="px-4 py-4 text-center font-bold text-gray-900 dark:text-gray-300">
+                                    {% if  table_data|sum_values:'5y_ahead' > table_data|sum_values:'today' %}
+                                        <a><span class="text-green-500 font-black">↗</span></a>
+                                        {% elif table_data|sum_values:'5y_ahead' < table_data|sum_values:'today' %}
+                                        <a><span class="text-red-500 font-black">↘</span></a>
+                                        {% elif table_data|sum_values:'5y_ahead' < table_data|sum_values:'today' %}
+                                        <a><span class="text-blue-500 font-black">=</span></a>
+                                        {% else %}
+                                        -
+                                        {% endif %}
+                                </td>
+                            </tr>
+                            {% endif %}
                           </tbody>
                       </table>
   
@@ -616,7 +662,7 @@
             <h2 class="text-lg font-medium text-gray-800 dark:text-white">Production by country</h2>
     
             <p class="text-sm text-gray-500 dark:text-gray-300">
-                % of total raw materials value production • source: {% for source in product.production_sources %} {{ source }} {% if not forloop.last %}, {% endif %} {% endfor %}
+                % of total raw materials value production | source: {% for source in product.production_sources %} {{ source }} {% if not forloop.last %}, {% endif %} {% endfor %}
             </p>
         
             <div class="relative flex flex-col justify-center items-center mt-2">
@@ -644,7 +690,8 @@
                         class="hidden font-medium absolute right-0 z-20 w-48 py-2 mt-2 origin-top-right bg-white rounded-md shadow-xl dark:bg-gray-800"
                         >
                         <!-- Export to Excel -->
-                        <form method="post" action="{% url 'product' slug=product.slug %}">
+                        <form method="post" action="{% url 'product' slug=product.slug %}"
+                        @submit="ignoreLoading = true; setTimeout(() => ignoreLoading = false, 100);">
                             {% csrf_token %}
                             <input type="hidden" name="action" value="map_export_excel">
                             <button type="submit" class="w-full flex items-center px-3 py-3 text-sm text-gray-600 transition-colors duration-300 transform dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-white">
@@ -657,7 +704,8 @@
                         </form>
                 
                         <!-- Export to CSV -->
-                        <form method="post" action="{% url 'product' slug=product.slug %}">
+                        <form method="post" action="{% url 'product' slug=product.slug %}"
+                        @submit="ignoreLoading = true; setTimeout(() => ignoreLoading = false, 100);">
                             {% csrf_token %}
                             <input type="hidden" name="action" value="map_export_csv">
                             <button type="submit" class="w-full flex items-center px-3 py-3 text-sm text-gray-600 transition-colors duration-300 transform dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-white">
@@ -879,7 +927,7 @@
                     type: 'time',
                     time: {
                         unit: 'quarter', 
-                        tooltipFormat: 'MMM YYYY', 
+                        tooltipFormat: 'DD MMM YYYY', 
                         displayFormats: {
                             quarter: '[Q]Q YY',
                         }

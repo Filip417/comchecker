@@ -1,33 +1,43 @@
 <input id="commodity_id" value="{{commodity.id}}" required class="hidden" hidden/>
+<!-- Instruction -->
+<p class="text-gray-500 dark:text-gray-300 text-sm my-5 mx-5">This calculator lets you put in a Date X and price at this Date X, and a Date Y you want to check.
+    <br>It then gives you a price at date Y.</p>
+
+
 <div class="grid grid-cols-2 gap-5">
-<!-- Dates -->
-<div>
-    <label for="date1" class="block text-sm text-gray-500 dark:text-gray-300">Starting date</label>
+{% now "Y-m-d" as current_date %}
 
-    <input type="date" id="date1" min="2019-01-01" max="2029-01-01" value="{% now 'Y-m-d' %}" required class="block  mt-2 w-full placeholder-gray-400/70 dark:placeholder-gray-500 rounded-lg border border-gray-200 bg-white px-5 py-2.5 text-gray-700 focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-300 dark:focus:border-blue-300" />
-</div>
-<div>
-    <label for="date2" class="block text-sm font-semibold text-gray-500 dark:text-gray-300">Date to calculate</label>
 
-    <input type="date" id="date2" min="2019-01-01" max="2029-01-01" required class="block  mt-2 w-full placeholder-gray-400/70 dark:placeholder-gray-500 rounded-lg border border-gray-200 bg-white px-5 py-2.5 text-gray-700 focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-300 dark:focus:border-blue-300" />
-</div>
-<!-- Prices -->
+<!-- Date 1 Price 1 -->
 <div>
-    <label for="price1" class="block text-sm text-gray-500 dark:text-gray-300">Starting price</label>
+    <label for="date1" class="block text-sm text-gray-500 dark:text-gray-300">Date X</label>
+
+    <input type="date" id="date1" min="2019-01-01" max="2029-01-01" value="{{current_date}}" required class="block  mt-2 w-full placeholder-gray-400/70 dark:placeholder-gray-500 rounded-lg border border-gray-200 bg-white px-5 py-2.5 text-gray-700 focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-300 dark:focus:border-blue-300" />
+</div>
+
+<div>
+    <label for="price1" class="block text-sm text-gray-500 dark:text-gray-300">Price at Date X</label>
 
     <input type="number" id="price1" min="0" value="100" class="block  mt-2 w-full placeholder-gray-400/70 dark:placeholder-gray-500 rounded-lg border border-gray-200 bg-white px-5 py-2.5 text-gray-700 focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-300 dark:focus:border-blue-300" />
 </div>
 
-<div>
-    <label for="price2" class="block text-sm text-gray-500 dark:text-gray-300">Calculated Price</label>
 
-    <input disabled type="number" id="price2" class="block cursor-not-allowed mt-2 w-full placeholder-gray-400/70 dark:placeholder-gray-500 rounded-lg border border-gray-200 bg-white px-5 py-2.5 text-gray-700 focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-300 dark:focus:border-blue-300" />
+<hr class="border-gray-200 dark:border-gray-700 col-span-2">
+<!-- Date 2 Price 2 -->
+<div>
+    {% load custom_tags %}
+    <label for="date2" class="block text-sm text-gray-500 font-semibold dark:text-gray-300">Date Y</label>
+    <input type="date" id="date2" value="{{ current_date|add_year|date:'Y-m-d' }}" min="2019-01-01" max="2029-01-01" required class="block  mt-2 w-full placeholder-gray-400/70 dark:placeholder-gray-500 rounded-lg border border-gray-200 bg-white px-5 py-2.5 text-gray-700 focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-300 dark:focus:border-blue-300" />
 </div>
-<!-- Instruction -->
-<hr class="border-gray-200 dark:border-gray-700">
-<hr class="border-gray-200 dark:border-gray-700">
-<p class="text-gray-500 dark:text-gray-300 text-sm">This calculator lets you put in a start date and price, and a date you want to check.</p>
-<p class="text-gray-500 dark:text-gray-300 text-sm">It then gives you a price for that date.</p>
+
+<div>
+    <label for="price2" class="block text-sm text-gray-500 dark:text-gray-300">Calculated Price at Date Y</label>
+
+    <input disabled type="number" id="price2" class="block cursor-not-allowed mt-2 w-full placeholder-gray-400/70 dark:placeholder-gray-500 rounded-lg border border-gray-200 bg-gray-100 dark:bg-gray-700 px-5 py-2.5 text-gray-700 focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40 dark:border-gray-600  dark:text-gray-300 dark:focus:border-blue-300" />
+</div>
+
+
+
 
 </div>
 

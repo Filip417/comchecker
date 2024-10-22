@@ -44,7 +44,7 @@
                 {{ commodity.production_total}}
             </a>
             <a class="text-xs font-normal text-gray-400 dark:text-gray-300">
-                • {{ commodity.production_unit}}
+                | {{ commodity.production_unit}}
             </a>
         </div>
         {% endif %}
@@ -271,8 +271,8 @@
             {% else %}
             Medium probability AI predictive model market forecast
             {% endif %}
-            • {{commodity.price_history_name}}
-            • source: {{commodity.price_history_source}}</p>
+            | {{commodity.price_history_name}}
+            | source: {{commodity.price_history_source}}</p>
     
         <div class="flex flex-col justify-center items-center mt-2">
             <canvas id='commodityChart'></canvas>
@@ -285,7 +285,7 @@
       <h2 class="text-lg font-medium text-gray-800 dark:text-white">{{commodity.price_history_type}} table</h2>
   
       <p class="text-sm text-gray-500 dark:text-gray-300">
-        Historical and forecast data • {{commodity.price_history_name}} • source: {{commodity.price_history_source}} • {{ commodity.currency.code }} / {{ commodity.unit }}</p>
+        Historical and forecast data | {{commodity.price_history_name}} | source: {{commodity.price_history_source}} | {{ commodity.currency.code }} / {{ commodity.unit }}</p>
   
       <div class="flex flex-col mt-2">
           <div class="overflow-x-auto">
@@ -375,7 +375,8 @@
                                           class="hidden font-medium absolute right-0 z-30 w-48 py-2 mt-2 origin-top-right bg-white rounded-md shadow-xl dark:bg-gray-800"
                                       >
                                           <!-- Export to Excel -->
-                                          <form method="post" action="{% url 'commodity' name=commodity.name %}">
+                                          <form method="post" action="{% url 'commodity' name=commodity.name %}"
+                                          @submit="ignoreLoading = true; setTimeout(() => ignoreLoading = false, 100);">
                                               {% csrf_token %}
                                               <input type="hidden" name="action" value="table_export_excel">
                                               <button type="submit" class="w-full flex items-center px-3 py-3 text-sm text-gray-600 transition-colors duration-300 transform dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-white">
@@ -388,7 +389,8 @@
                                           </form>
                                   
                                           <!-- Export to CSV -->
-                                          <form method="post" action="{% url 'commodity' name=commodity.name %}">
+                                          <form method="post" action="{% url 'commodity' name=commodity.name %}"
+                                          @submit="ignoreLoading = true; setTimeout(() => ignoreLoading = false, 100);">
                                               {% csrf_token %}
                                               <input type="hidden" name="action" value="table_export_csv">
                                               <button type="submit" class="w-full flex items-center px-3 py-3 text-sm text-gray-600 transition-colors duration-300 transform dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-white">
@@ -568,7 +570,7 @@
         <h2 class="text-lg font-medium text-gray-800 dark:text-white">Futures chart</h2>
 
         <p class="text-sm text-gray-500 dark:text-gray-300">
-            {{commodity.price_history_name}} • source: {{commodity.price_history_source}}</p>
+            {{commodity.price_history_name}} | source: {{commodity.price_history_source}}</p>
 
         <div class="flex flex-col justify-center items-center mt-2">
             <canvas id='commodityFuturesChart'></canvas>
@@ -582,7 +584,7 @@
         <h2 class="text-lg font-medium text-gray-800 dark:text-white">Futures table</h2>
     
         <p class="text-sm text-gray-500 dark:text-gray-300">
-          {{commodity.price_history_name}} • source: {{commodity.price_history_source}} • {{ commodity.currency.code }} / {{ commodity.unit }}</p>
+          {{commodity.price_history_name}} | source: {{commodity.price_history_source}} | {{ commodity.currency.code }} / {{ commodity.unit }}</p>
         <div class="flex justify-center mt-2 max-h-96">
             <div class="overflow-auto">
                 <div class="inline-block min-w-full py-2 align-middle md:px-6 lg:px-8">
@@ -624,7 +626,8 @@
                                             class="hidden font-medium absolute right-0 z-30 w-48 py-2 mt-2 origin-top-right bg-white rounded-md shadow-xl dark:bg-gray-800"
                                         >
                                             <!-- Export to Excel -->
-                                            <form method="post" action="{% url 'commodity' name=commodity.name %}">
+                                            <form method="post" action="{% url 'commodity' name=commodity.name %}"
+                                            @submit="ignoreLoading = true; setTimeout(() => ignoreLoading = false, 100);">
                                                 {% csrf_token %}
                                                 <input type="hidden" name="action" value="futures_table_excel">
                                                 <button type="submit" class="w-full flex items-center px-3 py-3 text-sm text-gray-600 transition-colors duration-300 transform dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-white">
@@ -637,7 +640,8 @@
                                             </form>
                                     
                                             <!-- Export to CSV -->
-                                            <form method="post" action="{% url 'commodity' name=commodity.name %}">
+                                            <form method="post" action="{% url 'commodity' name=commodity.name %}"
+                                            @submit="ignoreLoading = true; setTimeout(() => ignoreLoading = false, 100);">
                                                 {% csrf_token %}
                                                 <input type="hidden" name="action" value="futures_table_csv">
                                                 <button type="submit" class="w-full flex items-center px-3 py-3 text-sm text-gray-600 transition-colors duration-300 transform dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-white">
@@ -702,7 +706,19 @@
         <div class="my-5 flex flex-col">
             <h2 class="text-lg font-medium text-gray-800 dark:text-white">{{commodity.production_name}} by country</h2>
     
-            <p class="text-sm text-gray-500 dark:text-gray-300">source: {{commodity.production_source}}</p>
+            <p class="text-sm text-gray-500 dark:text-gray-300">
+                {% if commodity.production_name %}
+                World {{ commodity.production_name}} | 
+                {% endif %}
+                {% if commodity.production_total %}
+                Total: {{ commodity.production_total }} | 
+                {% endif %}
+                {% if commodity.production_unit %}
+                units: {{ commodity.production_unit}} | 
+                {% endif %}
+            </a>
+            <a class="text-xs lg:text-sm text-gray-600 dark:text-gray-400"> 
+                source: {{commodity.production_source}}</p>
         
             <div class="relative flex flex-col justify-center items-center mt-2">
                 <div id='commoditymap' class="w-full overflow-x-auto"></div>
@@ -729,7 +745,8 @@
                         class="hidden font-medium absolute right-0 z-20 w-48 py-2 mt-2 origin-top-right bg-white rounded-md shadow-xl dark:bg-gray-800"
                         >
                         <!-- Export to Excel -->
-                        <form method="post" action="{% url 'commodity' name=commodity.name %}">
+                        <form method="post" action="{% url 'commodity' name=commodity.name %}"
+                        @submit="ignoreLoading = true; setTimeout(() => ignoreLoading = false, 100);">
                             {% csrf_token %}
                             <input type="hidden" name="action" value="map_export_excel">
                             <button type="submit" class="w-full flex items-center px-3 py-3 text-sm text-gray-600 transition-colors duration-300 transform dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-white">
@@ -742,7 +759,8 @@
                         </form>
                 
                         <!-- Export to CSV -->
-                        <form method="post" action="{% url 'commodity' name=commodity.name %}">
+                        <form method="post" action="{% url 'commodity' name=commodity.name %}"
+                        @submit="ignoreLoading = true; setTimeout(() => ignoreLoading = false, 100);">
                             {% csrf_token %}
                             <input type="hidden" name="action" value="map_export_csv">
                             <button type="submit" class="w-full flex items-center px-3 py-3 text-sm text-gray-600 transition-colors duration-300 transform dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-white">
@@ -1044,7 +1062,7 @@
                 type: 'time',
                 time: {
                     unit: 'quarter',
-                    tooltipFormat: 'MMM YYYY',
+                    tooltipFormat: 'DD MMM YYYY', 
                     displayFormats: {
                         quarter: '[Q]Q YY',
                     }

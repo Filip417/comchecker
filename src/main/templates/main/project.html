@@ -52,7 +52,7 @@
       <h2 class="text-sm lg:text-base font-semibold text-gray-600 dark:text-gray-300">
         {% for cat in product_categories %}
             {{cat}}
-        {% if not forloop.last %} • {% endif %}
+        {% if not forloop.last %} | {% endif %}
         {% endfor %}
       </h2>
       <h3 class="text-xs lg:text-sm font-semibold text-gray-400 dark:text-gray-400">{{project.products.count}} products</h3>
@@ -309,7 +309,7 @@
       </div>
       <p class="text-sm text-gray-500 dark:text-gray-300">
         Historical and forecast data
-        {% comment %}   • source:
+        {% comment %}   | source:
         {% for source in unique_sources %} {{ source }} {% if not forloop.last %}, {% endif %} {% endfor %}
         {% endcomment %}
       </p> 
@@ -406,7 +406,8 @@
                                             class="hidden font-medium absolute right-0 z-30 w-48 py-2 mt-2 origin-top-right bg-white rounded-md shadow-xl dark:bg-gray-800"
                                         >
                                             <!-- Export to Excel -->
-                                            <form method="post" action="{% url 'project' project_slug=project.slug %}">
+                                            <form method="post" action="{% url 'project' project_slug=project.slug %}"
+                                            @submit="ignoreLoading = true; setTimeout(() => ignoreLoading = false, 100);">
                                                 {% csrf_token %}
                                                 <input type="hidden" name="action" value="table_export_excel">
                                                 <button type="submit" class="w-full flex items-center px-3 py-3 text-sm text-gray-600 transition-colors duration-300 transform dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-white">
@@ -419,7 +420,8 @@
                                             </form>
                                     
                                             <!-- Export to CSV -->
-                                            <form method="post" action="{% url 'project' project_slug=project.slug %}">
+                                            <form method="post" action="{% url 'project' project_slug=project.slug %}"
+                                            @submit="ignoreLoading = true; setTimeout(() => ignoreLoading = false, 100);">
                                                 {% csrf_token %}
                                                 <input type="hidden" name="action" value="table_export_csv">
                                                 <button type="submit" class="w-full flex items-center px-3 py-3 text-sm text-gray-600 transition-colors duration-300 transform dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-white">
@@ -537,6 +539,50 @@
                                 </td>
                             </tr>
                             {% endfor %}
+                            <!-- Total Row -->
+                            {% if table_data|length > 1 %}
+                            <tr class="bg-gray-50 dark:bg-gray-800"> <!-- Change color if needed -->
+                                <td class="px-4 py-4 font-bold text-gray-900 dark:text-gray-300" colspan="1">Total</td>
+                                <td class="px-4 py-4 text-center font-bold text-gray-900 dark:text-gray-300">
+                                    {{ table_data|sum_values:'5y_ago' }}
+                                </td>
+                                <td class="px-4 py-4 text-center font-bold text-gray-900 dark:text-gray-300">
+                                    {{ table_data|sum_values:'2y_ago' }}
+                                </td>
+                                <td class="px-4 py-4 text-center font-bold text-gray-900 dark:text-gray-300">
+                                    {{ table_data|sum_values:'1y_ago' }}
+                                </td>
+                                <td class="px-4 py-4 text-center font-bold text-gray-900 dark:text-gray-300">
+                                    {{ table_data|sum_values:'6m_ago' }}
+                                </td>
+                                <td class="px-4 py-4 text-center font-bold text-gray-900 dark:text-gray-300">
+                                    {{ table_data|sum_values:'today' }}
+                                </td>
+                                <td class="px-4 py-4 text-center font-bold text-gray-900 dark:text-gray-300">
+                                    {{ table_data|sum_values:'6m_ahead' }}
+                                </td>
+                                <td class="px-4 py-4 text-center font-bold text-gray-900 dark:text-gray-300">
+                                    {{ table_data|sum_values:'1y_ahead' }}
+                                </td>
+                                <td class="px-4 py-4 text-center font-bold text-gray-900 dark:text-gray-300">
+                                    {{ table_data|sum_values:'2y_ahead' }}
+                                </td>
+                                <td class="px-4 py-4 text-center font-bold text-gray-900 dark:text-gray-300">
+                                    {{ table_data|sum_values:'5y_ahead' }}
+                                </td>
+                                <td class="px-4 py-4 text-center font-bold text-gray-900 dark:text-gray-300">
+                                    {% if  table_data|sum_values:'5y_ahead' > table_data|sum_values:'today' %}
+                                        <a><span class="text-green-500 font-black">↗</span></a>
+                                        {% elif table_data|sum_values:'5y_ahead' < table_data|sum_values:'today' %}
+                                        <a><span class="text-red-500 font-black">↘</span></a>
+                                        {% elif table_data|sum_values:'5y_ahead' < table_data|sum_values:'today' %}
+                                        <a><span class="text-blue-500 font-black">=</span></a>
+                                        {% else %}
+                                        -
+                                        {% endif %}
+                                </td>
+                            </tr>
+                            {% endif %}
                           </tbody>
                       </table>
   

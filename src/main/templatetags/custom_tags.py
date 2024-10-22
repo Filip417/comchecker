@@ -11,7 +11,7 @@ import datetime
 from django import template
 from django.utils.timezone import now
 from main.models import Product
-
+from datetime import timedelta, datetime
 
 register = template.Library()
 
@@ -94,7 +94,7 @@ def slice_email(value):
 def time_since(value):
     """Returns the time since the given datetime value as a human-readable string."""
 
-    if not isinstance(value, datetime.datetime):
+    if not isinstance(value, datetime):
         return f"Invalid datetime: {type(value)}"  # Return the value unchanged if it's not a datetime object
 
     time_diff = now() - value
@@ -132,3 +132,23 @@ def divide_by_100(value):
         return round(float(value) / 100, 2)
     except (ValueError, TypeError):
         return 0  # Return 0 or handle the error as needed
+    
+@register.filter
+def sum_values(data, key):
+    """Sums the values of a specific key in a list of dictionaries."""
+    if isinstance(data, dict):
+        total = 0
+        for k, item in data.items():
+            if isinstance(item, dict):
+                value = item.get(key, 0)
+                total += value
+        return round(total, 2)
+    return 0  # Return 0 if data is not a list
+
+@register.filter
+def add_year(date_string):
+    """Adds one year to the given date."""
+    # Correct date format
+    date_format = "%Y-%m-%d"  # Use %Y, %m, and %d for the format
+    date_object = datetime.strptime(date_string, date_format)
+    return (date_object + timedelta(days=365)).date()  # Optionally return date only

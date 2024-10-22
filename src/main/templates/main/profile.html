@@ -192,7 +192,7 @@
                         </a>
                       </h3>
                       {% load custom_tags %}
-                      <p class="mt-1 text-xs text-gray-400 dark:text-gray-500">{{project.products.count}} products • {{project.created_at|time_since}}</p>
+                      <p class="mt-1 text-xs text-gray-400 dark:text-gray-500">{{project.products.count}} products | {{project.created_at|time_since}}</p>
                     </div>
                     <p class="text-sm font-semibold text-gray-900 dark:text-gray-200">
                       {% if project.increasefromlastyear %}

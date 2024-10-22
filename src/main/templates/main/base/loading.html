@@ -6,13 +6,22 @@
         window.addEventListener('pageshow', () => loading = false);  // For page load from cache
         
         // Show loading spinner on page unload (navigation) and when leaving the page
-        window.addEventListener('beforeunload', () => loading = true);
-        window.addEventListener('pagehide', () => loading = true);  // For when page is hidden
+        ignoreLoading = false
+        window.addEventListener('beforeunload', () => {
+            if (!ignoreLoading) {
+                loading = true;
+            }
+        });
+        window.addEventListener('pagehide', () => {
+            if (!ignoreLoading) {
+                loading = true;
+            }
+        });  // For when page is hidden
      "
      x-show="loading"
      x-cloak
      class="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50">
-    <div class="loader ease-linear rounded-full border-8 border-t-8 border-gray-200 h-24 w-24"></div>
+    <div  class="loader ease-linear rounded-full border-8 border-t-8 border-gray-200 h-24 w-24"></div>
 </div>
 
 <style>
