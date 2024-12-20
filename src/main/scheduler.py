@@ -12,9 +12,11 @@ def start_scheduler():
         scheduler.add_jobstore(DjangoJobStore(), "default")
 
         # Check if jobs already exist, only add if they don't
+        # set 12 hours for proper updates with higher cost
         if not scheduler.get_job("dailytasks"):
             scheduler.add_job(run_daily_tasks, 'interval', days=30, id="dailytasks", replace_existing=True)
-        
+            
+        # set 12 hours for proper updates with higher cost
         if not scheduler.get_job("sync_subs"):
             scheduler.add_job(sync_subs, 'interval', days=30, id="sync_subs", replace_existing=True)
         
