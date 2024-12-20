@@ -13,10 +13,10 @@ def start_scheduler():
 
         # Check if jobs already exist, only add if they don't
         if not scheduler.get_job("dailytasks"):
-            scheduler.add_job(run_daily_tasks, 'interval', hours=12, id="dailytasks", replace_existing=True)
+            scheduler.add_job(run_daily_tasks, 'interval', days=30, id="dailytasks", replace_existing=True)
         
         if not scheduler.get_job("sync_subs"):
-            scheduler.add_job(sync_subs, 'interval', hours=12, id="sync_subs", replace_existing=True)
+            scheduler.add_job(sync_subs, 'interval', days=30, id="sync_subs", replace_existing=True)
         
         if not scheduler.get_job("clear_dangling_subs"):
             # Schedule `clear_dangling_subs` for monthly execution
