@@ -183,3 +183,10 @@ Email: [sawinskif@gmail.com](mailto:sawinskif@gmail.com)
 GitHub: [Filip417](https://github.com/Filip417)
 
 © 2025 Material Wise. All rights reserved.
+
+## Project screenshots
+
+Screenshots made in dark mode - light mode also available
+
+<img src="https://github.com/Filip417/comchecker/blob/main/readmeimages/materialwiseexample1.PNG" alt="Material Wise Example 1" width="480" height="270"/>
+
