@@ -111,19 +111,20 @@ This technology stack enables robust data collection, advanced forecasting, secu
 3.  View detailed material information, including price histories, forecasts, regional raw materials manufacturing and other relevant materials
 
 
-### Creating custom product
+### Creating custom product, projects
 
-1.  From scratch or based on existing product
+1. Create it from scratch or based on existing product
     
-2.  Add commodity and indexes weights
+3.  Add commodity and indexes weights
     
-3.  View detailed material information, including price histories, forecasts, regional raw materials manufacturing and other relevant materials
+4.  View detailed material information, including price histories, forecasts, regional raw materials manufacturing and other relevant products, commodities and projects
 
-### Creating custom projects
 
-1.  Categorise products, commodities and indexes in custom projects with weight adjustment.
+### Creating Notifications
+
+1.  Set notification on product, commodity, project page
     
-2.  View detailed material information, including price histories, forecasts, regional raw materials manufacturing and other relevant products, commodities and projects.
+2.  Set future date of change, % threshold and direction of notification activated, email notification preference
     
 
 ### Analyzing Price Trends
