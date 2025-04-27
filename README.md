@@ -189,4 +189,15 @@ GitHub: [Filip417](https://github.com/Filip417)
 Screenshots made in dark mode - light mode also available
 
 <img src="https://github.com/Filip417/comchecker/blob/main/readmeimages/materialwiseexample1.PNG" alt="Material Wise Example 1"/>
+<img src="https://github.com/Filip417/comchecker/blob/main/readmeimages/materialwiseexample2.PNG" alt="Material Wise Example 2"/>
+<img src="https://github.com/Filip417/comchecker/blob/main/readmeimages/materialwiseexample3.PNG" alt="Material Wise Example 3"/>
+<img src="https://github.com/Filip417/comchecker/blob/main/readmeimages/materialwiseexample4.PNG" alt="Material Wise Example 4"/>
+<img src="https://github.com/Filip417/comchecker/blob/main/readmeimages/materialwiseexample5.PNG" alt="Material Wise Example 5"/>
+<img src="https://github.com/Filip417/comchecker/blob/main/readmeimages/materialwiseexample6.PNG" alt="Material Wise Example 6"/>
+<img src="https://github.com/Filip417/comchecker/blob/main/readmeimages/materialwiseexample7.PNG" alt="Material Wise Example 7"/>
+<img src="https://github.com/Filip417/comchecker/blob/main/readmeimages/materialwiseexample8.PNG" alt="Material Wise Example 8"/>
+<img src="https://github.com/Filip417/comchecker/blob/main/readmeimages/materialwiseexample9.PNG" alt="Material Wise Example 9"/>
+<img src="https://github.com/Filip417/comchecker/blob/main/readmeimages/materialwiseexample10.PNG" alt="Material Wise Example 10"/>
+<img src="https://github.com/Filip417/comchecker/blob/main/readmeimages/materialwiseexample11.PNG" alt="Material Wise Example 11"/>
+<img src="https://github.com/Filip417/comchecker/blob/main/readmeimages/materialwiseexample12.PNG" alt="Material Wise Example 12"/>
 
