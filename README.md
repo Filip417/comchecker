@@ -188,5 +188,5 @@ GitHub: [Filip417](https://github.com/Filip417)
 
 Screenshots made in dark mode - light mode also available
 
-<img src="https://github.com/Filip417/comchecker/blob/main/readmeimages/materialwiseexample1.PNG" alt="Material Wise Example 1" width="480" height="270"/>
+<img src="https://github.com/Filip417/comchecker/blob/main/readmeimages/materialwiseexample1.PNG" alt="Material Wise Example 1"/>
 
